@@ -6,8 +6,6 @@ import com.krakenrs.spade.commons.collections.graph.Vertex;
 
 import java.util.*;
 
-import static java.util.function.Predicate.not;
-
 /**
  * An algorithm to compute strongly connected components.
  */
@@ -31,7 +29,12 @@ public class TarjanScc<V extends Vertex> {
     }
 
     public List<Set<V>> run() {
-        graph.getVertices().stream().filter(not(indices::containsKey)).forEach(this::run);
+        for (V vertex : graph.getVertices()) {
+            if (!indices.containsKey(vertex)) {
+                run(vertex);
+            }
+        }
+
         return components;
     }
 
