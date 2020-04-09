@@ -5,26 +5,26 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 
 public class ArrayType implements ValueType {
-    private final ValueType elementType;
+    private final ValueType componentType;
 
-    public ArrayType(ValueType elementType) {
-        this.elementType = requireNonNull(elementType);
+    public ArrayType(ValueType componentType) {
+        this.componentType = requireNonNull(componentType);
+    }
+
+    public ValueType componentType() {
+        return componentType;
     }
 
     public ValueType elementType() {
-        return elementType;
-    }
-
-    public ValueType baseElementType() {
-        if (elementType instanceof ArrayType) {
-            return ((ArrayType) elementType).baseElementType();
+        if (componentType instanceof ArrayType) {
+            return ((ArrayType) componentType).elementType();
         } else {
-            return elementType;
+            return componentType;
         }
     }
 
     public int dimensions() {
-        return 1 + (elementType instanceof ArrayType ? ((ArrayType) elementType).dimensions() : 0);
+        return 1 + (componentType instanceof ArrayType ? ((ArrayType) componentType).dimensions() : 0);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class ArrayType implements ValueType {
 
     @Override
     public String toString() {
-        return '[' + elementType.toString();
+        return '[' + componentType.toString();
     }
 
     @Override
@@ -44,11 +44,11 @@ public class ArrayType implements ValueType {
         if (o == null || getClass() != o.getClass())
             return false;
         ArrayType arrayType = (ArrayType) o;
-        return Objects.equals(elementType, arrayType.elementType);
+        return Objects.equals(componentType, arrayType.componentType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(elementType);
+        return Objects.hash(componentType);
     }
 }
