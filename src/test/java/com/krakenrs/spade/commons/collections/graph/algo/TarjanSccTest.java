@@ -39,8 +39,8 @@ class TarjanSccTest {
     public void testScc0Edges() {
         var g = graphSupplier.get();
         Set<TestVertex> vs = new HashSet<>();
-        for(int i=0; i < 10; i++) {
-            TestVertex v = vertexSupplier.get();
+        for (int i = 0; i < 10; i++) {
+            var v = vertexSupplier.get();
             vs.add(v);
             g.addVertex(v);
         }
@@ -125,14 +125,14 @@ class TarjanSccTest {
     void testTarjanScc3() {
         // https://upload.wikimedia.org/wikipedia/commons/5/5c/Scc.png
         var graph = graphSupplier.get();
-        TestVertex a = vertexSupplier.get(),
-            b = vertexSupplier.get(),
-            c = vertexSupplier.get(),
-            d = vertexSupplier.get(),
-            e = vertexSupplier.get(),
-            f = vertexSupplier.get(),
-            g = vertexSupplier.get(),
-            h = vertexSupplier.get();
+        var a = vertexSupplier.get();
+        var b = vertexSupplier.get();
+        var c = vertexSupplier.get();
+        var d = vertexSupplier.get();
+        var e = vertexSupplier.get();
+        var f = vertexSupplier.get();
+        var g = vertexSupplier.get();
+        var h = vertexSupplier.get();
         graph.addEdge(edge(a, b));
         graph.addEdge(edge(b, e));
         graph.addEdge(edge(b, f));
@@ -151,32 +151,25 @@ class TarjanSccTest {
         TarjanScc<TestVertex> computer = new TarjanScc<>(graph);
 
         Set<Set<TestVertex>> components = new HashSet<>(computer.run());
-        assertEquals(
-            Set.of(
-                Set.of(a, b, e),
-                Set.of(f, g),
-                Set.of(c, d, h)
-            ),
-            components
-        );
+        assertEquals(Set.of(Set.of(a, b, e), Set.of(f, g), Set.of(c, d, h)), components);
     }
 
     @Test
     void testTarjanScc4() {
         // http://rosalind.info/media/sccexample.png
         var graph = graphSupplier.get();
-        TestVertex a = vertexSupplier.get(),
-            b = vertexSupplier.get(),
-            c = vertexSupplier.get(),
-            d = vertexSupplier.get(),
-            e = vertexSupplier.get(),
-            f = vertexSupplier.get(),
-            g = vertexSupplier.get(),
-            h = vertexSupplier.get(),
-            i = vertexSupplier.get(),
-            j = vertexSupplier.get(),
-            k = vertexSupplier.get(),
-            l = vertexSupplier.get();
+        var a = vertexSupplier.get();
+        var b = vertexSupplier.get();
+        var c = vertexSupplier.get();
+        var d = vertexSupplier.get();
+        var e = vertexSupplier.get();
+        var f = vertexSupplier.get();
+        var g = vertexSupplier.get();
+        var h = vertexSupplier.get();
+        var i = vertexSupplier.get();
+        var j = vertexSupplier.get();
+        var k = vertexSupplier.get();
+        var l = vertexSupplier.get();
         graph.addEdge(edge(a, b));
         graph.addEdge(edge(b, c));
         graph.addEdge(edge(b, d));
@@ -198,27 +191,18 @@ class TarjanSccTest {
         TarjanScc<TestVertex> computer = new TarjanScc<>(graph);
 
         Set<Set<TestVertex>> components = new HashSet<>(computer.run());
-        assertEquals(
-            Set.of(
-                Set.of(a),
-                Set.of(d),
-                Set.of(b, e),
-                Set.of(c, f),
-                Set.of(g, h, i, j, k, l)
-            ),
-            components
-        );
+        assertEquals(Set.of(Set.of(a), Set.of(d), Set.of(b, e), Set.of(c, f), Set.of(g, h, i, j, k, l)), components);
     }
 
     @Test
     void testSccCompletelyConnected() {
         // https://media.geeksforgeeks.org/wp-content/cdn-uploads/connectivity3.png
         var graph = graphSupplier.get();
-        TestVertex v0 = vertexSupplier.get(),
-            v1 = vertexSupplier.get(),
-            v2 = vertexSupplier.get(),
-            v3 = vertexSupplier.get(),
-            v4 = vertexSupplier.get();
+        var v0 = vertexSupplier.get();
+        var v1 = vertexSupplier.get();
+        var v2 = vertexSupplier.get();
+        var v3 = vertexSupplier.get();
+        var v4 = vertexSupplier.get();
         graph.addEdge(edge(v0, v1));
         graph.addEdge(edge(v1, v2));
         graph.addEdge(edge(v2, v3));
@@ -229,27 +213,22 @@ class TarjanSccTest {
         TarjanScc<TestVertex> computer = new TarjanScc<>(graph);
 
         Set<Set<TestVertex>> components = new HashSet<>(computer.run());
-        assertEquals(
-            Set.of(
-                Set.of(v0, v1, v2, v3, v4)
-            ),
-            components
-        );
+        assertEquals(Set.of(Set.of(v0, v1, v2, v3, v4)), components);
     }
 
     @Test
     void testTarjanScc5() {
         // https://runestone.academy/runestone/books/published/pythonds/_images/scc1.png
         var graph = graphSupplier.get();
-        TestVertex a = vertexSupplier.get(),
-            b = vertexSupplier.get(),
-            c = vertexSupplier.get(),
-            d = vertexSupplier.get(),
-            e = vertexSupplier.get(),
-            f = vertexSupplier.get(),
-            g = vertexSupplier.get(),
-            h = vertexSupplier.get(),
-            i = vertexSupplier.get();
+        var a = vertexSupplier.get();
+        var b = vertexSupplier.get();
+        var c = vertexSupplier.get();
+        var d = vertexSupplier.get();
+        var e = vertexSupplier.get();
+        var f = vertexSupplier.get();
+        var g = vertexSupplier.get();
+        var h = vertexSupplier.get();
+        var i = vertexSupplier.get();
         graph.addEdge(edge(a, b));
         graph.addEdge(edge(b, e));
         graph.addEdge(edge(b, c));
@@ -267,13 +246,6 @@ class TarjanSccTest {
         TarjanScc<TestVertex> computer = new TarjanScc<>(graph);
 
         Set<Set<TestVertex>> components = new HashSet<>(computer.run());
-        assertEquals(
-            Set.of(
-                Set.of(a, b, d, e, g),
-                Set.of(c),
-                Set.of(f, h, i)
-            ),
-            components
-        );
+        assertEquals(Set.of(Set.of(a, b, d, e, g), Set.of(c), Set.of(f, h, i)), components);
     }
 }
