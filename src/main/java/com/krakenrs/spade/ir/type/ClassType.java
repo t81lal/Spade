@@ -24,11 +24,13 @@ public abstract class ClassType implements Type {
 
     public abstract Set<ClassType> getSuperInterfaceTypes();
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return className;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -37,7 +39,8 @@ public abstract class ClassType implements Type {
         return Objects.equals(className, classType.className) && Objects.equals(valueType, classType.valueType);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(className, valueType);
     }
 }

@@ -1,5 +1,6 @@
 package com.krakenrs.spade.ir.type;
 
+@SuppressWarnings("serial")
 public class TypeParsingException extends RuntimeException {
     private final char[] cs;
     private final int offset;

@@ -4,7 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SimpleTypeManager extends TypeManager {
-    @Override protected ClassType findClassType(String name) {
+    @Override
+    protected ClassType findClassType(String name) {
         try {
             Class<?> c = Class.forName(name.replace("/", "."));
             ClassType sT = c.getSuperclass() == null ? null : asClassType(c.getSuperclass());

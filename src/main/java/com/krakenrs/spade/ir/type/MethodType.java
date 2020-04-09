@@ -22,7 +22,8 @@ public class MethodType implements Type {
         return returnType;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append('(');
         paramTypes.forEach(sb::append);
@@ -31,7 +32,8 @@ public class MethodType implements Type {
         return sb.toString();
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -40,7 +42,8 @@ public class MethodType implements Type {
         return Objects.equals(paramTypes, that.paramTypes) && Objects.equals(returnType, that.returnType);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(paramTypes, returnType);
     }
 }

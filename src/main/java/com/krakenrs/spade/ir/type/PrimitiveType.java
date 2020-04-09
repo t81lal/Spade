@@ -2,8 +2,12 @@ package com.krakenrs.spade.ir.type;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
+
+import java.util.List;
 
 public final class PrimitiveType implements ValueType {
     public static final PrimitiveType LONG = new PrimitiveType("J", 2);
@@ -16,10 +20,9 @@ public final class PrimitiveType implements ValueType {
     public static final PrimitiveType BOOLEAN = new PrimitiveType("Z", 1);
     public static final PrimitiveType VOID = new PrimitiveType("V", 0);
 
-    public static final Map<String, PrimitiveType> DESCRIPTORS = Map
-            .of(LONG.descriptor, LONG, DOUBLE.descriptor, DOUBLE, FLOAT.descriptor, FLOAT, INT.descriptor, INT,
-                    SHORT.descriptor, SHORT, BYTE.descriptor, BYTE, CHAR.descriptor, CHAR, BOOLEAN.descriptor, BOOLEAN,
-                    VOID.descriptor, VOID);
+    public static final Map<String, PrimitiveType> DESCRIPTORS = List
+            .of(LONG, DOUBLE, FLOAT, INT, SHORT, BYTE, CHAR, BOOLEAN, VOID).stream()
+            .collect(Collectors.toUnmodifiableMap(PrimitiveType::getDescriptor, Function.identity()));
 
     private final String descriptor;
     private final int size;
@@ -33,15 +36,18 @@ public final class PrimitiveType implements ValueType {
         return descriptor;
     }
 
-    @Override public int getSize() {
+    @Override
+    public int getSize() {
         return size;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return descriptor;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -50,7 +56,8 @@ public final class PrimitiveType implements ValueType {
         return size == that.size && Objects.equals(descriptor, that.descriptor);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(descriptor, size);
     }
 }

@@ -7,11 +7,13 @@ public class UnresolvedClassType extends ClassType {
         super(className);
     }
 
-    @Override public ClassType getSuperClassType() {
+    @Override
+    public ClassType getSuperClassType() {
         throw new UnsupportedOperationException();
     }
 
-    @Override public Set<ClassType> getSuperInterfaceTypes() {
+    @Override
+    public Set<ClassType> getSuperInterfaceTypes() {
         throw new UnsupportedOperationException();
     }
 }

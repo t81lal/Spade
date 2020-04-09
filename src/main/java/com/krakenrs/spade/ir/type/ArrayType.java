@@ -27,15 +27,18 @@ public class ArrayType implements ValueType {
         return 1 + (elementType instanceof ArrayType ? ((ArrayType) elementType).dimensions() : 0);
     }
 
-    @Override public int getSize() {
+    @Override
+    public int getSize() {
         return 1;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return '[' + elementType.toString();
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -44,7 +47,8 @@ public class ArrayType implements ValueType {
         return Objects.equals(elementType, arrayType.elementType);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(elementType);
     }
 }

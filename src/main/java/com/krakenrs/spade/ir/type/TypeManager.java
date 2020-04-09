@@ -111,8 +111,8 @@ public abstract class TypeManager {
                     }
                 } else if (i == len - 1) {
                     ValueType vt = _asValueType(cs, 0, len);
-                    if (!(vt instanceof PrimitiveType) && !(vt instanceof ArrayType && ((ArrayType) vt)
-                            .baseElementType() instanceof PrimitiveType)) {
+                    if (!(vt instanceof PrimitiveType) && !(vt instanceof ArrayType
+                            && ((ArrayType) vt).baseElementType() instanceof PrimitiveType)) {
                         throw new TypeParsingException("Expecting primitive, got " + vt, cs, 0, i, false);
                     } else {
                         return vt;
@@ -217,7 +217,7 @@ public abstract class TypeManager {
     }
 
     public ClassType lca(Set<ClassType> types) {
-        //		System.out.printf("lca(%s)\n", types);
+        // System.out.printf("lca(%s)\n", types);
         if (types.isEmpty()) {
             return null;
         } else {
@@ -240,7 +240,7 @@ public abstract class TypeManager {
     }
 
     public ClassType lca(ClassType t1, ClassType t2) {
-        //		System.out.printf("lca(%s, %s)\n", t1, t2);
+        // System.out.printf("lca(%s, %s)\n", t1, t2);
         if (t1 == null || t2 == null) {
             throw new NullPointerException();
         }
@@ -257,8 +257,8 @@ public abstract class TypeManager {
             } else if (t2.getSuperClassType().equals(t1)) {
                 return t1;
             } else {
-                Set<ClassType> if1 = new HashSet<>(t1.getSuperInterfaceTypes()), if2 = new HashSet<>(
-                        t2.getSuperInterfaceTypes());
+                Set<ClassType> if1 = new HashSet<>(t1.getSuperInterfaceTypes()),
+                        if2 = new HashSet<>(t2.getSuperInterfaceTypes());
                 if (if1.contains(t2)) {
                     return t2;
                 } else if (if2.contains(t1)) {

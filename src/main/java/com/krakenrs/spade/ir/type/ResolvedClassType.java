@@ -14,11 +14,13 @@ public class ResolvedClassType extends ClassType {
         this.superInterfaces = requireNonNull(superInterfaces);
     }
 
-    @Override public ClassType getSuperClassType() {
+    @Override
+    public ClassType getSuperClassType() {
         return superClass;
     }
 
-    @Override public Set<ClassType> getSuperInterfaceTypes() {
+    @Override
+    public Set<ClassType> getSuperInterfaceTypes() {
         return superInterfaces;
     }
 }

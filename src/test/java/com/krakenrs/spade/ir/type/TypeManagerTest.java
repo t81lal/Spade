@@ -17,13 +17,16 @@ class TypeManagerTest {
     final Supplier<MockTypeManager> typeManagerSupplier = MockTypeManager::new;
 
     private static Stream<Arguments> methodTypes() {
-        return Stream.of(Arguments.of(new MethodType(List.of(), PrimitiveType.VOID), "()V"),
-                Arguments.of(new MethodType(List.of(), PrimitiveType.INT), "()I"), Arguments
-                        .of(new MethodType(List.of(PrimitiveType.INT, PrimitiveType.INT), PrimitiveType.INT), "(II)I"));
+        return Stream.of(
+                Arguments.of(new MethodType(List.of(), PrimitiveType.VOID), "()V"),
+                Arguments.of(new MethodType(List.of(), PrimitiveType.INT), "()I"),
+                Arguments.of(new MethodType(List.of(PrimitiveType.INT, PrimitiveType.INT), 
+                                                    PrimitiveType.INT), "(II)I"));
     }
 
-    @ParameterizedTest(name = "[{index}] {1}") @MethodSource("methodTypes") void testAsMethodType(MethodType expected,
-            String descriptor) {
+    @ParameterizedTest(name = "[{index}] {1}")
+    @MethodSource("methodTypes")
+    void testAsMethodType(MethodType expected, String descriptor) {
         final var tm = typeManagerSupplier.get();
         final MethodType actual = tm.asMethodType(descriptor);
         assertEquals(expected, actual);
@@ -40,7 +43,8 @@ class TypeManagerTest {
             classes.put(className, classType);
         }
 
-        @Override protected ClassType findClassType(String name) {
+        @Override
+        protected ClassType findClassType(String name) {
             return classes.getOrDefault(name, new UnresolvedClassType(name));
         }
     }
