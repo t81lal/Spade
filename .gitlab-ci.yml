@@ -1,0 +1,32 @@
+image: maven:3.6-jdk-11
+
+stages:
+  - build
+  - test
+  - package
+
+cache:
+  paths:
+    - .m2/repository/
+
+build:
+  stage: build
+  script:
+    - mvn --batch-mode compile
+
+test:
+  stage: test
+  script:
+    - mvn --batch-mode test
+  artifacts:
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+
+package:
+  stage: package
+  script:
+    - mvn --batch-mode package -DskipTests
+  artifacts:
+    paths:
+      - target/spade-*.jar
