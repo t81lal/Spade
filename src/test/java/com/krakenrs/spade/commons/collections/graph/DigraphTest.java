@@ -26,6 +26,22 @@ class DigraphTest {
     }
 
     @Test
+    void testAddVertexTwice() {
+        var g = new Digraph<TestVertex, Edge<TestVertex>>();
+        var a = new TestVertex(0);
+        var b = new TestVertex(0);
+        var e = new Edge<>(a, b);
+        g.addEdge(e);
+
+        assertTrue(g.containsVertex(a));
+        assertTrue(g.containsVertex(b));
+
+        assertFalse(g.addVertex(a));
+        assertTrue(g.containsEdge(e));
+        assertTrue(g.containsReverseEdge(e));
+    }
+
+    @Test
     void testAddEdge() {
         final var g = new Digraph<TestVertex, Edge<TestVertex>>();
         final var v0 = new TestVertex(0);
@@ -35,12 +51,14 @@ class DigraphTest {
         assertFalse(g.containsVertex(v0));
         assertFalse(g.containsVertex(v1));
         assertFalse(g.containsEdge(v0v1));
+        assertFalse(g.containsReverseEdge(v0v1));
 
         g.addEdge(v0v1);
 
         assertTrue(g.containsVertex(v0));
         assertTrue(g.containsVertex(v1));
         assertTrue(g.containsEdge(v0v1));
+        assertTrue(g.containsReverseEdge(v0v1));
         assertEquals(Set.of(v0v1), g.getEdges(v0));
         assertEquals(Set.of(v0v1), g.getReverseEdges(v1));
     }
@@ -75,6 +93,7 @@ class DigraphTest {
         assertFalse(g.containsVertex(v1));
         assertFalse(g.containsEdge(v0v1));
         assertEquals(Set.of(), g.getEdges(v0));
+        assertThrows(IllegalArgumentException.class, () -> g.getReverseEdges(v1));
     }
 
     @Test
@@ -113,5 +132,7 @@ class DigraphTest {
 
         assertTrue(g0.equals(g1));
         assertTrue(g1.equals(g0));
+
+        assertTrue(g0.hashCode() == g1.hashCode());
     }
 }

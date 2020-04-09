@@ -158,6 +158,17 @@ public class Digraph<V extends Vertex, E extends Edge<V>> {
         return containsVertex(edge.getSource()) && edges.get(edge.getSource()).contains(edge);
     }
 
+    /**
+     * Check if a reverse edge is contained in the graph.
+     *
+     * @param edge Edge to check. Must not be null
+     * @return True if the reverse edge is contained in the graph. False otherwise
+     */
+    public boolean containsReverseEdge(E edge) {
+        requireNonNull(edge);
+        return containsVertex(edge.getDestination()) && reverseEdges.get(edge.getDestination()).contains(edge);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
