@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,5 +50,9 @@ class DepthFirstSearchTest {
         assertEquals(v0, search.getParent(v2).orElseThrow());
         assertEquals(v1, search.getParent(v3).orElseThrow());
         assertEquals(v1, search.getParent(v4).orElseThrow());
+        assertEquals(Set.of(), search.getEdges(DepthFirstSearch.VertexColour.BLACK));
+        assertEquals(Set.of(), search.getEdges(DepthFirstSearch.VertexColour.GREY));
+        assertEquals(Set.of(edge(v0, v1), edge(v1, v3), edge(v0, v2), edge(v1, v4)),
+                search.getEdges(DepthFirstSearch.VertexColour.WHITE));
     }
 }
