@@ -43,6 +43,14 @@ public class Edge<V> {
     }
 
     @Override
+    public String toString() {
+        return "Edge{" +
+                "source=" + source +
+                ", destination=" + destination +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
