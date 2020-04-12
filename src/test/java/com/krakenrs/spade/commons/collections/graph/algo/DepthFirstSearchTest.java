@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -54,5 +55,53 @@ class DepthFirstSearchTest {
         assertEquals(Set.of(), search.getEdges(DepthFirstSearch.VertexColour.GREY));
         assertEquals(Set.of(edge(v0, v1), edge(v1, v3), edge(v0, v2), edge(v1, v4)),
                 search.getEdges(DepthFirstSearch.VertexColour.WHITE));
+    }
+
+    @Test
+    void testDepthFirstSearch2() {
+        // https://upload.wikimedia.org/wikipedia/commons/5/57/Tree_edges.svg
+        var g = graphSupplier.get();
+        var v0 = vertexSupplier.get();
+        var v1 = vertexSupplier.get();
+        var v2 = vertexSupplier.get();
+        var v3 = vertexSupplier.get();
+        var v4 = vertexSupplier.get();
+        var v5 = vertexSupplier.get();
+        var v6 = vertexSupplier.get();
+        var v7 = vertexSupplier.get();
+        g.addEdge(edge(v0, v1));
+        g.addEdge(edge(v0, v4));
+        g.addEdge(edge(v0, v7));
+        g.addEdge(edge(v1, v2));
+        g.addEdge(edge(v2, v3));
+        g.addEdge(edge(v3, v1));
+        g.addEdge(edge(v4, v5));
+        g.addEdge(edge(v5, v2));
+        g.addEdge(edge(v5, v6));
+        g.addEdge(edge(v5, v7));
+
+        var search = new DepthFirstSearch<>(g);
+        search.run(v0);
+
+        // Test parents.
+        Map.of(
+                v1, v0,
+                v2, v1,
+                v3, v2,
+                v4, v0,
+                v5, v4,
+                v6, v5,
+                v7, v5
+        ).forEach((k, v) -> assertEquals(v, search.getParent(k).orElseThrow()));
+
+        // Test vertex ordering.
+        assertEquals(List.of(v3, v2, v1, v6, v7, v5, v4, v0), search.getPostOrder());
+        assertEquals(List.of(v0, v1, v2, v3, v4, v5, v6, v7), search.getPreOrder());
+
+        // Test edge classification.
+        assertEquals(Set.of(edge(v0, v1), edge(v1, v2), edge(v2, v3), edge(v4, v5), edge(v5, v6), edge(v5, v7),
+                edge(v0, v4)), search.getEdges(DepthFirstSearch.VertexColour.WHITE));
+        assertEquals(Set.of(edge(v0, v7), edge(v5, v2)), search.getEdges(DepthFirstSearch.VertexColour.BLACK));
+        assertEquals(Set.of(edge(v3, v1)), search.getEdges(DepthFirstSearch.VertexColour.GREY));
     }
 }
