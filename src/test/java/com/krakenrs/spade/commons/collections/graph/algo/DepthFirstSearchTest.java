@@ -106,4 +106,36 @@ class DepthFirstSearchTest {
         assertEquals(Set.of(edge(v0, v7), edge(v5, v2)), search.getEdges(DepthFirstSearch.EdgeType.CROSS_AND_FORWARD));
         assertEquals(Set.of(edge(v3, v1)), search.getEdges(DepthFirstSearch.EdgeType.BACK));
     }
+
+    @Test
+    void testDepthFirstSearch2Reverse() {
+        // Reverse of https://upload.wikimedia.org/wikipedia/commons/5/57/Tree_edges.svg
+        var g = graphSupplier.get();
+        var v0 = vertexSupplier.get();
+        var v1 = vertexSupplier.get();
+        var v2 = vertexSupplier.get();
+        var v3 = vertexSupplier.get();
+        var v4 = vertexSupplier.get();
+        var v5 = vertexSupplier.get();
+        var v6 = vertexSupplier.get();
+        var v7 = vertexSupplier.get();
+
+        g.addEdge(edge(v1, v0));
+        g.addEdge(edge(v4, v0));
+        g.addEdge(edge(v7, v0));
+        g.addEdge(edge(v2, v1));
+        g.addEdge(edge(v3, v2));
+        g.addEdge(edge(v1, v3));
+        g.addEdge(edge(v5, v4));
+        g.addEdge(edge(v2, v5));
+        g.addEdge(edge(v6, v5));
+        g.addEdge(edge(v7, v5));
+
+        var search = new DepthFirstSearch<>(g, true);
+        search.run(v0);
+
+        assertEquals(List.of(v3, v2, v1, v7, v6, v5, v4, v0), search.getPostOrder());
+        assertEquals(List.of(v0, v4, v5, v6, v7, v1, v2, v3), search.getTopOrder());
+        assertEquals(List.of(v0, v1, v2, v3, v7, v4, v5, v6), search.getPreOrder());
+    }
 }

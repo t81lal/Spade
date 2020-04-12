@@ -13,8 +13,9 @@ public class DepthFirstSearch<V extends Vertex> {
     private final Map<V, V> parents;
     private final List<V> postOrder;
     private final List<V> preOrder;
+    private final boolean reverse;
 
-    public DepthFirstSearch(Digraph<V, ? extends Edge<V>> graph) {
+    public DepthFirstSearch(Digraph<V, ? extends Edge<V>> graph, boolean reverse) {
         this.graph = graph;
         this.colours = new HashMap<>();
         this.edges = Map.of(
@@ -25,14 +26,19 @@ public class DepthFirstSearch<V extends Vertex> {
         this.parents = new HashMap<>();
         this.postOrder = new ArrayList<>();
         this.preOrder = new ArrayList<>();
+        this.reverse = reverse;
+    }
+
+    public DepthFirstSearch(Digraph<V, ? extends Edge<V>> graph) {
+        this(graph, false);
     }
 
     public void run(V vertex) {
         colours.put(vertex, VertexColour.GREY);
         preOrder.add(vertex);
 
-        for (Edge<V> edge : graph.getEdges(vertex)) {
-            V destination = edge.getDestination();
+        for (Edge<V> edge : reverse ? graph.getReverseEdges(vertex) : graph.getEdges(vertex)) {
+            V destination = reverse ? edge.getSource() : edge.getDestination();
 
             VertexColour destinationColour = colours.getOrDefault(destination, VertexColour.WHITE);
 
@@ -112,6 +118,10 @@ public class DepthFirstSearch<V extends Vertex> {
         List<V> copy = new ArrayList<>(postOrder);
         Collections.reverse(copy);
         return Collections.unmodifiableList(copy);
+    }
+
+    public boolean isReverse() {
+        return reverse;
     }
 
     public enum EdgeType {
