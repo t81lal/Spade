@@ -212,7 +212,7 @@ class TarjanSccTest {
     }
 
     @Test
-    public void testScc0Edges() {
+    void testComputeEdges() {
         var g = graphSupplier.get();
         Set<TestVertex> vs = new HashSet<>();
         for (int i = 0; i < 10; i++) {
@@ -221,8 +221,8 @@ class TarjanSccTest {
             g.addVertex(v);
         }
         TarjanScc<TestVertex> computer = new TarjanScc<>(g);
-        Set<Set<TestVertex>> comp1nts = new HashSet<>(computer.run());
-        Set<Set<TestVertex>> expected = vs.stream().map((v) -> Set.of(v)).collect(Collectors.toSet());
-        assertEquals(expected, comp1nts);
+        Set<Set<TestVertex>> actual = new HashSet<>(computer.run());
+        Set<Set<TestVertex>> expected = vs.stream().map(Set::of).collect(Collectors.toSet());
+        assertEquals(expected, actual);
     }
 }
