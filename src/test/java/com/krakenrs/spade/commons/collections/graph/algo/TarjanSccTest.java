@@ -6,17 +6,33 @@ import com.krakenrs.spade.commons.collections.graph.TestVertex;
 import com.krakenrs.spade.commons.collections.graph.TestVertexSupplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TarjanSccTest {
     private TestVertexSupplier vertexSupplier = new TestVertexSupplier();
     private Supplier<Digraph<TestVertex, Edge<TestVertex>>> graphSupplier = Digraph::new;
+
+    private static Edge<TestVertex> edge(int v1, int v2) {
+        return edge(new TestVertex(v1), new TestVertex(v2));
+    }
+
+    private static Set<TestVertex> scc(int... vs) {
+        Set<TestVertex> scc = new HashSet<>();
+        for (int v : vs) {
+            scc.add(new TestVertex(v));
+        }
+        return scc;
+    }
 
     private static Edge<TestVertex> edge(TestVertex v1, TestVertex v2) {
         return new Edge<>(v1, v2);
@@ -27,12 +43,172 @@ class TarjanSccTest {
         vertexSupplier.reset();
     }
 
-    @Test
-    public void testScc0Nodes() {
+    static Stream<Arguments> stronglyConnectedComp1nts() {
+        return Stream.of(
+                Arguments.of(
+                        // Empty.
+                        Set.of(),
+                        Set.of()
+                ),
+                Arguments.of(
+                        /*
+                         * +--------------+  +------+
+                         * |              |  |      |
+                         * |  V0----->V1------->V3  |
+                         * |   ^      /   |  |   |  |
+                         * |   |     /    |  +---|--+
+                         * |  V2<----     |      |
+                         * |              |  +---|--+
+                         * +--------------+  |   V  |
+                         *                   |  V4  |
+                         *                   |      |
+                         *                   +------+
+                         */
+                        Set.of(
+                                edge(0, 1),
+                                edge(1, 2),
+                                edge(2, 0),
+                                edge(1, 3),
+                                edge(3, 4)
+                        ),
+                        Set.of(
+                                scc(0, 1, 2),
+                                scc(3),
+                                scc(4)
+                        )
+                ),
+                Arguments.of(
+                        /*
+                         * +--------------+  +------+
+                         * |              |  |      |
+                         * |  V0----->V1------->V3  |
+                         * |   ^      /   |  |   |  |
+                         * |   |     /    |  +---|--+
+                         * |  V2<----     |      |
+                         * |              |  +---|---------+
+                         * +--------------+  |   V         |
+                         *                   |  V4<--->V5  |
+                         *                   |             |
+                         *                   +-------------+
+                         */
+                        Set.of(
+                                edge(0, 1),
+                                edge(1, 2),
+                                edge(2, 0),
+                                edge(1, 3),
+                                edge(3, 4),
+                                edge(4, 5),
+                                edge(5, 4)
+                        ),
+                        Set.of(
+                                scc(0, 1, 2),
+                                scc(3),
+                                scc(4, 5)
+                        )
+                ),
+                Arguments.of(
+                        // https://upload.wikimedia.org/wikipedia/commons/5/5c/Scc.png
+                        Set.of(
+                                edge(0, 1),
+                                edge(1, 4),
+                                edge(1, 5),
+                                edge(1, 2),
+                                edge(4, 0),
+                                edge(4, 5),
+                                edge(5, 6),
+                                edge(6, 5),
+                                edge(2, 6),
+                                edge(2, 3),
+                                edge(3, 2),
+                                edge(3, 7),
+                                edge(7, 3),
+                                edge(7, 6)
+                        ),
+                        Set.of(
+                                scc(0, 1, 4),
+                                scc(5, 6),
+                                scc(2, 3, 7)
+                        )
+                ),
+                Arguments.of(
+                        // http://rosalind.info/media/sccexample.png
+                        Set.of(
+                                edge(0, 1),
+                                edge(1, 2),
+                                edge(1, 3),
+                                edge(1, 4),
+                                edge(2, 5),
+                                edge(4, 1),
+                                edge(4, 5),
+                                edge(4, 6),
+                                edge(5, 2),
+                                edge(5, 7),
+                                edge(6, 7),
+                                edge(6, 9),
+                                edge(7, 10),
+                                edge(8, 6),
+                                edge(9, 8),
+                                edge(10, 11),
+                                edge(11, 9)
+                        ),
+                        Set.of(
+                                scc(0),
+                                scc(3),
+                                scc(1, 4),
+                                scc(2, 5),
+                                scc(6, 7, 8, 9, 10, 11)
+                        )
+                ),
+                Arguments.of(
+                        // https://media.geeksforgeeks.org/wp-con10t/cdn-uploads/connectivity3.png
+                        Set.of(
+                                edge(0, 1),
+                                edge(1, 2),
+                                edge(2, 3),
+                                edge(2, 4),
+                                edge(4, 2),
+                                edge(3, 0)
+                        ),
+                        Set.of(
+                                scc(0, 1, 2, 3, 4)
+                        )
+                ),
+                Arguments.of(
+                        // https://runest1.academy/runest1/books/published/pythonds/_images/scc1.png
+                        Set.of(
+                                edge(0, 1),
+                                edge(1, 4),
+                                edge(1, 2),
+                                edge(2, 2),
+                                edge(2, 5),
+                                edge(3, 6),
+                                edge(3, 1),
+                                edge(4, 3),
+                                edge(4, 0),
+                                edge(5, 7),
+                                edge(6, 4),
+                                edge(7, 8),
+                                edge(8, 5)
+                        ),
+                        Set.of(
+                                scc(0, 1, 3, 4, 6),
+                                scc(2),
+                                scc(5, 7, 8)
+                        )
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "[{index}]")
+    @MethodSource("stronglyConnectedComp1nts")
+    void testCompute(Set<Edge<TestVertex>> edges, Set<Set<TestVertex>> expected) {
         var g = graphSupplier.get();
-        TarjanScc<TestVertex> computer = new TarjanScc<>(g);
-        Set<Set<TestVertex>> components = new HashSet<>(computer.run());
-        assertEquals(Set.of(), components);
+        edges.forEach(g::addEdge);
+
+        var computer = new TarjanScc<>(g);
+        var actual = new HashSet<>(computer.run());
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -45,207 +221,8 @@ class TarjanSccTest {
             g.addVertex(v);
         }
         TarjanScc<TestVertex> computer = new TarjanScc<>(g);
-        Set<Set<TestVertex>> components = new HashSet<>(computer.run());
+        Set<Set<TestVertex>> comp1nts = new HashSet<>(computer.run());
         Set<Set<TestVertex>> expected = vs.stream().map((v) -> Set.of(v)).collect(Collectors.toSet());
-        assertEquals(expected, components);
-    }
-
-    @Test
-    void testTarjanScc1() {
-        /*
-         * +--------------+  +------+
-         * |              |  |      |
-         * |  V0----->V1------->V3  |
-         * |   ^      /   |  |   |  |
-         * |   |     /    |  +---|--+
-         * |  V2<----     |      |
-         * |              |  +---|--+
-         * +--------------+  |   V  |
-         *                   |  V4  |
-         *                   |      |
-         *                   +------+
-         */
-        var g = graphSupplier.get();
-        var v0 = vertexSupplier.get();
-        var v1 = vertexSupplier.get();
-        var v2 = vertexSupplier.get();
-        var v3 = vertexSupplier.get();
-        var v4 = vertexSupplier.get();
-        g.addEdge(edge(v0, v1));
-        g.addEdge(edge(v1, v2));
-        g.addEdge(edge(v2, v0));
-        g.addEdge(edge(v1, v3));
-        g.addEdge(edge(v3, v4));
-
-        TarjanScc<TestVertex> computer = new TarjanScc<>(g);
-
-        Set<Set<TestVertex>> components = new HashSet<>(computer.run());
-
-        assertEquals(Set.of(Set.of(v0, v1, v2), Set.of(v3), Set.of(v4)), components);
-    }
-
-    @Test
-    void testTarjanScc2() {
-        /*
-         * +--------------+  +------+
-         * |              |  |      |
-         * |  V0----->V1------->V3  |
-         * |   ^      /   |  |   |  |
-         * |   |     /    |  +---|--+
-         * |  V2<----     |      |
-         * |              |  +---|---------+
-         * +--------------+  |   V         |
-         *                   |  V4<--->V5  |
-         *                   |             |
-         *                   +-------------+
-         */
-        var g = graphSupplier.get();
-        var v0 = vertexSupplier.get();
-        var v1 = vertexSupplier.get();
-        var v2 = vertexSupplier.get();
-        var v3 = vertexSupplier.get();
-        var v4 = vertexSupplier.get();
-        var v5 = vertexSupplier.get();
-        g.addEdge(edge(v0, v1));
-        g.addEdge(edge(v1, v2));
-        g.addEdge(edge(v2, v0));
-        g.addEdge(edge(v1, v3));
-        g.addEdge(edge(v3, v4));
-        g.addEdge(edge(v4, v5));
-        g.addEdge(edge(v5, v4));
-
-        TarjanScc<TestVertex> computer = new TarjanScc<>(g);
-
-        Set<Set<TestVertex>> components = new HashSet<>(computer.run());
-
-        assertEquals(Set.of(Set.of(v0, v1, v2), Set.of(v3), Set.of(v4, v5)), components);
-    }
-
-    @Test
-    void testTarjanScc3() {
-        // https://upload.wikimedia.org/wikipedia/commons/5/5c/Scc.png
-        var graph = graphSupplier.get();
-        var a = vertexSupplier.get();
-        var b = vertexSupplier.get();
-        var c = vertexSupplier.get();
-        var d = vertexSupplier.get();
-        var e = vertexSupplier.get();
-        var f = vertexSupplier.get();
-        var g = vertexSupplier.get();
-        var h = vertexSupplier.get();
-        graph.addEdge(edge(a, b));
-        graph.addEdge(edge(b, e));
-        graph.addEdge(edge(b, f));
-        graph.addEdge(edge(b, c));
-        graph.addEdge(edge(e, a));
-        graph.addEdge(edge(e, f));
-        graph.addEdge(edge(f, g));
-        graph.addEdge(edge(g, f));
-        graph.addEdge(edge(c, g));
-        graph.addEdge(edge(c, d));
-        graph.addEdge(edge(d, c));
-        graph.addEdge(edge(d, h));
-        graph.addEdge(edge(h, d));
-        graph.addEdge(edge(h, g));
-
-        TarjanScc<TestVertex> computer = new TarjanScc<>(graph);
-
-        Set<Set<TestVertex>> components = new HashSet<>(computer.run());
-        assertEquals(Set.of(Set.of(a, b, e), Set.of(f, g), Set.of(c, d, h)), components);
-    }
-
-    @Test
-    void testTarjanScc4() {
-        // http://rosalind.info/media/sccexample.png
-        var graph = graphSupplier.get();
-        var a = vertexSupplier.get();
-        var b = vertexSupplier.get();
-        var c = vertexSupplier.get();
-        var d = vertexSupplier.get();
-        var e = vertexSupplier.get();
-        var f = vertexSupplier.get();
-        var g = vertexSupplier.get();
-        var h = vertexSupplier.get();
-        var i = vertexSupplier.get();
-        var j = vertexSupplier.get();
-        var k = vertexSupplier.get();
-        var l = vertexSupplier.get();
-        graph.addEdge(edge(a, b));
-        graph.addEdge(edge(b, c));
-        graph.addEdge(edge(b, d));
-        graph.addEdge(edge(b, e));
-        graph.addEdge(edge(c, f));
-        graph.addEdge(edge(e, b));
-        graph.addEdge(edge(e, f));
-        graph.addEdge(edge(e, g));
-        graph.addEdge(edge(f, c));
-        graph.addEdge(edge(f, h));
-        graph.addEdge(edge(g, h));
-        graph.addEdge(edge(g, j));
-        graph.addEdge(edge(h, k));
-        graph.addEdge(edge(i, g));
-        graph.addEdge(edge(j, i));
-        graph.addEdge(edge(k, l));
-        graph.addEdge(edge(l, j));
-
-        TarjanScc<TestVertex> computer = new TarjanScc<>(graph);
-
-        Set<Set<TestVertex>> components = new HashSet<>(computer.run());
-        assertEquals(Set.of(Set.of(a), Set.of(d), Set.of(b, e), Set.of(c, f), Set.of(g, h, i, j, k, l)), components);
-    }
-
-    @Test
-    void testSccCompletelyConnected() {
-        // https://media.geeksforgeeks.org/wp-content/cdn-uploads/connectivity3.png
-        var graph = graphSupplier.get();
-        var v0 = vertexSupplier.get();
-        var v1 = vertexSupplier.get();
-        var v2 = vertexSupplier.get();
-        var v3 = vertexSupplier.get();
-        var v4 = vertexSupplier.get();
-        graph.addEdge(edge(v0, v1));
-        graph.addEdge(edge(v1, v2));
-        graph.addEdge(edge(v2, v3));
-        graph.addEdge(edge(v2, v4));
-        graph.addEdge(edge(v4, v2));
-        graph.addEdge(edge(v3, v0));
-
-        TarjanScc<TestVertex> computer = new TarjanScc<>(graph);
-
-        Set<Set<TestVertex>> components = new HashSet<>(computer.run());
-        assertEquals(Set.of(Set.of(v0, v1, v2, v3, v4)), components);
-    }
-
-    @Test
-    void testTarjanScc5() {
-        // https://runestone.academy/runestone/books/published/pythonds/_images/scc1.png
-        var graph = graphSupplier.get();
-        var a = vertexSupplier.get();
-        var b = vertexSupplier.get();
-        var c = vertexSupplier.get();
-        var d = vertexSupplier.get();
-        var e = vertexSupplier.get();
-        var f = vertexSupplier.get();
-        var g = vertexSupplier.get();
-        var h = vertexSupplier.get();
-        var i = vertexSupplier.get();
-        graph.addEdge(edge(a, b));
-        graph.addEdge(edge(b, e));
-        graph.addEdge(edge(b, c));
-        graph.addEdge(edge(c, c));
-        graph.addEdge(edge(c, f));
-        graph.addEdge(edge(d, g));
-        graph.addEdge(edge(d, b));
-        graph.addEdge(edge(e, d));
-        graph.addEdge(edge(e, a));
-        graph.addEdge(edge(f, h));
-        graph.addEdge(edge(g, e));
-        graph.addEdge(edge(h, i));
-        graph.addEdge(edge(i, f));
-
-        TarjanScc<TestVertex> computer = new TarjanScc<>(graph);
-
-        Set<Set<TestVertex>> components = new HashSet<>(computer.run());
-        assertEquals(Set.of(Set.of(a, b, d, e, g), Set.of(c), Set.of(f, h, i)), components);
+        assertEquals(expected, comp1nts);
     }
 }
