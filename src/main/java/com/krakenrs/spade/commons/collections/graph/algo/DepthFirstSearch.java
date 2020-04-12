@@ -92,6 +92,17 @@ public class DepthFirstSearch<V extends Vertex> {
         return preOrder;
     }
 
+    /**
+     * Get a list of the vertices visited in this search in reverse postorder.
+     *
+     * @return An <b>unmodifiable</b> list of vertices
+     */
+    public List<V> getTopOrder() {
+        List<V> copy = new ArrayList<>(postOrder);
+        Collections.reverse(copy);
+        return Collections.unmodifiableList(copy);
+    }
+
     public enum EdgeType {
         TREE,
         BACK,

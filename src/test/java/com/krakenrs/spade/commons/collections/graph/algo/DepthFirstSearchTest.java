@@ -46,6 +46,7 @@ class DepthFirstSearchTest {
 
         assertEquals(List.of(v0, v1, v3, v4, v2), search.getPreOrder());
         assertEquals(List.of(v3, v4, v1, v2, v0), search.getPostOrder());
+        assertEquals(List.of(v0, v2, v1, v4, v3), search.getTopOrder());
         assertFalse(search.getParent(v0).isPresent());
         assertEquals(v0, search.getParent(v1).orElseThrow());
         assertEquals(v0, search.getParent(v2).orElseThrow());
@@ -96,6 +97,7 @@ class DepthFirstSearchTest {
 
         // Test vertex ordering.
         assertEquals(List.of(v3, v2, v1, v6, v7, v5, v4, v0), search.getPostOrder());
+        assertEquals(List.of(v0, v4, v5, v7, v6, v1, v2, v3), search.getTopOrder());
         assertEquals(List.of(v0, v1, v2, v3, v4, v5, v6, v7), search.getPreOrder());
 
         // Test edge classification.
