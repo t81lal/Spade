@@ -55,11 +55,26 @@ public class DepthFirstSearch<V extends Vertex> {
     /**
      * Get a set of edges by their classification.
      *
-     * @param colour Use {@link VertexColour#WHITE} for tree edges, {@link VertexColour#GREY} for back edges, and
-     *               {@link VertexColour#BLACK} for forward and cross edges.
+     * @param edgeType Edge type to lookup
      * @return A set of edges.
      */
-    public Set<Edge<V>> getEdges(VertexColour colour) {
+    public Set<Edge<V>> getEdges(EdgeType edgeType) {
+        VertexColour colour;
+
+        switch (edgeType) {
+            case TREE:
+                colour = VertexColour.WHITE;
+                break;
+            case BACK:
+                colour = VertexColour.GREY;
+                break;
+            case CROSS_AND_FORWARD:
+                colour = VertexColour.BLACK;
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+
         final Set<Edge<V>> edgeSet = edges.get(colour);
 
         if (edgeSet == null) {
@@ -77,10 +92,16 @@ public class DepthFirstSearch<V extends Vertex> {
         return preOrder;
     }
 
+    public enum EdgeType {
+        TREE,
+        BACK,
+        CROSS_AND_FORWARD,
+    }
+
     /**
      * Represents the state of a vertex.
      */
-    public enum VertexColour {
+    private enum VertexColour {
         /**
          * The vertex has not yet been visited.
          */

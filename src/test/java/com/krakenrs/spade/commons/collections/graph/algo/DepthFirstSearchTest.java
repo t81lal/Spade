@@ -51,10 +51,10 @@ class DepthFirstSearchTest {
         assertEquals(v0, search.getParent(v2).orElseThrow());
         assertEquals(v1, search.getParent(v3).orElseThrow());
         assertEquals(v1, search.getParent(v4).orElseThrow());
-        assertEquals(Set.of(), search.getEdges(DepthFirstSearch.VertexColour.BLACK));
-        assertEquals(Set.of(), search.getEdges(DepthFirstSearch.VertexColour.GREY));
+        assertEquals(Set.of(), search.getEdges(DepthFirstSearch.EdgeType.CROSS_AND_FORWARD));
+        assertEquals(Set.of(), search.getEdges(DepthFirstSearch.EdgeType.BACK));
         assertEquals(Set.of(edge(v0, v1), edge(v1, v3), edge(v0, v2), edge(v1, v4)),
-                search.getEdges(DepthFirstSearch.VertexColour.WHITE));
+                search.getEdges(DepthFirstSearch.EdgeType.TREE));
     }
 
     @Test
@@ -100,8 +100,8 @@ class DepthFirstSearchTest {
 
         // Test edge classification.
         assertEquals(Set.of(edge(v0, v1), edge(v1, v2), edge(v2, v3), edge(v4, v5), edge(v5, v6), edge(v5, v7),
-                edge(v0, v4)), search.getEdges(DepthFirstSearch.VertexColour.WHITE));
-        assertEquals(Set.of(edge(v0, v7), edge(v5, v2)), search.getEdges(DepthFirstSearch.VertexColour.BLACK));
-        assertEquals(Set.of(edge(v3, v1)), search.getEdges(DepthFirstSearch.VertexColour.GREY));
+                edge(v0, v4)), search.getEdges(DepthFirstSearch.EdgeType.TREE));
+        assertEquals(Set.of(edge(v0, v7), edge(v5, v2)), search.getEdges(DepthFirstSearch.EdgeType.CROSS_AND_FORWARD));
+        assertEquals(Set.of(edge(v3, v1)), search.getEdges(DepthFirstSearch.EdgeType.BACK));
     }
 }
