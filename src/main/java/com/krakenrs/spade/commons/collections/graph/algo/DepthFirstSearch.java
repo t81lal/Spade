@@ -84,12 +84,23 @@ public class DepthFirstSearch<V extends Vertex> {
         return edgeSet;
     }
 
+    /**
+     * Get a list of vertices visited in this search in the order that they were <i>last</i> visited by the algorithm.
+     *
+     * @return An <b>unmodifiable</b> list of vertices
+     */
     public List<V> getPostOrder() {
-        return postOrder;
+        return Collections.unmodifiableList(postOrder);
     }
 
+    /**
+     * Get a list of the vertices visited in this search in the order that they were <i>first</i> visited by the
+     * algorithm.
+     *
+     * @return An <b>unmodifiable</b> list of vertices
+     */
     public List<V> getPreOrder() {
-        return preOrder;
+        return Collections.unmodifiableList(preOrder);
     }
 
     /**
