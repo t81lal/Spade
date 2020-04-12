@@ -1,10 +1,14 @@
 package com.krakenrs.spade.app.asm;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.objectweb.asm.ClassReader;
 
 public class KlassSourceTest {
@@ -96,6 +100,15 @@ public class KlassSourceTest {
         ks.putClass(makeKlass(ks, "K1"));
         assertTrue(ks.hasKlass("K1"));
         assertFalse(ks.hasKlass("K2"));
+    }
+
+    @Test
+    public void testLoadClass() throws IOException {
+        InputStream thisClassInputStream = getClass().getResourceAsStream(getClass().getSimpleName() + ".class");
+        KlassSource ks = new KlassSource();
+        Klass k = ks.loadFromClassFile(thisClassInputStream,
+                ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+        assertEquals(getClass().getCanonicalName().replace(".", "/"), k.name);
     }
 
     @Test

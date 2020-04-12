@@ -32,13 +32,14 @@ public class KlassSource {
         return resources.put(name, resource);
     }
 
-    public void loadFromClassFile(InputStream is, int options) throws IOException {
+    public Klass loadFromClassFile(InputStream is, int options) throws IOException {
         Objects.requireNonNull(is, "inputstream must not be null");
 
         Klass klass = new Klass(this);
         ClassReader cr = new ClassReader(is);
         cr.accept(klass, options);
         putClass(klass);
+        return klass;
     }
 
     /**
