@@ -20,15 +20,6 @@ public class KlassSource {
         this.resources = new HashMap<>();
     }
 
-    public KlassSource(Map<String, Klass> klasses, Map<String, byte[]> resources) {
-        Objects.requireNonNull(klasses);
-        Objects.requireNonNull(resources);
-
-        this.klasses = klasses;
-        this.resources = resources;
-
-    }
-
     public Klass putClass(Klass klass) {
         Objects.requireNonNull(klass, "Klass must not be null");
         Objects.requireNonNull(klass.name, "Klass name must not be null");
@@ -44,7 +35,7 @@ public class KlassSource {
     public void loadFromClassFile(InputStream is, int options) throws IOException {
         Objects.requireNonNull(is, "inputstream must not be null");
 
-        Klass klass = new Klass();
+        Klass klass = new Klass(this);
         ClassReader cr = new ClassReader(is);
         cr.accept(klass, options);
         putClass(klass);

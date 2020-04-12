@@ -1,9 +1,6 @@
 package com.krakenrs.spade.app.asm;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,8 +9,8 @@ import org.objectweb.asm.ClassReader;
 
 public class KlassSourceTest {
 
-    private Klass makeKlass(String name) {
-        Klass k = new Klass();
+    private Klass makeKlass(KlassSource source, String name) {
+        Klass k = new Klass(source);
         k.superName = "java/lang/Object";
         k.name = name;
         return k;
@@ -43,9 +40,9 @@ public class KlassSourceTest {
         KlassSource ks = new KlassSource();
 
         assertThrows(NullPointerException.class, () -> ks.putClass(null));
-        assertThrows(NullPointerException.class, () -> ks.putClass(makeKlass(null)));
+        assertThrows(NullPointerException.class, () -> ks.putClass(makeKlass(ks, null)));
 
-        Klass k1 = makeKlass("K1"), k2 = makeKlass("K1");
+        Klass k1 = makeKlass(ks, "K1"), k2 = makeKlass(ks, "K1");
 
         assertEquals(null, ks.putClass(k1));
         assertTrue(ks.hasKlass("K1"));
@@ -78,7 +75,7 @@ public class KlassSourceTest {
         assertThrows(NullPointerException.class, () -> ks.getKlass(null));
         assertThrows(IllegalArgumentException.class, () -> ks.getKlass("resource"));
 
-        Klass k1 = makeKlass("K1"), k2 = makeKlass("K2");
+        Klass k1 = makeKlass(ks, "K1"), k2 = makeKlass(ks, "K2");
         ks.putClass(k1);
         ks.putClass(k2);
         assertEquals(k1, ks.getKlass("K1"));
@@ -96,34 +93,9 @@ public class KlassSourceTest {
     @Test
     public void testContainsKlass() {
         KlassSource ks = new KlassSource();
-        ks.putClass(makeKlass("K1"));
+        ks.putClass(makeKlass(ks, "K1"));
         assertTrue(ks.hasKlass("K1"));
         assertFalse(ks.hasKlass("K2"));
-    }
-
-    @Test
-    public void testPreLoad() {
-        Map<String, Klass> kData = new HashMap<>();
-        Map<String, byte[]> rData = new HashMap<>();
-        for (int i = 0; i < 5; i++) {
-            Klass k = makeKlass("K" + i);
-            kData.put(k.name, k);
-            rData.put("R" + i, new byte[] { (byte) i });
-        }
-        KlassSource ks = new KlassSource(kData, rData);
-        for (Entry<String, Klass> e : kData.entrySet()) {
-            assertEquals(e.getValue(), ks.getKlass(e.getKey()));
-        }
-        for (Entry<String, byte[]> e : rData.entrySet()) {
-            assertEquals(e.getValue(), ks.getResource(e.getKey()));
-        }
-    }
-
-    @Test
-    public void testNullPreLoad() {
-        assertThrows(NullPointerException.class, () -> new KlassSource(Map.of(), null));
-        assertThrows(NullPointerException.class, () -> new KlassSource(null, Map.of()));
-        assertThrows(NullPointerException.class, () -> new KlassSource(null, null));
     }
 
     @Test
