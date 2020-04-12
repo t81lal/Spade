@@ -52,6 +52,13 @@ public class DepthFirstSearch<V extends Vertex> {
         return Optional.ofNullable(parents.get(vertex));
     }
 
+    /**
+     * Get a set of edges by their classification.
+     *
+     * @param colour Use {@link VertexColour#WHITE} for tree edges, {@link VertexColour#GREY} for back edges, and
+     *               {@link VertexColour#BLACK} for forward and cross edges.
+     * @return A set of edges.
+     */
     public Set<Edge<V>> getEdges(VertexColour colour) {
         final Set<Edge<V>> edgeSet = edges.get(colour);
 
