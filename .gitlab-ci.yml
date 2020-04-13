@@ -3,7 +3,6 @@ image: maven:3.6-jdk-11
 stages:
   - build
   - test
-  - package
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
@@ -25,11 +24,3 @@ test:
     reports:
       junit:
         - target/surefire-reports/TEST-*.xml
-
-package:
-  stage: package
-  script:
-    - mvn --batch-mode package -DskipTests
-  artifacts:
-    paths:
-      - target/spade-*.jar
