@@ -126,6 +126,10 @@ public abstract class TypeManager {
 
     // mega private, don't let users parse their own value types
     private ValueType _asValueType(char[] cs, int offset, int csLength) {
+        if (offset >= cs.length) {
+            throw new TypeParsingException("Out of range");
+        }
+
         int dims = 0, i = offset;
         while (cs[i] == '[' && i++ <= (csLength + offset - 1)) {
             dims++;
@@ -168,6 +172,10 @@ public abstract class TypeManager {
     }
 
     private MethodType parseMethodType(char[] cs, int offset, int end) {
+        if (offset >= cs.length) {
+            throw new TypeParsingException("Out of range");
+        }
+
         if (cs[offset] == '(') {
             List<ValueType> paramTypes = new ArrayList<>();
             int i = offset + 1;
