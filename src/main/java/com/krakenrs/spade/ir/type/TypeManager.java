@@ -43,6 +43,8 @@ public abstract class TypeManager {
     public ArrayType asArrayType(Class<?> clazz, int dims) {
         if (clazz == null) {
             throw new NullPointerException();
+        } else if (dims <= 0) {
+            throw new IllegalArgumentException("dims should be greater than 0");
         }
         return asArrayType(asClassType(clazz).asValueType(), dims);
     }
@@ -100,8 +102,11 @@ public abstract class TypeManager {
             } else {
                 char[] cs = s.toCharArray();
                 int len = cs.length, i = 0;
-                while (cs[i] == '[' && i++ < len)
-                    ;
+                while (i < len && cs[i] == '[')
+                    i++;
+                if (i >= len) {
+                    throw new TypeParsingException("No value type:", cs, i, len - 1, true);
+                }
 
                 if (cs[i] == 'L') {
                     if (cs[len - 1] == ';') {
@@ -138,7 +143,7 @@ public abstract class TypeManager {
 
         ValueType vt = null;
         if (len == 0) {
-            throw new TypeParsingException("No value type:", cs, i, csLength, true);
+            throw new TypeParsingException("No value type:", cs, i, csLength - 1, true);
         } else if (len == 1) {
             String d = new String(cs, i, len);
             if (PrimitiveType.DESCRIPTORS.containsKey(d)) {
@@ -157,7 +162,7 @@ public abstract class TypeManager {
                 return vt;
             }
         } else {
-            throw new TypeParsingException("No type found ", cs, offset, csLength, false);
+            throw new TypeParsingException("No type found ", cs, offset, csLength - 1, false);
         }
     }
 
