@@ -36,11 +36,11 @@ public abstract class ClassType implements Type {
         if (o == null || getClass() != o.getClass())
             return false;
         ClassType classType = (ClassType) o;
-        return Objects.equals(className, classType.className) && Objects.equals(valueType, classType.valueType);
+        return Objects.equals(className, classType.className);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(className, valueType);
+        return Objects.hash(className);
     }
 }
