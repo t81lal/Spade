@@ -3,13 +3,24 @@ package com.krakenrs.spade.ir.type;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class ObjectTypeTest {
+import java.util.stream.Stream;
 
-    @Test
-    void testToString() {
-        assertEquals("Ljava/lang/Object;", new ObjectType(new UnresolvedClassType("java/lang/Object")).toString());
-        assertEquals("Lash/ir/ClassTypeTest;",
-                new ObjectType(new UnresolvedClassType("ash/ir/ClassTypeTest")).toString());
+class ObjectTypeTest {
+    static Stream<Arguments> strings() {
+        return Stream.of(
+                Arguments.of("Ljava/lang/Object;", new ObjectType(new UnresolvedClassType("java/lang/Object"))),
+                Arguments.of("Lfoo/Unresolved;",
+                        new ObjectType(new UnresolvedClassType("foo/Unresolved")))
+        );
+    }
+
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("strings")
+    void testToString(String expected, ObjectType objectType) {
+        assertEquals(expected, objectType.toString());
     }
 }

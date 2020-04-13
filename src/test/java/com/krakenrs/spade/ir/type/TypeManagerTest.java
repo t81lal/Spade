@@ -4,18 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TypeManagerTest {
     final Supplier<MockTypeManager> typeManagers = MockTypeManager::new;
@@ -26,10 +22,30 @@ class TypeManagerTest {
                 Arguments.of(new MethodType(List.of(), PrimitiveType.VOID), "()V"),
                 Arguments.of(new MethodType(List.of(), PrimitiveType.INT), "()I"),
                 Arguments.of(new MethodType(List.of(PrimitiveType.INT, PrimitiveType.INT),
-                        PrimitiveType.INT), "(II)I"));
+                        PrimitiveType.INT), "(II)I"),
+                Arguments.of(new MethodType(
+                        List.of(PrimitiveType.INT, new ObjectType(new UnresolvedClassType("foo/Unresolved"))),
+                        PrimitiveType.INT), "(ILfoo/Unresolved;)I")
+        );
     }
 
-    private static Stream<Arguments> methodTypesInvalid() {
+    static Stream<Arguments> valueTypes() {
+        return Stream.of(
+                Arguments.of(PrimitiveType.BYTE, "B"),
+                Arguments.of(PrimitiveType.CHAR, "C"),
+                Arguments.of(PrimitiveType.DOUBLE, "D"),
+                Arguments.of(PrimitiveType.FLOAT, "F"),
+                Arguments.of(PrimitiveType.INT, "I"),
+                Arguments.of(PrimitiveType.LONG, "J"),
+                Arguments.of(PrimitiveType.SHORT, "S"),
+                Arguments.of(PrimitiveType.BOOLEAN, "Z"),
+                Arguments.of(new ObjectType(new UnresolvedClassType("foo/Unresolved")), "Lfoo/Unresolved;"),
+                Arguments.of(new ArrayType(PrimitiveType.INT), "[I"),
+                Arguments.of(new ArrayType(new ArrayType(PrimitiveType.INT)), "[[I")
+        );
+    }
+
+    static Stream<Arguments> methodTypesInvalid() {
         return Stream.of(
                 Arguments.of(""),
                 Arguments.of("()"),
@@ -38,7 +54,7 @@ class TypeManagerTest {
                 Arguments.of("();V"));
     }
 
-    private static Stream<Arguments> ancestors() {
+    static Stream<Arguments> ancestors() {
         return Stream.of(
                 Arguments.of("java.lang.Object", "java.lang.Object", "java.lang.Object"),
                 Arguments.of("java.lang.Comparable", "java.io.Serializable", "java.lang.Object"),
@@ -67,6 +83,14 @@ class TypeManagerTest {
         assertThrows(TypeParsingException.class, () -> tm.asMethodType(descriptor));
     }
 
+    @ParameterizedTest(name = "[{index}] {1}")
+    @MethodSource("valueTypes")
+    void testAsValueType(ValueType expected, String descriptor) {
+        final var tm = typeManagers.get();
+        final ValueType actual = tm.asValueType(descriptor);
+        assertEquals(expected, actual);
+    }
+
     @ParameterizedTest(name = "[{index}] {0}, {1}")
     @MethodSource("ancestors")
     void testLca(String lhsDesc, String rhsDesc, String expectedDesc) {
@@ -88,74 +112,7 @@ class TypeManagerTest {
     }
 
     @Test
-    void testParseValueTypePrimitive() throws TypeParsingException {
-        var types = typeManagers.get();
-        assertEquals(PrimitiveType.BYTE, types.asValueType("B"));
-        assertEquals(PrimitiveType.CHAR, types.asValueType("C"));
-        assertEquals(PrimitiveType.DOUBLE, types.asValueType("D"));
-        assertEquals(PrimitiveType.FLOAT, types.asValueType("F"));
-        assertEquals(PrimitiveType.INT, types.asValueType("I"));
-        assertEquals(PrimitiveType.LONG, types.asValueType("J"));
-        assertEquals(PrimitiveType.SHORT, types.asValueType("S"));
-        assertEquals(PrimitiveType.BOOLEAN, types.asValueType("Z"));
-    }
-
-    @Test
-    void testParseValueTypeArray() throws TypeParsingException {
-        var types = typeManagers.get();
-        assertEquals(new ArrayType(PrimitiveType.INT), types.asArrayType(PrimitiveType.INT, 1));
-        assertEquals(new ArrayType(new ArrayType(PrimitiveType.INT)), types.asArrayType(PrimitiveType.INT, 2));
-    }
-
-    @Test
-    void testParseValueTypeObject() throws TypeParsingException {
-        var types = typeManagers.get();
-        // TODO:
-        assertEquals(new ObjectType(new UnresolvedClassType("java/lang/String")),
-                types.asValueType("Ljava/lang/String;"));
-        assertEquals(new ObjectType(new UnresolvedClassType("ash/ir/type/Type")),
-                types.asValueType("Lash/ir/type/Type;"));
-    }
-
-    @Test
-    void testParseMethod() throws TypeParsingException {
-        var types = typeManagers.get();
-        assertEquals(new MethodType(List.of(), PrimitiveType.VOID), types.asMethodType("()V"));
-        assertEquals(new MethodType(List.of(), PrimitiveType.INT), types.asMethodType("()I"));
-        assertEquals(new MethodType(List.of(PrimitiveType.INT), PrimitiveType.INT), types.asMethodType("(I)I"));
-        assertEquals(new MethodType(List.of(PrimitiveType.INT, PrimitiveType.INT), PrimitiveType.INT),
-                types.asMethodType("(II)I"));
-        assertEquals(new MethodType(List.of(), new ObjectType(new UnresolvedClassType("java/lang/String"))),
-                types.asMethodType("()Ljava/lang/String;"));
-        assertEquals(new MethodType(List.of(new ObjectType(new UnresolvedClassType("java/lang/String"))),
-                PrimitiveType.VOID), types.asMethodType("(Ljava/lang/String;)V"));
-        assertEquals(
-                new MethodType(List.of(new ObjectType(new UnresolvedClassType("java/lang/String")), PrimitiveType.INT),
-                        PrimitiveType.VOID),
-                types.asMethodType("(Ljava/lang/String;I)V"));
-        assertEquals(
-                new MethodType(List.of(PrimitiveType.INT, new ObjectType(new UnresolvedClassType("java/lang/String"))),
-                        PrimitiveType.VOID),
-                types.asMethodType("(ILjava/lang/String;)V"));
-        assertEquals(
-                new MethodType(List.of(new ObjectType(new UnresolvedClassType("java/lang/String")),
-                        new ObjectType(new UnresolvedClassType("java/lang/String"))), PrimitiveType.VOID),
-                types.asMethodType("(Ljava/lang/String;Ljava/lang/String;)V"));
-        assertEquals(new MethodType(List.of(new ArrayType(new ArrayType(PrimitiveType.INT))), PrimitiveType.INT),
-                types.asMethodType("([[I)I"));
-        assertEquals(new MethodType(List.of(new ArrayType(PrimitiveType.INT)), PrimitiveType.INT),
-                types.asMethodType("([I)I"));
-        assertEquals(
-                new MethodType(List.of(new ArrayType(PrimitiveType.INT), PrimitiveType.BOOLEAN), PrimitiveType.INT),
-                types.asMethodType("([IZ)I"));
-        assertEquals(
-                new MethodType(List.of(PrimitiveType.INT, PrimitiveType.INT, PrimitiveType.INT,
-                        new ArrayType(new ArrayType(new ArrayType(PrimitiveType.INT)))), PrimitiveType.VOID),
-                types.asMethodType("(III[[[I)V"));
-    }
-
-    @Test
-    void testAsClassTypeNPE() {
+    void testAsClassTypeInvalid() {
         var types = typeManagers.get();
         assertThrows(NullPointerException.class, () -> types.asClassType((String) null));
         assertThrows(NullPointerException.class, () -> types.asClassType((Class<?>) null));
@@ -188,23 +145,6 @@ class TypeManagerTest {
         // Invalid primitive type
         assertThrows(TypeParsingException.class, () -> types.asValueType("[K"));
         assertThrows(TypeParsingException.class, () -> types.asValueType("K"));
-    }
-
-    @Test
-    void testLCANPE() {
-        var types = typeManagers.get();
-        assertThrows(NullPointerException.class, () -> types.lca(null, null));
-    }
-
-    @Test
-    void testLCA() {
-        var types = resolvingTypeManagers.get();
-
-        // Equal
-        ClassType stringClassType = types.asClassType(String.class);
-        ClassType objectClassType = types.asClassType(Object.class);
-        assertEquals(stringClassType, types.lca(stringClassType, stringClassType));
-        assertEquals(objectClassType, types.lca(objectClassType, objectClassType));
     }
 
     static class MockTypeManager extends TypeManager {
