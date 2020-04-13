@@ -26,6 +26,15 @@ class TypeManagerTest {
                         PrimitiveType.INT), "(II)I"));
     }
 
+    private static Stream<Arguments> methodTypesInvalid() {
+        return Stream.of(
+                Arguments.of(""),
+                Arguments.of("()"),
+                Arguments.of("(II)"),
+                Arguments.of(")V"),
+                Arguments.of("();V"));
+    }
+
     private static Stream<Arguments> ancestors() {
         return Stream.of(
                 Arguments.of("java.lang.Object", "java.lang.Object", "java.lang.Object"),
@@ -46,6 +55,13 @@ class TypeManagerTest {
         final var tm = typeManagerSupplier.get();
         final MethodType actual = tm.asMethodType(descriptor);
         assertEquals(expected, actual);
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @MethodSource("methodTypesInvalid")
+    void testAsMethodTypeInvalid(String descriptor) {
+        final var tm = typeManagerSupplier.get();
+        assertThrows(TypeParsingException.class, () -> tm.asMethodType(descriptor));
     }
 
     @ParameterizedTest(name = "[{index}] {0}, {1}")
