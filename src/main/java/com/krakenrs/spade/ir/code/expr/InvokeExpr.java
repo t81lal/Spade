@@ -1,11 +1,14 @@
 package com.krakenrs.spade.ir.code.expr;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import com.krakenrs.spade.app.asm.Klass;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
+import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
 import com.krakenrs.spade.ir.type.MethodType;
 
 public abstract class InvokeExpr extends Expr {
@@ -17,14 +20,16 @@ public abstract class InvokeExpr extends Expr {
     private final Klass owner;
     private final String name;
     private final MethodType methodType;
+    private final List<ValueExpr<?>> arguments;
     private final Mode mode;
 
-    public InvokeExpr(Klass owner, String name, MethodType methodType, Mode mode) {
+    public InvokeExpr(Klass owner, String name, MethodType methodType, Mode mode, List<ValueExpr<?>> arguments) {
         super(Opcodes.INVOKE, methodType.getReturnType());
         this.owner = owner;
         this.name = name;
         this.methodType = methodType;
         this.mode = mode;
+        this.arguments = Collections.unmodifiableList(arguments);
     }
 
     public Klass owner() {
@@ -39,6 +44,10 @@ public abstract class InvokeExpr extends Expr {
         return methodType;
     }
 
+    public List<ValueExpr<?>> arguments() {
+        return arguments;
+    }
+
     public Mode mode() {
         return mode;
     }
@@ -51,8 +60,9 @@ public abstract class InvokeExpr extends Expr {
     public static class InvokeVirtualExpr extends InvokeExpr {
         private final LoadLocalExpr accessor;
 
-        public InvokeVirtualExpr(LoadLocalExpr accessor, Klass owner, String name, MethodType methodType, Mode mode) {
-            super(owner, name, methodType, mode);
+        public InvokeVirtualExpr(Klass owner, String name, MethodType methodType, Mode mode, LoadLocalExpr accessor,
+                List<ValueExpr<?>> arguments) {
+            super(owner, name, methodType, mode, arguments);
             if (mode == Mode.STATIC || mode == Mode.DYNAMIC) {
                 throw new IllegalArgumentException();
             }
@@ -70,8 +80,8 @@ public abstract class InvokeExpr extends Expr {
     }
 
     public static class InvokeStaticExpr extends InvokeExpr {
-        public InvokeStaticExpr(Klass owner, String name, MethodType methodType) {
-            super(owner, name, methodType, Mode.STATIC);
+        public InvokeStaticExpr(Klass owner, String name, MethodType methodType, List<ValueExpr<?>> arguments) {
+            super(owner, name, methodType, Mode.STATIC, arguments);
         }
     }
 }
