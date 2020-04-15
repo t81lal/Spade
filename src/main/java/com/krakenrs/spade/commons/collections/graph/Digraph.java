@@ -22,6 +22,10 @@ public class Digraph<V extends Vertex, E extends Edge<V>> {
         reverseEdges = new HashMap<>();
     }
 
+    public int size() {
+        return edges.size();
+    }
+
     /**
      * Get all of the vertices contained in this graph.
      *
