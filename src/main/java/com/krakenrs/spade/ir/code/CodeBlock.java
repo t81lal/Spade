@@ -9,9 +9,19 @@ import com.krakenrs.spade.commons.collections.graph.Vertex;
 public class CodeBlock implements Vertex {
     private final int id;
     private final List<Stmt> stmts = new ArrayList<>();
+    private int orderHint;
 
     public CodeBlock(int id) {
         this.id = id;
+        this.orderHint = id;
+    }
+
+    public int getOrderHint() {
+        return orderHint;
+    }
+
+    public void setOrderHint(int orderHint) {
+        this.orderHint = orderHint;
     }
 
     public int id() {
@@ -43,19 +53,20 @@ public class CodeBlock implements Vertex {
     }
 
     public void appendStmt(Stmt stmt) {
-        addNewStmt(stmt, () -> stmts.add(stmt));
+        preAppendStmt(stmt);
+        stmts.add(stmt);
     }
 
     public void preprendStmt(Stmt stmt) {
-        addNewStmt(stmt, () -> stmts.add(0, stmt));
+        preAppendStmt(stmt);
+        stmts.add(0, stmt);
     }
 
-    private void addNewStmt(Stmt stmt, Runnable action) {
+    private void preAppendStmt(Stmt stmt) {
         Objects.requireNonNull(stmt);
         if (stmt.getBlock() != null) {
             throw new IllegalArgumentException();
         }
-        action.run();
         stmt.setBlock(this);
     }
     
