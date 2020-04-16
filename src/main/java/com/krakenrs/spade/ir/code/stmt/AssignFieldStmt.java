@@ -2,21 +2,21 @@ package com.krakenrs.spade.ir.code.stmt;
 
 import java.util.Objects;
 
-import com.krakenrs.spade.app.asm.Klass;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
+import com.krakenrs.spade.ir.type.ClassType;
 import com.krakenrs.spade.ir.type.ValueType;
 
 public abstract class AssignFieldStmt extends Stmt {
 
-    private final Klass owner;
+    private final ClassType owner;
     private final String name;
     private final ValueType fieldType;
     private final ValueExpr<?> value;
 
-    public AssignFieldStmt(Klass owner, String name, ValueType fieldType, ValueExpr<?> value) {
+    public AssignFieldStmt(ClassType owner, String name, ValueType fieldType, ValueExpr<?> value) {
         super(Opcodes.ASSIGN_FIELD);
         this.owner = owner;
         this.name = name;
@@ -24,7 +24,7 @@ public abstract class AssignFieldStmt extends Stmt {
         this.value = value;
     }
 
-    public Klass owner() {
+    public ClassType owner() {
         return owner;
     }
 
@@ -48,7 +48,7 @@ public abstract class AssignFieldStmt extends Stmt {
     }
 
     public static class AssignStaticFieldExpr extends AssignFieldStmt {
-        public AssignStaticFieldExpr(Klass owner, String name, ValueType fieldType, ValueExpr<?> value) {
+        public AssignStaticFieldExpr(ClassType owner, String name, ValueType fieldType, ValueExpr<?> value) {
             super(owner, name, fieldType, value);
         }
 
@@ -61,7 +61,7 @@ public abstract class AssignFieldStmt extends Stmt {
     public static class AssignVirtualFieldStmt extends AssignFieldStmt {
         private final LoadLocalExpr accessor;
 
-        public AssignVirtualFieldStmt(Klass owner, String name, ValueType fieldType, ValueExpr<?> value,
+        public AssignVirtualFieldStmt(ClassType owner, String name, ValueType fieldType, ValueExpr<?> value,
                 LoadLocalExpr accessor) {
             super(owner, name, fieldType, value);
             this.accessor = accessor;

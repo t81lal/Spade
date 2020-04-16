@@ -4,11 +4,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import com.krakenrs.spade.app.asm.Klass;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
+import com.krakenrs.spade.ir.type.ClassType;
 import com.krakenrs.spade.ir.type.MethodType;
 
 public abstract class InvokeExpr extends Expr {
@@ -17,13 +17,13 @@ public abstract class InvokeExpr extends Expr {
         STATIC, VIRTUAL, INTERFACE, SPECIAL, DYNAMIC
     }
     
-    private final Klass owner;
+    private final ClassType owner;
     private final String name;
     private final MethodType methodType;
     private final List<ValueExpr<?>> arguments;
     private final Mode mode;
 
-    public InvokeExpr(Klass owner, String name, MethodType methodType, Mode mode, List<ValueExpr<?>> arguments) {
+    public InvokeExpr(ClassType owner, String name, MethodType methodType, Mode mode, List<ValueExpr<?>> arguments) {
         super(Opcodes.INVOKE, methodType.getReturnType());
         this.owner = owner;
         this.name = name;
@@ -32,7 +32,7 @@ public abstract class InvokeExpr extends Expr {
         this.arguments = Collections.unmodifiableList(arguments);
     }
 
-    public Klass owner() {
+    public ClassType owner() {
         return owner;
     }
 
@@ -60,7 +60,7 @@ public abstract class InvokeExpr extends Expr {
     public static class InvokeVirtualExpr extends InvokeExpr {
         private final LoadLocalExpr accessor;
 
-        public InvokeVirtualExpr(Klass owner, String name, MethodType methodType, Mode mode, LoadLocalExpr accessor,
+        public InvokeVirtualExpr(ClassType owner, String name, MethodType methodType, Mode mode, LoadLocalExpr accessor,
                 List<ValueExpr<?>> arguments) {
             super(owner, name, methodType, mode, arguments);
             if (mode == Mode.STATIC || mode == Mode.DYNAMIC) {
@@ -80,7 +80,7 @@ public abstract class InvokeExpr extends Expr {
     }
 
     public static class InvokeStaticExpr extends InvokeExpr {
-        public InvokeStaticExpr(Klass owner, String name, MethodType methodType, List<ValueExpr<?>> arguments) {
+        public InvokeStaticExpr(ClassType owner, String name, MethodType methodType, List<ValueExpr<?>> arguments) {
             super(owner, name, methodType, Mode.STATIC, arguments);
         }
     }
