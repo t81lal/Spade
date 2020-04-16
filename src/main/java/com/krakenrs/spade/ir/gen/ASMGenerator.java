@@ -757,7 +757,7 @@ public class ASMGenerator {
             void __dupx(int blockWidth, int offset) {
                 Set<TypedLocal> queuedLocals = new TreeSet<>(
                         (t1, t2) -> Integer.compare(t1.getA().index(), t2.getA().index()));
-                for (ImmutableTuple3<Integer, Integer, ValueType> e : TypeHelper.dupx(stack, blockWidth,
+                for (ImmutableTuple3<Integer, Integer, ValueType> e : CopyHelper.dupx(stack, blockWidth,
                         offset)) {
                     Local dst = new Local(e.getA(), true);
                     Local src = new Local(e.getB(), true);
