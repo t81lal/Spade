@@ -1,7 +1,9 @@
 package com.krakenrs.spade.ir.code;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -14,11 +16,18 @@ public class ControlFlowGraph extends Digraph<CodeBlock, FlowEdge> {
     private final boolean isStatic;
     private final CodeBlock entryBlock;
 
+    private final Set<ExceptionRange> ranges;
+
     public ControlFlowGraph(MethodType methodType, boolean isStatic) {
         this.methodType = methodType;
         this.isStatic = isStatic;
+        this.ranges = new HashSet<>();
 
         this.entryBlock = makeBlock();
+    }
+
+    public CodeBlock getEntryBlock() {
+        return entryBlock;
     }
 
     public CodeBlock makeBlock() {
@@ -44,12 +53,8 @@ public class ControlFlowGraph extends Digraph<CodeBlock, FlowEdge> {
         return getEdges(block).stream().filter(e -> e.kind().equals(kind));
     }
 
-    @Override
-    public boolean addVertex(CodeBlock block) {
-        boolean added = super.addVertex(block);
-        if (added) {
-
-        }
-        return added;
+    public void addExceptionRange(ExceptionRange range) {
+        Objects.requireNonNull(range);
+        ranges.add(range);
     }
 }
