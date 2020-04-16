@@ -1,5 +1,6 @@
 package com.krakenrs.spade.ir.code;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -19,10 +20,17 @@ public class ExceptionRange {
     }
 
     public void addProtectedBlock(CodeBlock block) {
+        Objects.requireNonNull(block);
         range.add(block);
     }
 
+    public void addProtectedBlocks(Collection<CodeBlock> blocks) {
+        Objects.requireNonNull(blocks);
+        range.addAll(blocks);
+    }
+
     public void removeProtectedBlock(CodeBlock block) {
+        Objects.requireNonNull(block);
         range.remove(block);
     }
 
@@ -30,7 +38,13 @@ public class ExceptionRange {
         return Collections.unmodifiableSet(range);
     }
 
+    public boolean containsProtectedBlock(CodeBlock block) {
+        Objects.requireNonNull(block);
+        return range.contains(block);
+    }
+
     public void setHandler(CodeBlock handler) {
+        Objects.requireNonNull(handler);
         this.handler = handler;
     }
 
@@ -39,10 +53,12 @@ public class ExceptionRange {
     }
 
     public void addCatchType(ClassType type) {
+        Objects.requireNonNull(type);
         catchTypes.add(type);
     }
 
     public void removeCatchType(ClassType type) {
+        Objects.requireNonNull(type);
         catchTypes.remove(type);
     }
     
