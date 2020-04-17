@@ -24,6 +24,7 @@ public class ControlFlowGraph extends Digraph<CodeBlock, FlowEdge> {
         this.ranges = new HashSet<>();
 
         this.entryBlock = makeBlock();
+        addVertex(entryBlock);
     }
 
     public CodeBlock getEntryBlock() {
