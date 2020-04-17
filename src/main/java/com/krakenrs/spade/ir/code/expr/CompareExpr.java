@@ -10,7 +10,16 @@ import com.krakenrs.spade.ir.type.PrimitiveType;
 public class CompareExpr extends Expr {
 
     public static enum Operation {
-        LT, GT, NONE
+        LT("<"), GT(">"), NONE("==");
+        private final String symbol;
+        Operation(String symbol) {
+            this.symbol = symbol;
+        }
+        
+        @Override
+        public String toString() {
+            return symbol;
+        }
     }
 
     private final LoadLocalExpr lhs, rhs;
@@ -31,7 +40,7 @@ public class CompareExpr extends Expr {
         return rhs;
     }
 
-    public Operation operation() {
+    public Operation op() {
         return operation;
     }
 
