@@ -1,6 +1,7 @@
 package com.krakenrs.spade.ir.code;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -92,6 +93,10 @@ public class CodeBlock implements Vertex {
         int index = stmts.indexOf(pos) + offset;
         stmts.add(index, stmt);
         stmt.setBlock(this);
+    }
+
+    public List<Stmt> stmts() {
+        return Collections.unmodifiableList(stmts);
     }
 
     @Override
