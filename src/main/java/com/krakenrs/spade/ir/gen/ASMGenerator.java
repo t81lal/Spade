@@ -176,13 +176,13 @@ public class ASMGenerator {
             CodeBlock block = preprocess(label);
             if (block == null)
                 return;
-
+            
             ASMInterpCtx interpCtx = new ASMInterpCtx(block, inputStacks.get(block).copy());
 
             InsnList insns = ctx.getMethod().instructions;
             for (int i = insns.indexOf(label) + 1, codeLen = insns.size(); i < codeLen; i++) {
                 AbstractInsnNode insn = insns.get(i);
-
+                
                 if (insn.getOpcode() != -1) {
                     interpCtx.execute(insn);
                 }
@@ -458,9 +458,9 @@ public class ASMGenerator {
             
             blocks.sort((a, b) -> {
                 if (entryBlock.equals(a)) {
-                    return 1;
-                } else if (entryBlock.equals(b)) {
                     return -1;
+                } else if (entryBlock.equals(b)) {
+                    return 1;
                 } else {
                     return Integer.compare(codeIndexOf(a), codeIndexOf(b));
                 }
@@ -571,8 +571,11 @@ public class ASMGenerator {
                 // Check each stack variable index is contiguous
                 for (int i = stack.size() - 1, vIndex = 0; i >= 0; i--, vIndex++) {
                     TypedLocal l = stack.peek(i);
-                    if (l.getA().index() != vIndex)
+                    if (l.getA().index() != vIndex || !l.getA().isStack())
                         throw new IllegalStateException();
+                    if (l.getB().equals(PrimitiveType.VOID)) {
+                        throw new IllegalStateException();
+                    }
                 }
             }
 
