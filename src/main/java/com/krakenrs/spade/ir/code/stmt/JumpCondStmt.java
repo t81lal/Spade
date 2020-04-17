@@ -34,19 +34,19 @@ public class JumpCondStmt extends Stmt {
         this.target = target;
     }
 
-    public ValueExpr<?> getLhs() {
+    public ValueExpr<?> lhs() {
         return lhs;
     }
 
-    public ValueExpr<?> getRhs() {
+    public ValueExpr<?> rhs() {
         return rhs;
     }
 
-    public Mode getMode() {
+    public Mode mode() {
         return mode;
     }
 
-    public CodeBlock getTarget() {
+    public CodeBlock target() {
         return target;
     }
 
