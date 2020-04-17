@@ -2,9 +2,12 @@ package com.krakenrs.spade.app.asm;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -108,5 +111,9 @@ public class KlassSource {
         } else {
             throw new IllegalArgumentException(klassName + " does not exists in " + toString());
         }
+    }
+
+    public Set<Klass> getKlasses() {
+        return Collections.unmodifiableSet(new HashSet<>(klasses.values()));
     }
 }
