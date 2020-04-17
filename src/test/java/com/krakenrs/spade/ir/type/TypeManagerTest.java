@@ -7,14 +7,28 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TypeManagerTest {
-    final Supplier<MockTypeManager> typeManagers = MockTypeManager::new;
+    final Supplier<MockTypeManager> typeManagers = () -> {
+        MockTypeManager manager = new MockTypeManager();
+        manager.addClass("java/lang/Object", new ResolvedClassType("java/lang/Object", null, Set.of()));
+        manager.addClass("java/io/Serializable", new ResolvedClassType("java/io/Serializable", null, Set.of()));
+        manager.addClass("java/lang/Comparable", new ResolvedClassType("java/lang/Comparable", null, Set.of()));
+        manager.addClass("java/lang/Number", new ResolvedClassType("java/lang/Number", manager.findClassType("java/lang/Object"),
+                Set.of(manager.findClassType("java/io/Serializable"))));
+        manager.addClass("java/lang/Integer", new ResolvedClassType("java/lang/Integer", manager.findClassType("java/lang/Number"),
+                Set.of(manager.findClassType("java/lang/Comparable"))));
+        manager.addClass("java/lang/Long", new ResolvedClassType("java/lang/Long", manager.findClassType("java/lang/Number"),
+                Set.of(manager.findClassType("java/lang/Comparable"))));
+        manager.addClass("foo/CoolInteger",
+                new ResolvedClassType("foo/CoolInteger", manager.findClassType("java/lang/Integer"), Set.of()));
+        return manager;
+    };
+
     final Supplier<MockTypeManager> resolvingTypeManagers = ResolvingMockTypeManager::new;
 
     static Stream<Arguments> methodTypes() {
@@ -145,68 +159,5 @@ class TypeManagerTest {
         // Invalid primitive type
         assertThrows(TypeParsingException.class, () -> types.asValueType("[K"));
         assertThrows(TypeParsingException.class, () -> types.asValueType("K"));
-    }
-
-    static class MockTypeManager extends TypeManager {
-        private final Map<String, ClassType> classes = new HashMap<>();
-
-        public MockTypeManager() {
-            addClass("java/lang/Object", new ResolvedClassType("java/lang/Object", null, Set.of()));
-            addClass("java/io/Serializable", new ResolvedClassType("java/io/Serializable", null, Set.of()));
-            addClass("java/lang/Comparable", new ResolvedClassType("java/lang/Comparable", null, Set.of()));
-            addClass("java/lang/Number", new ResolvedClassType("java/lang/Number", findClassType("java/lang/Object"),
-                    Set.of(findClassType("java/io/Serializable"))));
-            addClass("java/lang/Integer", new ResolvedClassType("java/lang/Integer", findClassType("java/lang/Number"),
-                    Set.of(findClassType("java/lang/Comparable"))));
-            addClass("java/lang/Long", new ResolvedClassType("java/lang/Long", findClassType("java/lang/Number"),
-                    Set.of(findClassType("java/lang/Comparable"))));
-
-            addClass("foo/CoolInteger",
-                    new ResolvedClassType("foo/CoolInteger", findClassType("java/lang/Integer"), Set.of()));
-        }
-
-        public void addClass(String className, ClassType classType) {
-            classes.put(className, classType);
-        }
-
-        protected ClassType findClassType0(String name) {
-            return new UnresolvedClassType(name);
-        }
-
-        @Override
-        public ClassType findClassType(String name) {
-            // Can't use computeIfAbsent as classes might change while current lookup is being performed
-            if (classes.containsKey(name)) {
-                return classes.get(name);
-            } else {
-                ClassType ct = findClassType0(name);
-                classes.put(name, Objects.requireNonNull(ct));
-                return ct;
-            }
-        }
-    }
-
-    static class ResolvingMockTypeManager extends MockTypeManager {
-        @Override
-        protected ClassType findClassType0(String name) {
-            Objects.requireNonNull(name);
-
-            String klassName = name.replace(".", "/");
-            String clazzName = name.replace("/", ".");
-            try {
-                Class<?> clazz = Class.forName(clazzName);
-                Class<?> superClazz = clazz.getSuperclass();
-                ClassType superClassType = null;
-                if (superClazz != null) {
-                    // Object and interfaces
-                    superClassType = asClassType(superClazz);
-                }
-                Set<ClassType> superInterfacesTypes = Arrays.asList(clazz.getInterfaces()).stream()
-                        .map(this::asClassType).collect(Collectors.toSet());
-                return new ResolvedClassType(klassName, superClassType, superInterfacesTypes);
-            } catch (ClassNotFoundException e) {
-                return new UnresolvedClassType(klassName);
-            }
-        }
     }
 }
