@@ -1,6 +1,7 @@
 package com.krakenrs.spade.commons.collections.graph;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -33,6 +34,15 @@ public class Digraph<V extends Vertex, E extends Edge<V>> {
      */
     public Set<V> getVertices() {
         return Collections.unmodifiableSet(edges.keySet());
+    }
+
+    /**
+     * Get all of the real edges contained in this graph (i.e. not including reverse edges).
+     *
+     * @return An <b>unmodifiable</b> set of edges
+     */
+    public Set<E> getEdges() {
+        return edges.values().stream().flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
     }
 
     /**
