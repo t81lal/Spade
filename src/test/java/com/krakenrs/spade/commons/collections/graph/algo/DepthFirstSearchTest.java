@@ -1,141 +1,74 @@
 package com.krakenrs.spade.commons.collections.graph.algo;
 
-import com.krakenrs.spade.commons.collections.graph.Digraph;
+import java.io.File;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
 import com.krakenrs.spade.commons.collections.graph.Edge;
 import com.krakenrs.spade.commons.collections.graph.TestVertex;
-import com.krakenrs.spade.commons.collections.graph.TestVertexSupplier;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import com.krakenrs.spade.commons.collections.graph.Vertex;
+import com.krakenrs.spade.commons.collections.graph.invariants.GraphAssertionChecker;
+import com.krakenrs.spade.commons.collections.graph.invariants.GraphAssertionChecker.PropTime;
+import com.krakenrs.spade.commons.collections.graph.invariants.Parser;
 
 class DepthFirstSearchTest {
-    private final TestVertexSupplier vertexSupplier = new TestVertexSupplier();
-    private final Supplier<Digraph<TestVertex, Edge<TestVertex>>> graphSupplier = Digraph::new;
 
-    private static Edge<TestVertex> edge(TestVertex v1, TestVertex v2) {
-        return new Edge<>(v1, v2);
+    static <V extends Vertex> GraphAssertionChecker<V, Edge<V>> createChecker(String fileName,
+            Function<Integer, V> vertexCreator, BiFunction<V, V, Edge<V>> edgeCreator) throws Exception {
+        Parser<V, Edge<V>> parser = new Parser<>(
+                String.join("\n",
+                        Files.readAllLines(
+                                new File(DepthFirstSearchTest.class.getResource(fileName).getPath()).toPath()))
+                        .toCharArray(),
+                vertexCreator, edgeCreator);
+        return parser.parse();
     }
 
-    @BeforeEach
-    void setup() {
-        vertexSupplier.reset();
+    class DfsVertex extends TestVertex {
+        int pre, post, topo;
+        int parent;
+        public DfsVertex(int id) {
+            super(id);
+        }
     }
 
-    @Test
-    void testDepthFirstSearch1() {
-        var g = graphSupplier.get();
-        var v0 = vertexSupplier.get();
-        var v1 = vertexSupplier.get();
-        var v2 = vertexSupplier.get();
-        var v3 = vertexSupplier.get();
-        var v4 = vertexSupplier.get();
-        g.addEdge(edge(v0, v1));
-        g.addEdge(edge(v0, v2));
-        g.addEdge(edge(v1, v3));
-        g.addEdge(edge(v1, v4));
-
-        DepthFirstSearch<TestVertex> search = new DepthFirstSearch<>(g);
-        search.run(v0);
-
-        assertEquals(List.of(v0, v1, v3, v4, v2), search.getPreOrder());
-        assertEquals(List.of(v3, v4, v1, v2, v0), search.getPostOrder());
-        assertEquals(List.of(v0, v2, v1, v4, v3), search.getTopOrder());
-        assertFalse(search.getParent(v0).isPresent());
-        assertEquals(v0, search.getParent(v1).orElseThrow());
-        assertEquals(v0, search.getParent(v2).orElseThrow());
-        assertEquals(v1, search.getParent(v3).orElseThrow());
-        assertEquals(v1, search.getParent(v4).orElseThrow());
-        assertEquals(Set.of(), search.getEdges(DepthFirstSearch.EdgeType.CROSS_AND_FORWARD));
-        assertEquals(Set.of(), search.getEdges(DepthFirstSearch.EdgeType.BACK));
-        assertEquals(Set.of(edge(v0, v1), edge(v1, v3), edge(v0, v2), edge(v1, v4)),
-                search.getEdges(DepthFirstSearch.EdgeType.TREE));
+    class DfsEdge extends Edge<DfsVertex> {
+        List<String> type = new ArrayList<>();
+        public DfsEdge(DfsVertex source, DfsVertex destination) {
+            super(source, destination);
+        }
     }
 
-    @Test
-    void testDepthFirstSearch2() {
-        // https://upload.wikimedia.org/wikipedia/commons/5/57/Tree_edges.svg
-        var g = graphSupplier.get();
-        var v0 = vertexSupplier.get();
-        var v1 = vertexSupplier.get();
-        var v2 = vertexSupplier.get();
-        var v3 = vertexSupplier.get();
-        var v4 = vertexSupplier.get();
-        var v5 = vertexSupplier.get();
-        var v6 = vertexSupplier.get();
-        var v7 = vertexSupplier.get();
-        g.addEdge(edge(v0, v1));
-        g.addEdge(edge(v0, v4));
-        g.addEdge(edge(v0, v7));
-        g.addEdge(edge(v1, v2));
-        g.addEdge(edge(v2, v3));
-        g.addEdge(edge(v3, v1));
-        g.addEdge(edge(v4, v5));
-        g.addEdge(edge(v5, v2));
-        g.addEdge(edge(v5, v6));
-        g.addEdge(edge(v5, v7));
+    @ParameterizedTest
+    @ValueSource(strings = { "dfs1.g", "dfs2.g" })
+    void test(String fileName) throws Exception {
+        var checker = createChecker("dfs/" + fileName, DfsVertex::new, DfsEdge::new);
+        var g = checker.createGraph();
+
+        checker.verify(PropTime.PRE, g);
 
         var search = new DepthFirstSearch<>(g);
-        search.run(v0);
+        search.run(new DfsVertex(0));
+        
+        for (var v : g.getVertices()) {
+            v.pre = search.getPreOrder().indexOf(v);
+            v.post = search.getPostOrder().indexOf(v);
+            v.topo = search.getTopOrder().indexOf(v);
+            v.parent = search.getParent(v).map(DfsVertex::getId).orElse(-1);
+        }
 
-        // Test parents.
-        Map.of(
-                v1, v0,
-                v2, v1,
-                v3, v2,
-                v4, v0,
-                v5, v4,
-                v6, v5,
-                v7, v5
-        ).forEach((k, v) -> assertEquals(v, search.getParent(k).orElseThrow()));
+        for (var et : DepthFirstSearch.EdgeType.values()) {
+            for (var e : search.getEdges(et)) {
+                ((DfsEdge) e).type.add(et.name().toLowerCase());
+            }
+        }
 
-        // Test vertex ordering.
-        assertEquals(List.of(v3, v2, v1, v6, v7, v5, v4, v0), search.getPostOrder());
-        assertEquals(List.of(v0, v4, v5, v7, v6, v1, v2, v3), search.getTopOrder());
-        assertEquals(List.of(v0, v1, v2, v3, v4, v5, v6, v7), search.getPreOrder());
-
-        // Test edge classification.
-        assertEquals(Set.of(edge(v0, v1), edge(v1, v2), edge(v2, v3), edge(v4, v5), edge(v5, v6), edge(v5, v7),
-                edge(v0, v4)), search.getEdges(DepthFirstSearch.EdgeType.TREE));
-        assertEquals(Set.of(edge(v0, v7), edge(v5, v2)), search.getEdges(DepthFirstSearch.EdgeType.CROSS_AND_FORWARD));
-        assertEquals(Set.of(edge(v3, v1)), search.getEdges(DepthFirstSearch.EdgeType.BACK));
-    }
-
-    @Test
-    void testDepthFirstSearch2Reverse() {
-        // Reverse of https://upload.wikimedia.org/wikipedia/commons/5/57/Tree_edges.svg
-        var g = graphSupplier.get();
-        var v0 = vertexSupplier.get();
-        var v1 = vertexSupplier.get();
-        var v2 = vertexSupplier.get();
-        var v3 = vertexSupplier.get();
-        var v4 = vertexSupplier.get();
-        var v5 = vertexSupplier.get();
-        var v6 = vertexSupplier.get();
-        var v7 = vertexSupplier.get();
-
-        g.addEdge(edge(v1, v0));
-        g.addEdge(edge(v4, v0));
-        g.addEdge(edge(v7, v0));
-        g.addEdge(edge(v2, v1));
-        g.addEdge(edge(v3, v2));
-        g.addEdge(edge(v1, v3));
-        g.addEdge(edge(v5, v4));
-        g.addEdge(edge(v2, v5));
-        g.addEdge(edge(v6, v5));
-        g.addEdge(edge(v7, v5));
-
-        var search = new DepthFirstSearch<>(g, true);
-        search.run(v0);
-
-        assertEquals(List.of(v3, v2, v1, v7, v6, v5, v4, v0), search.getPostOrder());
-        assertEquals(List.of(v0, v4, v5, v6, v7, v1, v2, v3), search.getTopOrder());
-        assertEquals(List.of(v0, v1, v2, v3, v7, v4, v5, v6), search.getPreOrder());
+        checker.verify(PropTime.POST, g);
     }
 }
