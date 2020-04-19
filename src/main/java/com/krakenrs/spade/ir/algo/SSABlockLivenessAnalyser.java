@@ -148,7 +148,6 @@ public class SSABlockLivenessAnalyser {
 
             // positive phi handling for defs
             currIn.addAll(phiDef.get(block));
-            prevIn.addAll(phiDef.get(block));
 
             // in[n] = use[n] U(out[n] - def[n])
             currIn.addAll(currOut.relativeComplement(def.get(block)));
