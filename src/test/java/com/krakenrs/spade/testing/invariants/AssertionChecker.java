@@ -22,9 +22,9 @@ import com.krakenrs.spade.testing.invariants.json.JsonValue;
 import com.krakenrs.spade.testing.invariants.json.JsonVariable;
 
 public class AssertionChecker {
-    private final Function<String, Object> variableMapping;
+    private final Function<String, ? extends Object> variableMapping;
 
-    public AssertionChecker(Function<String, Object> variableMapping) {
+    public AssertionChecker(Function<String, ? extends Object> variableMapping) {
         this.variableMapping = variableMapping;
     }
 

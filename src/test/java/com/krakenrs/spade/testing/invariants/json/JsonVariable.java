@@ -21,8 +21,16 @@ public class JsonVariable implements JsonValue {
     }
 
     private void checkValid(String alias) {
-        for (char c : alias.toCharArray()) {
-            if (!Character.isAlphabetic(c)) {
+        if(alias.length() == 0) {
+            throw new IllegalArgumentException("Empty string");
+        }
+        if(alias.length() == 1) {
+            if (!Character.isJavaIdentifierStart(alias.charAt(0))) {
+                throw new IllegalArgumentException(alias);
+            }
+        }
+        for (int i = 1; i < alias.length(); i++) {
+            if (!Character.isJavaIdentifierPart(alias.charAt(i))) {
                 throw new IllegalArgumentException(alias);
             }
         }

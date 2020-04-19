@@ -66,11 +66,12 @@ public class GraphAssertionChecker<V extends Vertex, E extends Edge<V>> {
         verify(time, graph, null);
     }
 
-    public void verify(PropTime time, Digraph<V, E> graph, Function<String, Object> variableMapping) {
+    public void verify(PropTime time, Digraph<V, E> graph, Function<String, ? extends Object> variableMapping) {
         verify(time, graph, true, variableMapping);
     }
 
-    public List<String> verify(PropTime time, Digraph<V, E> graph, boolean junitFail, Function<String, Object> variableMapping) {
+    public List<String> verify(PropTime time, Digraph<V, E> graph, boolean junitFail,
+            Function<String, ? extends Object> variableMapping) {
         AssertionChecker checker = new AssertionChecker(variableMapping);
         checker.verify(vertexProps.get(time), graph.getVertices());
         checker.verify(edgeProps.get(time), graph.getEdges());

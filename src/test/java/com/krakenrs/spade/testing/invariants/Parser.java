@@ -11,7 +11,7 @@ import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.NL;
 import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.RBRACE;
 import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.RBRACKET;
 import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.STRING_LIT;
-import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.WORD;
+import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.IDENT;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -143,7 +143,7 @@ public class Parser<V extends Vertex, E extends Edge<V>> {
         TokenType token = lexer.token();
         String id1 = null, id2 = null;
 
-        if (token.equals(WORD) || token.equals(INT_LIT)) {
+        if (token.equals(IDENT) || token.equals(INT_LIT)) {
             // Either PRE/POST or id
             id1 = parseId();
             PropTime pt = getPropTime(id1);
@@ -157,7 +157,7 @@ public class Parser<V extends Vertex, E extends Edge<V>> {
             } else {
                 // id
                 token = lexer.token();
-                if (token.equals(WORD) || token.equals(INT_LIT)) {
+                if (token.equals(IDENT) || token.equals(INT_LIT)) {
                     // edge
                     id2 = parseId();
 
@@ -197,7 +197,7 @@ public class Parser<V extends Vertex, E extends Edge<V>> {
 
     private String parseId() throws ParsingException {
         String lexeme = lexer.lexeme();
-        accept(Set.of(INT_LIT, WORD));
+        accept(Set.of(INT_LIT, IDENT));
         return lexeme;
     }
 
@@ -244,8 +244,8 @@ public class Parser<V extends Vertex, E extends Edge<V>> {
         } else if(token.equals(FLOAT_LIT)) {
             accept(FLOAT_LIT);
             return new JsonNumber(Float.parseFloat(lexeme));
-        } else if (token.equals(WORD)) {
-            accept(WORD);
+        } else if (token.equals(IDENT)) {
+            accept(IDENT);
             if (lexeme.equals("true")) {
                 return new JsonBool(true);
             } else if (lexeme.equals("false")) {
@@ -278,7 +278,7 @@ public class Parser<V extends Vertex, E extends Edge<V>> {
     
     private void member(JsonObject obj) throws ParsingException {
         String key = lexer.lexeme();
-        accept(Set.of(STRING_LIT, WORD));
+        accept(Set.of(STRING_LIT, IDENT));
         accept(COLON);
         obj.put(key, value());
     }

@@ -2,7 +2,7 @@ package com.krakenrs.spade.testing.invariants;
 
 public class Lexer {
     static enum TokenType {
-        COMMA, COLON, WORD, STRING_LIT, INT_LIT, FLOAT_LIT, LBRACKET, RBRACKET, LBRACE, RBRACE, NL, EOF
+        COMMA, COLON, IDENT, STRING_LIT, INT_LIT, FLOAT_LIT, LBRACKET, RBRACKET, LBRACE, RBRACE, NL, EOF
     }
 
     private final char[] chars;
@@ -190,9 +190,11 @@ public class Lexer {
                 case 'p': case 'q': case 'r': case 's': case 't':
                 case 'u': case 'v': case 'w': case 'x': case 'y':
                 case 'z':
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
                     break;
                 default:
-                    token = TokenType.WORD;
+                    token = TokenType.IDENT;
                     return;
             }
         } while (true);
