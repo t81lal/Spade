@@ -2,6 +2,11 @@ package com.krakenrs.spade.ir.code;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
+import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
+import com.krakenrs.spade.ir.code.visitor.LocalUsageVisitor;
+import com.krakenrs.spade.ir.value.Local;
 
 public abstract class CodeUnit {
     private static int codeUnitIds = 0;
@@ -14,8 +19,6 @@ public abstract class CodeUnit {
         this.opcode = opcode;
     }
 
-    public abstract Stmt stmt();
-
     public int id() {
         return id;
     }
@@ -24,7 +27,17 @@ public abstract class CodeUnit {
         return opcode;
     }
 
-    public abstract void accept(CodeVisitor vis);
+    public Set<Local> getUses() {
+        LocalUsageVisitor vis = new LocalUsageVisitor();
+        accept(vis);
+        return vis.getUses();
+    }
+
+    public abstract Stmt stmt();
+
+    public void accept(CodeVisitor vis) {
+        vis.visitAny(this);
+    }
 
     @Override
     public int hashCode() {

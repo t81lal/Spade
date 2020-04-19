@@ -6,8 +6,8 @@ import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodeUnit;
-import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Opcodes;
+import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.value.Local;
 
 public class AssignPhiStmt extends DeclareLocalStmt {
@@ -20,6 +20,7 @@ public class AssignPhiStmt extends DeclareLocalStmt {
 
     @Override
     public void accept(CodeVisitor vis) {
+        super.accept(vis);
         vis.visitAssignPhiStmt(this);
     }
 

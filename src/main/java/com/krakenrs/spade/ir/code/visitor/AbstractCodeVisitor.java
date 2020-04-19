@@ -1,5 +1,6 @@
-package com.krakenrs.spade.ir.code;
+package com.krakenrs.spade.ir.code.visitor;
 
+import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.expr.AllocArrayExpr;
 import com.krakenrs.spade.ir.code.expr.AllocObjectExpr;
 import com.krakenrs.spade.ir.code.expr.ArithmeticExpr;
@@ -30,6 +31,10 @@ import com.krakenrs.spade.ir.code.stmt.ReturnStmt;
 import com.krakenrs.spade.ir.code.stmt.ThrowStmt;
 
 public class AbstractCodeVisitor implements CodeVisitor {
+
+    @Override
+    public void visitAny(CodeUnit u) {
+    }
 
     @Override
     public void visitAssignArrayStmt(AssignArrayStmt s) {
@@ -75,7 +80,7 @@ public class AbstractCodeVisitor implements CodeVisitor {
     }
 
     @Override
-    public void visitJumpSwichStmt(JumpSwitchStmt s) {
+    public void visitJumpSwitchStmt(JumpSwitchStmt s) {
         s.expr().accept(this);
     }
 

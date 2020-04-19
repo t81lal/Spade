@@ -3,10 +3,10 @@ package com.krakenrs.spade.ir.code.stmt;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
-import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
+import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 
 public class ThrowStmt extends Stmt {
 
@@ -19,6 +19,7 @@ public class ThrowStmt extends Stmt {
 
     @Override
     public void accept(CodeVisitor vis) {
+        super.accept(vis);
         vis.visitThrowStmt(this);
     }
 

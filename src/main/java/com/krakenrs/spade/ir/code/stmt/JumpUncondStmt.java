@@ -4,9 +4,9 @@ import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodeUnit;
-import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
+import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 
 public class JumpUncondStmt extends Stmt {
 
@@ -19,6 +19,7 @@ public class JumpUncondStmt extends Stmt {
 
     @Override
     public void accept(CodeVisitor vis) {
+        super.accept(vis);
         vis.visitJumpUncondStmt(this);
     }
 

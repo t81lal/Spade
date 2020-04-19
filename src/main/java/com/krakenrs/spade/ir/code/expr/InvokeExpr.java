@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
-import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
+import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ClassType;
 import com.krakenrs.spade.ir.type.MethodType;
 
@@ -36,6 +36,7 @@ public abstract class InvokeExpr extends Expr {
 
     @Override
     public void accept(CodeVisitor vis) {
+        super.accept(vis);
         vis.visitInvokeExpr(this);
     }
 

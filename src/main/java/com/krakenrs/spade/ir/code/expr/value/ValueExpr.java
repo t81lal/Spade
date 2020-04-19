@@ -3,8 +3,8 @@ package com.krakenrs.spade.ir.code.expr.value;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
-import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Expr;
+import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ValueType;
 import com.krakenrs.spade.ir.value.Value;
 
@@ -23,6 +23,7 @@ public abstract class ValueExpr<T extends Value> extends Expr {
 
     @Override
     public void accept(CodeVisitor vis) {
+        super.accept(vis);
         vis.visitValueExpr(this);
     }
 

@@ -1,5 +1,6 @@
-package com.krakenrs.spade.ir.code;
+package com.krakenrs.spade.ir.code.visitor;
 
+import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.expr.AllocArrayExpr;
 import com.krakenrs.spade.ir.code.expr.AllocObjectExpr;
 import com.krakenrs.spade.ir.code.expr.ArithmeticExpr;
@@ -27,6 +28,8 @@ import com.krakenrs.spade.ir.code.stmt.ReturnStmt;
 import com.krakenrs.spade.ir.code.stmt.ThrowStmt;
 
 public interface CodeVisitor {
+    void visitAny(CodeUnit u);
+
     void visitAssignArrayStmt(AssignArrayStmt s);
 
     void visitAssignCatchStmt(AssignCatchStmt s);
@@ -43,7 +46,7 @@ public interface CodeVisitor {
 
     void visitJumpCondStmt(JumpCondStmt s);
 
-    void visitJumpSwichStmt(JumpSwitchStmt s);
+    void visitJumpSwitchStmt(JumpSwitchStmt s);
 
     void visitJumpUncondStmt(JumpUncondStmt s);
 

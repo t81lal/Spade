@@ -3,10 +3,10 @@ package com.krakenrs.spade.ir.code.expr;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
-import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
+import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 
 public class NegateExpr extends Expr {
     private final LoadLocalExpr var;
@@ -18,6 +18,7 @@ public class NegateExpr extends Expr {
 
     @Override
     public void accept(CodeVisitor vis) {
+        super.accept(vis);
         vis.visitNegateExpr(this);
     }
 

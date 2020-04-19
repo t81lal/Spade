@@ -1,8 +1,8 @@
 package com.krakenrs.spade.ir.code.expr;
 
-import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
+import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ClassType;
 
 public class AllocObjectExpr extends Expr {
@@ -12,6 +12,7 @@ public class AllocObjectExpr extends Expr {
 
     @Override
     public void accept(CodeVisitor vis) {
+        super.accept(vis);
         vis.visitAllocObjectExpr(this);
     }
 }

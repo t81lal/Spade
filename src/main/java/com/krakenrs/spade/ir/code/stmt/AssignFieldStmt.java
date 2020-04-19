@@ -3,11 +3,11 @@ package com.krakenrs.spade.ir.code.stmt;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
-import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
+import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ClassType;
 import com.krakenrs.spade.ir.type.ValueType;
 
@@ -28,6 +28,7 @@ public abstract class AssignFieldStmt extends Stmt {
 
     @Override
     public void accept(CodeVisitor vis) {
+        super.accept(vis);
         vis.visitAssignFieldStmt(this);
     }
 
@@ -65,8 +66,8 @@ public abstract class AssignFieldStmt extends Stmt {
         }
     }
 
-    public static class AssignStaticFieldExpr extends AssignFieldStmt {
-        public AssignStaticFieldExpr(ClassType owner, String name, ValueType fieldType, ValueExpr<?> value) {
+    public static class AssignStaticFieldStmt extends AssignFieldStmt {
+        public AssignStaticFieldStmt(ClassType owner, String name, ValueType fieldType, ValueExpr<?> value) {
             super(owner, name, fieldType, value);
         }
 

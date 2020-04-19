@@ -708,7 +708,7 @@ public class AsmGenerator {
                 ValueType fieldType = ctx.getTypeManager().asValueType(desc);
                 LoadLocalExpr value = pop();
                 if(isStatic) {
-                    afs = new AssignFieldStmt.AssignStaticFieldExpr(ownerType, name, fieldType, value);
+                    afs = new AssignFieldStmt.AssignStaticFieldStmt(ownerType, name, fieldType, value);
                 } else {
                     afs = new AssignFieldStmt.AssignVirtualFieldStmt(ownerType, name, fieldType, value, pop());
                 }

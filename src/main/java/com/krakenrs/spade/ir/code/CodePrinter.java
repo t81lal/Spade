@@ -38,21 +38,19 @@ import com.krakenrs.spade.ir.type.ObjectType;
 public class CodePrinter implements Opcodes {
 
     public static String toString(ControlFlowGraph cfg) {
-        Emitter e = new Emitter();
-        e.emitCfg(cfg);
-        return e.toString();
+        return new Emitter().emitCfg(cfg).toString();
     }
 
     public static String toString(ControlFlowGraph cfg, CodeBlock block) {
-        Emitter e = new Emitter();
-        e.emitBlock(cfg, block);
-        return e.toString();
+        return new Emitter().emitBlock(cfg, block).toString();
     }
 
     public static String toString(List<Stmt> stmts) {
-        Emitter e = new Emitter();
-        e.emitStmtsOnly(stmts);
-        return e.toString();
+        return new Emitter().emitStmtsOnly(stmts).toString();
+    }
+
+    public static String toString(Stmt stmt) {
+        return new Emitter().emitStmt(stmt).toString();
     }
 
     static class Emitter {
@@ -96,7 +94,7 @@ public class CodePrinter implements Opcodes {
             return this;
         }
 
-        void emitCfg(ControlFlowGraph cfg) {
+        Emitter emitCfg(ControlFlowGraph cfg) {
             List<CodeBlock> blocks = new ArrayList<>(cfg.getVertices());
             blocks.sort((a, b) -> a.getOrderHint() - b.getOrderHint());
 
@@ -107,9 +105,11 @@ public class CodePrinter implements Opcodes {
                     nl();
                 }
             }
+
+            return this;
         }
 
-        void emitStmtsOnly(List<Stmt> stmts) {
+        Emitter emitStmtsOnly(List<Stmt> stmts) {
             Iterator<Stmt> it = stmts.iterator();
             while (it.hasNext()) {
                 emitStmt(it.next());
@@ -117,9 +117,10 @@ public class CodePrinter implements Opcodes {
                     nl();
                 }
             }
+            return this;
         }
 
-        void emitBlock(ControlFlowGraph cfg, CodeBlock block) {
+        Emitter emitBlock(ControlFlowGraph cfg, CodeBlock block) {
             List<Stmt> stmts = block.stmts();
             emit("==Block(id=L").emit(block.id()).emit(", order=").emit(block.getOrderHint()).emit(", size=")
                     .emit(stmts.size()).emit(")");
@@ -136,6 +137,8 @@ public class CodePrinter implements Opcodes {
             }
             unindent();
             nl();
+
+            return this;
         }
 
         Emitter emitTarget(CodeBlock block) {
