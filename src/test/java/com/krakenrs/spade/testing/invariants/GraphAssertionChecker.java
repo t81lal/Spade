@@ -1,16 +1,20 @@
-package com.krakenrs.spade.commons.collections.graph.invariants;
+package com.krakenrs.spade.testing.invariants;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.krakenrs.spade.commons.collections.graph.Digraph;
 import com.krakenrs.spade.commons.collections.graph.Edge;
 import com.krakenrs.spade.commons.collections.graph.Vertex;
-import com.krakenrs.spade.commons.collections.graph.invariants.json.JsonObject;
+import com.krakenrs.spade.testing.invariants.json.JsonObject;
 
 public class GraphAssertionChecker<V extends Vertex, E extends Edge<V>> {
     public enum PropTime {
@@ -73,5 +77,16 @@ public class GraphAssertionChecker<V extends Vertex, E extends Edge<V>> {
         }
 
         return checker.errorMessages;
+    }
+
+    public static <V extends Vertex> GraphAssertionChecker<V, Edge<V>> createChecker(Class<?> relativeClass,
+            String fileName,
+            Function<Integer, V> vertexCreator, BiFunction<V, V, Edge<V>> edgeCreator) throws Exception {
+        Parser<V, Edge<V>> parser = new Parser<>(String
+                .join("\n",
+                        Files.readAllLines(
+                                new File(relativeClass.getResource(fileName).getPath()).toPath()))
+                .toCharArray(), vertexCreator, edgeCreator);
+        return parser.parse();
     }
 }

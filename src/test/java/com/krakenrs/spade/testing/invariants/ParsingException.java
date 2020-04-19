@@ -1,4 +1,4 @@
-package com.krakenrs.spade.commons.collections.graph.invariants;
+package com.krakenrs.spade.testing.invariants;
 
 public class ParsingException extends Exception {
     private static final long serialVersionUID = 5818807714507128794L;

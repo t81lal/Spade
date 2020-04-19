@@ -4,15 +4,12 @@ import com.krakenrs.spade.commons.collections.graph.Digraph;
 import com.krakenrs.spade.commons.collections.graph.Edge;
 import com.krakenrs.spade.commons.collections.graph.TestVertex;
 import com.krakenrs.spade.commons.collections.graph.Vertex;
-import com.krakenrs.spade.commons.collections.graph.invariants.GraphAssertionChecker;
-import com.krakenrs.spade.commons.collections.graph.invariants.GraphAssertionChecker.PropTime;
-import com.krakenrs.spade.commons.collections.graph.invariants.Parser;
-import org.junit.jupiter.api.Test;
+import com.krakenrs.spade.testing.invariants.GraphAssertionChecker;
+import com.krakenrs.spade.testing.invariants.GraphAssertionChecker.PropTime;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -25,13 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DominatorComputerTest {
     static <V extends Vertex> GraphAssertionChecker<V, Edge<V>> createChecker(String fileName,
             Function<Integer, V> vertexCreator, BiFunction<V, V, Edge<V>> edgeCreator) throws Exception {
-        Parser<V, Edge<V>> parser = new Parser<>(
-                String.join("\n",
-                        Files.readAllLines(
-                                new File(DominatorComputerTest.class.getResource(fileName).getPath()).toPath()))
-                        .toCharArray(),
-                vertexCreator, edgeCreator);
-        return parser.parse();
+        return GraphAssertionChecker.createChecker(DominatorComputerTest.class, fileName, vertexCreator, edgeCreator);
     }
 
     @ParameterizedTest

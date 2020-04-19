@@ -1,7 +1,5 @@
 package com.krakenrs.spade.commons.collections.graph.algo;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -13,21 +11,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 import com.krakenrs.spade.commons.collections.graph.Edge;
 import com.krakenrs.spade.commons.collections.graph.TestVertex;
 import com.krakenrs.spade.commons.collections.graph.Vertex;
-import com.krakenrs.spade.commons.collections.graph.invariants.GraphAssertionChecker;
-import com.krakenrs.spade.commons.collections.graph.invariants.GraphAssertionChecker.PropTime;
-import com.krakenrs.spade.commons.collections.graph.invariants.Parser;
+import com.krakenrs.spade.testing.invariants.GraphAssertionChecker;
+import com.krakenrs.spade.testing.invariants.GraphAssertionChecker.PropTime;
 
 class DepthFirstSearchTest {
 
     static <V extends Vertex> GraphAssertionChecker<V, Edge<V>> createChecker(String fileName,
             Function<Integer, V> vertexCreator, BiFunction<V, V, Edge<V>> edgeCreator) throws Exception {
-        Parser<V, Edge<V>> parser = new Parser<>(
-                String.join("\n",
-                        Files.readAllLines(
-                                new File(DepthFirstSearchTest.class.getResource(fileName).getPath()).toPath()))
-                        .toCharArray(),
-                vertexCreator, edgeCreator);
-        return parser.parse();
+        return GraphAssertionChecker.createChecker(DepthFirstSearchTest.class, fileName, vertexCreator, edgeCreator);
     }
 
     class DfsVertex extends TestVertex {

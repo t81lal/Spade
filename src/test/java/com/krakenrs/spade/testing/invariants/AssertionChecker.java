@@ -1,4 +1,4 @@
-package com.krakenrs.spade.commons.collections.graph.invariants;
+package com.krakenrs.spade.testing.invariants;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import com.krakenrs.spade.commons.collections.graph.invariants.json.*;
+import com.krakenrs.spade.testing.invariants.json.*;
 
 public class AssertionChecker {
     abstract class AccessSelector {

@@ -1,17 +1,17 @@
-package com.krakenrs.spade.commons.collections.graph.invariants;
+package com.krakenrs.spade.testing.invariants;
 
-import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.COLON;
-import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.COMMA;
-import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.EOF;
-import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.FLOAT_LIT;
-import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.INT_LIT;
-import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.LBRACE;
-import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.LBRACKET;
-import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.NL;
-import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.RBRACE;
-import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.RBRACKET;
-import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.STRING_LIT;
-import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.WORD;
+import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.COLON;
+import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.COMMA;
+import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.EOF;
+import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.FLOAT_LIT;
+import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.INT_LIT;
+import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.LBRACE;
+import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.LBRACKET;
+import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.NL;
+import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.RBRACE;
+import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.RBRACKET;
+import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.STRING_LIT;
+import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.WORD;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -20,15 +20,15 @@ import java.util.function.Function;
 
 import com.krakenrs.spade.commons.collections.graph.Edge;
 import com.krakenrs.spade.commons.collections.graph.Vertex;
-import com.krakenrs.spade.commons.collections.graph.invariants.GraphAssertionChecker.PropTime;
-import com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType;
-import com.krakenrs.spade.commons.collections.graph.invariants.json.JsonArray;
-import com.krakenrs.spade.commons.collections.graph.invariants.json.JsonBool;
-import com.krakenrs.spade.commons.collections.graph.invariants.json.JsonNull;
-import com.krakenrs.spade.commons.collections.graph.invariants.json.JsonNumber;
-import com.krakenrs.spade.commons.collections.graph.invariants.json.JsonObject;
-import com.krakenrs.spade.commons.collections.graph.invariants.json.JsonString;
-import com.krakenrs.spade.commons.collections.graph.invariants.json.JsonValue;
+import com.krakenrs.spade.testing.invariants.GraphAssertionChecker.PropTime;
+import com.krakenrs.spade.testing.invariants.Lexer.TokenType;
+import com.krakenrs.spade.testing.invariants.json.JsonArray;
+import com.krakenrs.spade.testing.invariants.json.JsonBool;
+import com.krakenrs.spade.testing.invariants.json.JsonNull;
+import com.krakenrs.spade.testing.invariants.json.JsonNumber;
+import com.krakenrs.spade.testing.invariants.json.JsonObject;
+import com.krakenrs.spade.testing.invariants.json.JsonString;
+import com.krakenrs.spade.testing.invariants.json.JsonValue;
 
 public class Parser<V extends Vertex, E extends Edge<V>> {
 

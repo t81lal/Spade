@@ -1,4 +1,4 @@
-package com.krakenrs.spade.commons.collections.graph.invariants.json;
+package com.krakenrs.spade.testing.invariants.json;
 
 import java.util.Iterator;
 

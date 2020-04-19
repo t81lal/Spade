@@ -1,4 +1,4 @@
-package com.krakenrs.spade.commons.collections.graph.invariants;
+package com.krakenrs.spade.testing.invariants;
 
 public class Lexer {
     static enum TokenType {
