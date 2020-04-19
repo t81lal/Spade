@@ -13,34 +13,6 @@ import org.junit.jupiter.api.Test;
 import com.krakenrs.spade.commons.collections.IdSupplier;
 
 public class CachingBitSetIndexerTest {
-    class TestElement {
-        int index;
-        int indexCalls;
-
-        TestElement(int index) {
-            this.index = index;
-        }
-
-        public int getIndex() {
-            indexCalls++;
-            return index;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o instanceof TestElement) {
-                return ((TestElement) o).index == index;
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            return index;
-        }
-    }
-
     final IdSupplier<TestElement> elements = new IdSupplier<>(TestElement::new);
 
     @BeforeEach
