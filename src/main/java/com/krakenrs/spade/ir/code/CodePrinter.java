@@ -43,6 +43,18 @@ public class CodePrinter implements Opcodes {
         return e.toString();
     }
 
+    public static String toString(ControlFlowGraph cfg, CodeBlock block) {
+        Emitter e = new Emitter();
+        e.emitBlock(cfg, block);
+        return e.toString();
+    }
+
+    public static String toString(List<Stmt> stmts) {
+        Emitter e = new Emitter();
+        e.emitStmtsOnly(stmts);
+        return e.toString();
+    }
+
     static class Emitter {
         final String tab = "  ";
 
@@ -91,6 +103,16 @@ public class CodePrinter implements Opcodes {
             Iterator<CodeBlock> it = blocks.iterator();
             while (it.hasNext()) {
                 emitBlock(cfg, it.next());
+                if (it.hasNext()) {
+                    nl();
+                }
+            }
+        }
+
+        void emitStmtsOnly(List<Stmt> stmts) {
+            Iterator<Stmt> it = stmts.iterator();
+            while (it.hasNext()) {
+                emitStmt(it.next());
                 if (it.hasNext()) {
                     nl();
                 }
