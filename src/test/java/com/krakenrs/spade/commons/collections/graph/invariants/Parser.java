@@ -13,11 +13,8 @@ import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.Toke
 import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.STRING_LIT;
 import static com.krakenrs.spade.commons.collections.graph.invariants.Lexer.TokenType.WORD;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -47,7 +44,7 @@ public class Parser<V extends Vertex, E extends Edge<V>> {
     }
 
     class ParserState {
-        Map<String, Entity<V>> nodes = new HashMap<>();
+        Map<String, Entity<V>> nodes = new LinkedHashMap<>();
         Set<Entity<E>> edges = new HashSet<>();
         Entity<?> cur;
 
