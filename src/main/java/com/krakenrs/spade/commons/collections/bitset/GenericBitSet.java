@@ -310,7 +310,13 @@ public class GenericBitSet<E> implements Set<E> {
 
     @Override
     public Object[] toArray() {
-        throw new UnsupportedOperationException();
+        Object[] es = new Object[size()];
+        int i = 0;
+        Iterator<E> it = iterator();
+        while (it.hasNext()) {
+            es[i++] = it.next();
+        }
+        return es;
     }
 
     @Override
