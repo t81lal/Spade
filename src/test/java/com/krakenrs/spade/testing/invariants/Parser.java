@@ -183,11 +183,8 @@ public class Parser<V extends Vertex, E extends Edge<V>> {
     }
 
     private String parseId() throws ParsingException {
-        TokenType token = lexer.token();
         String lexeme = lexer.lexeme();
-        if (token.equals(WORD) || token.equals(INT_LIT)) {
-            accept(token);
-        }
+        accept(Set.of(INT_LIT, WORD));
         return lexeme;
     }
 
