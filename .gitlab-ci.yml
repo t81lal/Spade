@@ -2,6 +2,7 @@ image: maven:3.6-jdk-11
 
 stages:
   - build
+  - package
   - test
 
 variables:
@@ -24,3 +25,10 @@ test:
     reports:
       junit:
         - target/surefire-reports/TEST-*.xml
+
+package:
+  stage: package
+  script:
+    - mvn --batch-mode package -DskipTests
+  artifacts:
+    paths:
