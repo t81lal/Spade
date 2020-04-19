@@ -2,6 +2,7 @@ package com.krakenrs.spade.ir.code.expr;
 
 import java.util.Objects;
 
+import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
@@ -32,6 +33,16 @@ public abstract class LoadFieldExpr extends Expr {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), owner, name);
+    }
+
+    @Override
+    public boolean equivalent(CodeUnit u) {
+        if (super.equivalent(u)) {
+            LoadFieldExpr lfe = (LoadFieldExpr) u;
+            return Objects.equals(owner, lfe.owner) && Objects.equals(name, lfe.name) && lfe.isStatic() == isStatic();
+        } else {
+            return false;
+        }
     }
     
     public static class LoadStaticFieldExpr extends LoadFieldExpr {
@@ -65,6 +76,11 @@ public abstract class LoadFieldExpr extends Expr {
         @Override
         public boolean isStatic() {
             return false;
+        }
+
+        @Override
+        public boolean equivalent(CodeUnit u) {
+            return super.equivalent(u) && equivalent(((LoadVirtualFieldExpr) u).accessor, accessor);
         }
     }
 }

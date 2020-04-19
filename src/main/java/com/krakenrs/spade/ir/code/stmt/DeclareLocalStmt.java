@@ -2,6 +2,7 @@ package com.krakenrs.spade.ir.code.stmt;
 
 import java.util.Objects;
 
+import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.value.Local;
 
@@ -20,5 +21,10 @@ public abstract class DeclareLocalStmt extends Stmt {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), var);
+    }
+
+    @Override
+    public boolean equivalent(CodeUnit u) {
+        return super.equivalent(u) && Objects.equals(((DeclareLocalStmt) u).var, var);
     }
 }

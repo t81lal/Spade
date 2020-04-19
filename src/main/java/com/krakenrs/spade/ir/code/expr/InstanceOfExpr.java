@@ -2,6 +2,7 @@ package com.krakenrs.spade.ir.code.expr;
 
 import java.util.Objects;
 
+import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
@@ -30,5 +31,15 @@ public class InstanceOfExpr extends Expr {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), var, checkType);
+    }
+
+    @Override
+    public boolean equivalent(CodeUnit u) {
+        if (super.equivalent(u)) {
+            InstanceOfExpr ioe = (InstanceOfExpr) u;
+            return equivalent(var, ioe.var) && Objects.equals(checkType, ioe.checkType);
+        } else {
+            return false;
+        }
     }
 }

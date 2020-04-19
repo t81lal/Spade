@@ -2,6 +2,7 @@ package com.krakenrs.spade.ir.code.expr;
 
 import java.util.Objects;
 
+import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
@@ -58,5 +59,15 @@ public class ArithmeticExpr extends Expr {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), operation, lhs, rhs);
+    }
+
+    @Override
+    public boolean equivalent(CodeUnit u) {
+        if (super.equivalent(u)) {
+            ArithmeticExpr ae = (ArithmeticExpr) u;
+            return equivalent(lhs, ae.lhs) && equivalent(rhs, ae.rhs) && Objects.equals(operation, ae.operation);
+        } else {
+            return false;
+        }
     }
 }

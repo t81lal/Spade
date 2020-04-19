@@ -2,12 +2,12 @@ package com.krakenrs.spade.ir.code.stmt;
 
 import java.util.Objects;
 
+import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 
 public class ConsumeStmt extends Stmt {
-
     private final Expr expr;
 
     public ConsumeStmt(Expr expr) {
@@ -22,5 +22,10 @@ public class ConsumeStmt extends Stmt {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), expr);
+    }
+
+    @Override
+    public boolean equivalent(CodeUnit u) {
+        return super.equivalent(u) && equivalent(((ConsumeStmt) u).expr, expr);
     }
 }

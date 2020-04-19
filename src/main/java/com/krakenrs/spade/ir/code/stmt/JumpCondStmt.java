@@ -3,6 +3,7 @@ package com.krakenrs.spade.ir.code.stmt;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeBlock;
+import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
@@ -55,4 +56,14 @@ public class JumpCondStmt extends Stmt {
         return Objects.hash(super.hashCode(), lhs, rhs, mode, target);
     }
 
+    @Override
+    public boolean equivalent(CodeUnit u) {
+        if (super.equivalent(u)) {
+            JumpCondStmt jcs = (JumpCondStmt) u;
+            return Objects.equals(jcs.mode, mode) && Objects.equals(jcs.target, target) && equivalent(jcs.lhs, lhs)
+                    && equivalent(jcs.rhs, rhs);
+        } else {
+            return false;
+        }
+    }
 }

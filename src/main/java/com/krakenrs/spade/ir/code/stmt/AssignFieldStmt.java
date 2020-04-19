@@ -2,6 +2,7 @@ package com.krakenrs.spade.ir.code.stmt;
 
 import java.util.Objects;
 
+import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
@@ -47,6 +48,17 @@ public abstract class AssignFieldStmt extends Stmt {
         return Objects.hash(super.hashCode(), owner, name, fieldType, value);
     }
 
+    @Override
+    public boolean equivalent(CodeUnit u) {
+        if (super.equivalent(u)) {
+            AssignFieldStmt afs = (AssignFieldStmt) u;
+            return Objects.equals(owner, afs.owner) && Objects.equals(name, afs.name) && afs.isStatic() == isStatic()
+                    && Objects.equals(fieldType, afs.fieldType) && equivalent(value, afs.value);
+        } else {
+            return false;
+        }
+    }
+
     public static class AssignStaticFieldExpr extends AssignFieldStmt {
         public AssignStaticFieldExpr(ClassType owner, String name, ValueType fieldType, ValueExpr<?> value) {
             super(owner, name, fieldType, value);
@@ -79,6 +91,11 @@ public abstract class AssignFieldStmt extends Stmt {
         @Override
         public int hashCode() {
             return Objects.hash(super.hashCode(), accessor);
+        }
+
+        @Override
+        public boolean equivalent(CodeUnit u) {
+            return super.equivalent(u) && equivalent(((AssignVirtualFieldStmt) u).accessor, accessor);
         }
     }
 }

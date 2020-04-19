@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
@@ -57,6 +58,18 @@ public abstract class InvokeExpr extends Expr {
         return Objects.hash(super.hashCode(), owner, name, methodType, mode);
     }
 
+    @Override
+    public boolean equivalent(CodeUnit u) {
+        if (super.equivalent(u)) {
+            InvokeExpr ie = (InvokeExpr) u;
+            return Objects.equals(ie.owner, owner) && Objects.equals(ie.name, name)
+                    && Objects.equals(ie.methodType, methodType) && Objects.equals(ie.mode, mode)
+                    && equivalent(ie.arguments, arguments);
+        } else {
+            return false;
+        }
+    }
+
     public static class InvokeVirtualExpr extends InvokeExpr {
         private final LoadLocalExpr accessor;
 
@@ -76,6 +89,11 @@ public abstract class InvokeExpr extends Expr {
         @Override
         public int hashCode() {
             return Objects.hash(super.hashCode(), accessor);
+        }
+
+        @Override
+        public boolean equivalent(CodeUnit u) {
+            return super.equivalent(u) && equivalent(((InvokeVirtualExpr) u).accessor, accessor);
         }
     }
 

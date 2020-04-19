@@ -1,5 +1,8 @@
 package com.krakenrs.spade.ir.code;
 
+import java.util.List;
+import java.util.Objects;
+
 public abstract class CodeUnit {
     private static int codeUnitIds = 0;
 
@@ -25,6 +28,27 @@ public abstract class CodeUnit {
     public int hashCode() {
         // Position independent hash
         return opcode;
+    }
+
+    public abstract boolean equivalent(CodeUnit u);
+
+    public static boolean equivalent(CodeUnit u1, CodeUnit u2) {
+        Objects.requireNonNull(u1);
+        Objects.requireNonNull(u2);
+        return u1.equivalent(u2);
+    }
+
+    public static boolean equivalent(List<? extends CodeUnit> l1, List<? extends CodeUnit> l2) {
+        if (l1.size() != l2.size()) {
+            return false;
+        }
+        final int len = l1.size();
+        for (int i = 0; i < len; i++) {
+            if (!equivalent(l1.get(i), l2.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

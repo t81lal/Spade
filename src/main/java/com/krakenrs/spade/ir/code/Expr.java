@@ -37,4 +37,15 @@ public abstract class Expr extends CodeUnit {
         // hashCode of two expressions that are matching/equivalent are the same.
         return Objects.hash(super.hashCode(), type);
     }
+
+    @Override
+    public boolean equivalent(CodeUnit u) {
+        Objects.requireNonNull(u);
+
+        if (!getClass().equals(u.getClass())) {
+            return false;
+        }
+
+        return Objects.equals(type, ((Expr) u).type);
+    }
 }

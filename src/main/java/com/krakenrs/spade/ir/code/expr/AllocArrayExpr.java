@@ -3,6 +3,7 @@ package com.krakenrs.spade.ir.code.expr;
 import java.util.List;
 import java.util.Objects;
 
+import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
@@ -24,5 +25,10 @@ public class AllocArrayExpr extends Expr {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), bounds);
+    }
+
+    @Override
+    public boolean equivalent(CodeUnit u) {
+        return super.equivalent(u) && equivalent(((AllocArrayExpr) u).bounds, bounds);
     }
 }
