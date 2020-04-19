@@ -1,4 +1,4 @@
-package com.krakenrs.spade.ir.code.vis;
+package com.krakenrs.spade.ir.code.visitor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
