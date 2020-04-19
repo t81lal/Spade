@@ -2,7 +2,7 @@ image: maven:3.6-jdk-11
 
 stages:
   - build
-  - package
+  - test
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
@@ -16,9 +16,11 @@ build:
   script:
     - mvn --batch-mode compile
 
-package:
-  stage: package
+test:
+  stage: test
   script:
-    - mvn --batch-mode package -DskipTests
+    - mvn --batch-mode test
   artifacts:
-    paths:
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
