@@ -35,7 +35,7 @@ public class DominatorComputerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "dom1", "dom2", "dom3" })
+    @ValueSource(strings = { "dom1", "dom2", "dom3", "ladder" })
     void test(String fileName) throws Exception {
         var expectedDomTree = createChecker("dominator/" + fileName + "_domtree.g", DominatorVertex::new, Edge::new)
                 .createGraph();
