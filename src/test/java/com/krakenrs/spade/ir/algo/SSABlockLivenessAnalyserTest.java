@@ -17,6 +17,7 @@ import com.krakenrs.spade.commons.collections.graph.TestVertex;
 import com.krakenrs.spade.commons.collections.graph.Vertex;
 import com.krakenrs.spade.ir.IRSource;
 import com.krakenrs.spade.ir.code.CodeBlock;
+import com.krakenrs.spade.ir.code.CodePrinter;
 import com.krakenrs.spade.ir.code.ControlFlowGraph;
 import com.krakenrs.spade.ir.code.FlowEdge;
 import com.krakenrs.spade.ir.value.Local;
@@ -39,8 +40,13 @@ public class SSABlockLivenessAnalyserTest {
     @ParameterizedTest
     @IRSource(classes = { SSABlockLivenessAnalyserTest.class }, methodNames = { "myMethod" })
     void test1(ControlFlowGraph cfg) throws Exception {
-        //        System.out.println(CodePrinter.toString(cfg));
+        System.out.println(CodePrinter.toString(cfg));
         var analyser = new SSABlockLivenessAnalyser(cfg);
+        for(var  b: cfg.getVertices()) {
+            System.out.println(b.id());
+            System.out.println(analyser.getLiveIn(b));
+            System.out.println(analyser.getLiveOut(b));
+        }
         var g2 = makeLivenessGraph(cfg, analyser);
         var checker = createChecker("liveness/myMethod.g", LivenessBlock::new, Edge::new);
         checker.verify(PropTime.POST, g2, varParser);
