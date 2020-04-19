@@ -51,10 +51,6 @@ public class GraphAssertionChecker<V extends Vertex, E extends Edge<V>> {
     public Digraph<V, E> createGraph() {
         Digraph<V, E> graph = new Digraph<>();
 
-        for (V v : vertices) {
-            graph.addVertex(v);
-        }
-        
         for (E e : edges) {
             graph.addEdge(e);
         }
