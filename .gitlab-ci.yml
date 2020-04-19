@@ -3,7 +3,6 @@ image: maven:3.6-jdk-11
 stages:
   - build
   - package
-  - test
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
