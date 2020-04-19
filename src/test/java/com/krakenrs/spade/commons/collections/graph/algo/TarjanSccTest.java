@@ -1,9 +1,10 @@
 package com.krakenrs.spade.commons.collections.graph.algo;
 
+import com.krakenrs.spade.commons.collections.IdSupplier;
 import com.krakenrs.spade.commons.collections.graph.Digraph;
 import com.krakenrs.spade.commons.collections.graph.Edge;
 import com.krakenrs.spade.commons.collections.graph.TestVertex;
-import com.krakenrs.spade.commons.collections.graph.TestVertexSupplier;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +20,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TarjanSccTest {
-    private TestVertexSupplier vertexSupplier = new TestVertexSupplier();
+    private IdSupplier<TestVertex> vertexSupplier = new IdSupplier<>(TestVertex::new);
     private Supplier<Digraph<TestVertex, Edge<TestVertex>>> graphSupplier = Digraph::new;
 
     private static Edge<TestVertex> edge(int v1, int v2) {
