@@ -16,15 +16,6 @@ build:
   script:
     - mvn --batch-mode compile
 
-test:
-  stage: test
-  script:
-    - mvn --batch-mode test
-  artifacts:
-    reports:
-      junit:
-        - target/surefire-reports/TEST-*.xml
-
 package:
   stage: package
   script:
