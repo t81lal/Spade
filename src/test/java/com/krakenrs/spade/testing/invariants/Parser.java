@@ -33,6 +33,7 @@ import com.krakenrs.spade.testing.invariants.json.JsonNumber;
 import com.krakenrs.spade.testing.invariants.json.JsonObject;
 import com.krakenrs.spade.testing.invariants.json.JsonString;
 import com.krakenrs.spade.testing.invariants.json.JsonValue;
+import com.krakenrs.spade.testing.invariants.json.JsonVariable;
 
 public class Parser<V extends Vertex, E extends Edge<V>> {
 
@@ -66,12 +67,20 @@ public class Parser<V extends Vertex, E extends Edge<V>> {
 
     private final Function<Integer, V> vertexSupplier;
     private final BiFunction<V, V, E> edgeSupplier;
+    private final boolean allowVariables;
     private final Lexer lexer;
     
     public Parser(char[] chars, Function<Integer, V> vertexSupplier, BiFunction<V, V, E> edgeSupplier)
             throws ParsingException {
+        this(chars, vertexSupplier, edgeSupplier, false);
+    }
+
+    public Parser(char[] chars, Function<Integer, V> vertexSupplier, BiFunction<V, V, E> edgeSupplier,
+            boolean allowVariables)
+            throws ParsingException {
         this.vertexSupplier = vertexSupplier;
         this.edgeSupplier = edgeSupplier;
+        this.allowVariables = allowVariables;
 
         this.lexer = new Lexer(chars);
         this.lexer.next();
@@ -244,8 +253,12 @@ public class Parser<V extends Vertex, E extends Edge<V>> {
             } else if (lexeme.equals("null")) {
                 return new JsonNull();
             } else {
-                lexer.error("Unknown literal: " + lexeme);
-                return null;
+                if (allowVariables) {
+                    return new JsonVariable(lexeme);
+                } else {
+                    lexer.error("Unknown literal (variables are not enabled): '" + lexeme + "'");
+                    return null;
+                }
             }
         } else {
             lexer.error("Unexpected token: " + token);

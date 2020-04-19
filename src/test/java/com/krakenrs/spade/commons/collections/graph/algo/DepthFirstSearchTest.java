@@ -18,7 +18,8 @@ class DepthFirstSearchTest {
 
     static <V extends Vertex> GraphAssertionChecker<V, Edge<V>> createChecker(String fileName,
             Function<Integer, V> vertexCreator, BiFunction<V, V, Edge<V>> edgeCreator) throws Exception {
-        return GraphAssertionChecker.createChecker(DepthFirstSearchTest.class, fileName, vertexCreator, edgeCreator);
+        return GraphAssertionChecker.createChecker(DepthFirstSearchTest.class, fileName, vertexCreator, edgeCreator,
+                false);
     }
 
     class DfsVertex extends TestVertex {

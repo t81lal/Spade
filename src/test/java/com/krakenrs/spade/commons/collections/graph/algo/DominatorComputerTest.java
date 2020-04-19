@@ -22,7 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DominatorComputerTest {
     static <V extends Vertex> GraphAssertionChecker<V, Edge<V>> createChecker(String fileName,
             Function<Integer, V> vertexCreator, BiFunction<V, V, Edge<V>> edgeCreator) throws Exception {
-        return GraphAssertionChecker.createChecker(DominatorComputerTest.class, fileName, vertexCreator, edgeCreator);
+        return GraphAssertionChecker.createChecker(DominatorComputerTest.class, fileName, vertexCreator, edgeCreator,
+                false);
     }
 
     @ParameterizedTest

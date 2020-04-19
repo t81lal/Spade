@@ -11,10 +11,23 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
-import com.krakenrs.spade.testing.invariants.json.*;
+import com.krakenrs.spade.testing.invariants.json.JsonArray;
+import com.krakenrs.spade.testing.invariants.json.JsonBool;
+import com.krakenrs.spade.testing.invariants.json.JsonNumber;
+import com.krakenrs.spade.testing.invariants.json.JsonObject;
+import com.krakenrs.spade.testing.invariants.json.JsonString;
+import com.krakenrs.spade.testing.invariants.json.JsonValue;
+import com.krakenrs.spade.testing.invariants.json.JsonVariable;
 
 public class AssertionChecker {
+    private final Function<String, Object> variableMapping;
+
+    public AssertionChecker(Function<String, Object> variableMapping) {
+        this.variableMapping = variableMapping;
+    }
+
     abstract class AccessSelector {
         abstract Optional<Object> getValue(Object obj);
     }
@@ -172,6 +185,9 @@ public class AssertionChecker {
             case ARRAY:
                 verifyFromSpec(value, props);
                 break;
+            case VARIABLE:
+                assertEquals(getSubstitution(((JsonVariable) props).getAlias()), value);
+                break;
             case STRING:
                 assertEquals(((JsonString) props).getValue(), value);
                 break;
@@ -184,6 +200,14 @@ public class AssertionChecker {
             case NULL:
                 assertEquals(null, value);
                 break;
+        }
+    }
+
+    Object getSubstitution(String alias) {
+        if (variableMapping != null) {
+            return variableMapping.apply(alias);
+        } else {
+            throw new UnsupportedOperationException("No value for alias '" + alias + "'");
         }
     }
 

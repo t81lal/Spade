@@ -30,6 +30,9 @@ public class JsonFormatter {
             case ARRAY:
                 emit((JsonArray) value);
                 break;
+            case VARIABLE:
+                sb.append(((JsonVariable) value).getAlias());
+                break;
             case NUMBER:
                 sb.append(value.toString());
                 break;

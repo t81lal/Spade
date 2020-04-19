@@ -63,11 +63,15 @@ public class GraphAssertionChecker<V extends Vertex, E extends Edge<V>> {
     }
 
     public void verify(PropTime time, Digraph<V, E> graph) {
-        verify(time, graph, true);
+        verify(time, graph, null);
     }
 
-    public List<String> verify(PropTime time, Digraph<V, E> graph, boolean junitFail) {
-        AssertionChecker checker = new AssertionChecker();
+    public void verify(PropTime time, Digraph<V, E> graph, Function<String, Object> variableMapping) {
+        verify(time, graph, true, variableMapping);
+    }
+
+    public List<String> verify(PropTime time, Digraph<V, E> graph, boolean junitFail, Function<String, Object> variableMapping) {
+        AssertionChecker checker = new AssertionChecker(variableMapping);
         checker.verify(vertexProps.get(time), graph.getVertices());
         checker.verify(edgeProps.get(time), graph.getEdges());
 
@@ -81,12 +85,13 @@ public class GraphAssertionChecker<V extends Vertex, E extends Edge<V>> {
 
     public static <V extends Vertex> GraphAssertionChecker<V, Edge<V>> createChecker(Class<?> relativeClass,
             String fileName,
-            Function<Integer, V> vertexCreator, BiFunction<V, V, Edge<V>> edgeCreator) throws Exception {
+            Function<Integer, V> vertexCreator, BiFunction<V, V, Edge<V>> edgeCreator,
+            boolean allowVariables) throws Exception {
         Parser<V, Edge<V>> parser = new Parser<>(String
                 .join("\n",
                         Files.readAllLines(
                                 new File(relativeClass.getResource(fileName).getPath()).toPath()))
-                .toCharArray(), vertexCreator, edgeCreator);
+                .toCharArray(), vertexCreator, edgeCreator, allowVariables);
         return parser.parse();
     }
 }
