@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodeUnit;
+import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
@@ -23,6 +24,11 @@ public class JumpSwitchStmt extends Stmt {
         this.expr = expr;
         this.cases = Collections.unmodifiableMap(cases);
         this.defaultCase = defaultCase;
+    }
+
+    @Override
+    public void accept(CodeVisitor vis) {
+        vis.visitJumpSwichStmt(this);
     }
 
     public ValueExpr<?> expr() {

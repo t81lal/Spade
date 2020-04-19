@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodeUnit;
+import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 
@@ -14,6 +15,11 @@ public class JumpUncondStmt extends Stmt {
     public JumpUncondStmt(CodeBlock target) {
         super(Opcodes.JUMP_UNCOND);
         this.target = target;
+    }
+
+    @Override
+    public void accept(CodeVisitor vis) {
+        vis.visitJumpUncondStmt(this);
     }
 
     public CodeBlock target() {

@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodeUnit;
+import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
@@ -33,6 +34,11 @@ public class JumpCondStmt extends Stmt {
         this.rhs = rhs;
         this.mode = mode;
         this.target = target;
+    }
+
+    @Override
+    public void accept(CodeVisitor vis) {
+        vis.visitJumpCondStmt(this);
     }
 
     public ValueExpr<?> lhs() {

@@ -3,6 +3,7 @@ package com.krakenrs.spade.ir.code.stmt;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
+import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
@@ -20,6 +21,11 @@ public class MonitorStmt extends Stmt {
         super(Opcodes.MONITOR);
         this.var = var;
         this.mode = mode;
+    }
+
+    @Override
+    public void accept(CodeVisitor vis) {
+        vis.visitMonitorStmt(this);
     }
 
     public LoadLocalExpr var() {

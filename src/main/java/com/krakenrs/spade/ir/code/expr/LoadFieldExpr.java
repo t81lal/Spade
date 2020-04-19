@@ -3,6 +3,7 @@ package com.krakenrs.spade.ir.code.expr;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
+import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
@@ -18,6 +19,11 @@ public abstract class LoadFieldExpr extends Expr {
         super(Opcodes.LOAD_FIELD, fieldType);
         this.owner = owner;
         this.name = name;
+    }
+
+    @Override
+    public void accept(CodeVisitor vis) {
+        vis.visitLoadFieldExpr(this);
     }
 
     public ClassType owner() {

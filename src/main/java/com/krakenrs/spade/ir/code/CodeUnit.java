@@ -24,6 +24,8 @@ public abstract class CodeUnit {
         return opcode;
     }
 
+    public abstract void accept(CodeVisitor vis);
+
     @Override
     public int hashCode() {
         // Position independent hash

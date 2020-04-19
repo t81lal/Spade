@@ -3,6 +3,7 @@ package com.krakenrs.spade.ir.code.stmt;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
+import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
@@ -14,6 +15,11 @@ public class ThrowStmt extends Stmt {
     public ThrowStmt(LoadLocalExpr var) {
         super(Opcodes.THROW);
         this.var = var;
+    }
+
+    @Override
+    public void accept(CodeVisitor vis) {
+        vis.visitThrowStmt(this);
     }
 
     public LoadLocalExpr var() {

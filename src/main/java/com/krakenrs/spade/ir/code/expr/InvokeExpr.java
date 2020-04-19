@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
+import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
@@ -31,6 +32,11 @@ public abstract class InvokeExpr extends Expr {
         this.methodType = methodType;
         this.mode = mode;
         this.arguments = Collections.unmodifiableList(arguments);
+    }
+
+    @Override
+    public void accept(CodeVisitor vis) {
+        vis.visitInvokeExpr(this);
     }
 
     public ClassType owner() {

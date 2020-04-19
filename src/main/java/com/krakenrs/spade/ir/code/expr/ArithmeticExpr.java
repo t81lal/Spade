@@ -3,6 +3,7 @@ package com.krakenrs.spade.ir.code.expr;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
+import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
@@ -42,6 +43,11 @@ public class ArithmeticExpr extends Expr {
         this.operation = operation;
         this.lhs = lhs;
         this.rhs = rhs;
+    }
+
+    @Override
+    public void accept(CodeVisitor vis) {
+        vis.visitArithmeticExpr(this);
     }
 
     public Operation op() {

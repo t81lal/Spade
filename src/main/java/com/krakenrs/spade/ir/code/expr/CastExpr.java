@@ -3,6 +3,7 @@ package com.krakenrs.spade.ir.code.expr;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
+import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
@@ -14,6 +15,11 @@ public class CastExpr extends Expr {
     public CastExpr(ValueType type, LoadLocalExpr var) {
         super(Opcodes.CAST, type);
         this.var = var;
+    }
+
+    @Override
+    public void accept(CodeVisitor vis) {
+        vis.visitCastExpr(this);
     }
 
     public LoadLocalExpr var() {

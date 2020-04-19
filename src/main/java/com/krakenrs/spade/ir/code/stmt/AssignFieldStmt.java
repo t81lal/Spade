@@ -3,6 +3,7 @@ package com.krakenrs.spade.ir.code.stmt;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
+import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
@@ -23,6 +24,11 @@ public abstract class AssignFieldStmt extends Stmt {
         this.name = name;
         this.fieldType = fieldType;
         this.value = value;
+    }
+
+    @Override
+    public void accept(CodeVisitor vis) {
+        vis.visitAssignFieldStmt(this);
     }
 
     public ClassType owner() {

@@ -7,6 +7,7 @@ public interface Opcodes {
     int ASSIGN_CATCH = 0x10004;
     int ASSIGN_ARRAY = 0x10008;
     int ASSIGN_FIELD = 0x10010;
+    int ASSIGN_PHI   = 0x10020;
 
     int JUMP_COND   = 0x20001;
     int JUMP_UNCOND = 0x20002;

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
+import com.krakenrs.spade.ir.code.CodeVisitor;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
@@ -16,6 +17,11 @@ public class AllocArrayExpr extends Expr {
     public AllocArrayExpr(ArrayType type, List<ValueExpr<?>> bounds) {
         super(Opcodes.ALLOCARR, type);
         this.bounds = bounds;
+    }
+
+    @Override
+    public void accept(CodeVisitor vis) {
+        vis.visitAllocArrayExpr(this);
     }
 
     public List<ValueExpr<?>> bounds() {
