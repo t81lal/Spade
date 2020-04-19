@@ -80,10 +80,10 @@ import com.krakenrs.spade.ir.type.ValueType;
 import com.krakenrs.spade.ir.value.Constant;
 import com.krakenrs.spade.ir.value.Local;
 
-public class ASMGenerator {
+public class AsmGenerator {
 
-    public static ControlFlowGraph run(ASMGenerationCtx ctx) {
-        ASMGenerationState state = new ASMGenerationState(ctx);
+    public static ControlFlowGraph run(AsmGenerationCtx ctx) {
+        AsmGenerationState state = new AsmGenerationState(ctx);
 
         state.generateEntry();
         state.generateHandlers();
@@ -98,8 +98,8 @@ public class ASMGenerator {
         return state.graph;
     }
 
-    static class ASMGenerationState {
-        final ASMGenerationCtx ctx;
+    static class AsmGenerationState {
+        final AsmGenerationCtx ctx;
 
         final Set<CodeBlock> finished;
         final Set<CodeBlock> stacks;
@@ -115,7 +115,7 @@ public class ASMGenerator {
         
         final ControlFlowGraph graph;
 
-        ASMGenerationState(ASMGenerationCtx ctx) {
+        AsmGenerationState(AsmGenerationCtx ctx) {
             this.ctx = ctx;
 
             this.finished = new HashSet<>();
@@ -177,7 +177,7 @@ public class ASMGenerator {
             if (block == null)
                 return;
             
-            ASMInterpCtx interpCtx = new ASMInterpCtx(block, inputStacks.get(block).copy());
+            AsmInterpCtx interpCtx = new AsmInterpCtx(block, inputStacks.get(block).copy());
 
             InsnList insns = ctx.getMethod().instructions;
             for (int i = insns.indexOf(label) + 1, codeLen = insns.size(); i < codeLen; i++) {
@@ -196,14 +196,14 @@ public class ASMGenerator {
             updateSuccessorStacks(interpCtx);
         }
 
-        void updateSuccessorStacks(ASMInterpCtx interpCtx) {
+        void updateSuccessorStacks(AsmInterpCtx interpCtx) {
             // graph.getEdgeStream(interpCtx.block, FlowEdge.Kind.IMMEDIATE)
             graph.getEdges(interpCtx.block).forEach(e -> {
                 updateTargetStack(interpCtx, e.getDestination());
             });
         }
 
-        boolean updateTransitions(ASMInterpCtx interpCtx, InsnList insns, int codeIndex, AbstractInsnNode insn) {
+        boolean updateTransitions(AsmInterpCtx interpCtx, InsnList insns, int codeIndex, AbstractInsnNode insn) {
             int opcode = insn.getOpcode(), type = insn.getType();
             switch (type) {
                 case AbstractInsnNode.LABEL: {
@@ -281,7 +281,7 @@ public class ASMGenerator {
             }
         }
 
-        void updateTargetStack(ASMInterpCtx interpCtx, CodeBlock target) {
+        void updateTargetStack(AsmInterpCtx interpCtx, CodeBlock target) {
             LocalStack currentStack = interpCtx.stack;
             if (!stacks.contains(target)) {
                 /* No input stack is set for the target block, just set it to the output
@@ -554,11 +554,11 @@ public class ASMGenerator {
             }
         }
 
-        class ASMInterpCtx {
+        class AsmInterpCtx {
             final CodeBlock block;
             final LocalStack stack;
 
-            ASMInterpCtx(CodeBlock block, LocalStack stack) {
+            AsmInterpCtx(CodeBlock block, LocalStack stack) {
                 this.block = block;
                 this.stack = stack;
             }

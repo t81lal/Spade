@@ -7,11 +7,11 @@ import org.objectweb.asm.tree.MethodNode;
 
 import com.krakenrs.spade.ir.type.TypeManager;
 
-public class ASMGenerationCtx extends GenerationCtx {
+public class AsmGenerationCtx extends GenerationCtx {
 
     private final MethodNode method;
 
-    public ASMGenerationCtx(TypeManager typeManager, ClassNode klass, MethodNode method) {
+    public AsmGenerationCtx(TypeManager typeManager, ClassNode klass, MethodNode method) {
         super(typeManager, typeManager.asClassType(klass.name), typeManager.asMethodType(method.desc),
                 Modifier.isStatic(method.access));
         this.method = method;

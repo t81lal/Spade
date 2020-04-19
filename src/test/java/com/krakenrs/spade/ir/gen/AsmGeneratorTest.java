@@ -13,14 +13,14 @@ import org.objectweb.asm.tree.MethodNode;
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodePrinter;
 import com.krakenrs.spade.ir.code.ControlFlowGraph;
-import com.krakenrs.spade.ir.gen.ASMGenerator.ASMGenerationState;
-import com.krakenrs.spade.ir.gen.ASMGenerator.ASMGenerationState.ASMInterpCtx;
+import com.krakenrs.spade.ir.gen.AsmGenerator.AsmGenerationState;
+import com.krakenrs.spade.ir.gen.AsmGenerator.AsmGenerationState.AsmInterpCtx;
 import com.krakenrs.spade.ir.gen.LocalStack.TypedLocal;
 import com.krakenrs.spade.ir.type.PrimitiveType;
 import com.krakenrs.spade.ir.type.ResolvingMockTypeManager;
 import com.krakenrs.spade.ir.value.Local;
 
-public class ASMGeneratorTest {
+public class AsmGeneratorTest {
 
     // Convenience for getting a context
     ControlFlowGraph cfg() throws IOException {
@@ -32,8 +32,8 @@ public class ASMGeneratorTest {
         for (MethodNode mn : cn.methods) {
             if (mn.name.equals(e.getMethodName())) {
 
-                ASMGenerationCtx gCtx = new ASMGenerationCtx(new ResolvingMockTypeManager(), cn, mn);
-                return ASMGenerator.run(gCtx);
+                AsmGenerationCtx gCtx = new AsmGenerationCtx(new ResolvingMockTypeManager(), cn, mn);
+                return AsmGenerator.run(gCtx);
             }
         }
 
@@ -41,7 +41,7 @@ public class ASMGeneratorTest {
     }
 
     // Convenience for getting a context
-    ASMInterpCtx ctx() throws IOException {
+    AsmInterpCtx ctx() throws IOException {
         StackTraceElement e = new Exception().getStackTrace()[1];
         ClassReader cr = new ClassReader(e.getClassName());
         ClassNode cn = new ClassNode();
@@ -50,9 +50,9 @@ public class ASMGeneratorTest {
         for (MethodNode mn : cn.methods) {
             if (mn.name.equals(e.getMethodName())) {
 
-                ASMGenerationCtx gCtx = new ASMGenerationCtx(new ResolvingMockTypeManager(), cn, mn);
-                ASMGenerationState state = new ASMGenerationState(gCtx);
-                ASMInterpCtx ctx = state.new ASMInterpCtx(new CodeBlock(1), new LocalStack());
+                AsmGenerationCtx gCtx = new AsmGenerationCtx(new ResolvingMockTypeManager(), cn, mn);
+                AsmGenerationState state = new AsmGenerationState(gCtx);
+                AsmInterpCtx ctx = state.new AsmInterpCtx(new CodeBlock(1), new LocalStack());
 
                 return ctx;
             }
