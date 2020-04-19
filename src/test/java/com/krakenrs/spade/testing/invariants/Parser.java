@@ -13,8 +13,12 @@ import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.RBRACKET;
 import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.STRING_LIT;
 import static com.krakenrs.spade.testing.invariants.Lexer.TokenType.WORD;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -224,21 +228,25 @@ public class Parser<V extends Vertex, E extends Edge<V>> {
             return parseArray();
         } else if(token.equals(STRING_LIT)) {
             accept(STRING_LIT);
-            if(lexeme.equals("true")) {
-                return new JsonBool(true);
-            } else if(lexeme.equals("false")) {
-                return new JsonBool(false);
-            } else if(lexeme.equals("null")) {
-                return new JsonNull();
-            } else {
-                return new JsonString(lexeme);
-            }
+            return new JsonString(lexeme);
         } else if(token.equals(INT_LIT)) {
             accept(INT_LIT);
             return new JsonNumber(Integer.parseInt(lexeme));
         } else if(token.equals(FLOAT_LIT)) {
             accept(FLOAT_LIT);
             return new JsonNumber(Float.parseFloat(lexeme));
+        } else if (token.equals(WORD)) {
+            accept(WORD);
+            if (lexeme.equals("true")) {
+                return new JsonBool(true);
+            } else if (lexeme.equals("false")) {
+                return new JsonBool(false);
+            } else if (lexeme.equals("null")) {
+                return new JsonNull();
+            } else {
+                lexer.error("Unknown literal: " + lexeme);
+                return null;
+            }
         } else {
             lexer.error("Unexpected token: " + token);
             return null;
