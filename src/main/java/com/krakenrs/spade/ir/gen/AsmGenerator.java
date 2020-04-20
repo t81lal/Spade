@@ -34,6 +34,7 @@ import org.objectweb.asm.util.Printer;
 
 import com.krakenrs.spade.commons.collections.tuple.Tuple3.ImmutableTuple3;
 import com.krakenrs.spade.ir.code.CodeBlock;
+import com.krakenrs.spade.ir.code.CodePrinter;
 import com.krakenrs.spade.ir.code.ControlFlowGraph;
 import com.krakenrs.spade.ir.code.ExceptionRange;
 import com.krakenrs.spade.ir.code.Expr;
@@ -81,19 +82,18 @@ import com.krakenrs.spade.ir.value.Constant;
 import com.krakenrs.spade.ir.value.Local;
 
 public class AsmGenerator {
-
     public static ControlFlowGraph run(AsmGenerationCtx ctx) {
         AsmGenerationState state = new AsmGenerationState(ctx);
 
-        state.generateEntry();
-        state.generateHandlers();
-        state.processQueue();
-        state.ensureMarks();
+        ctx.executeStage("GenerateEntry", state::generateEntry);
+        ctx.executeStage("GenerateHandlers", state::generateHandlers);
+        ctx.executeStage("ProcessQueue", state::processQueue);
+        ctx.executeStage("EnsureMarks", state::ensureMarks);
         
-        List<CodeBlock> codeOrderedBlocks = state.getCodeOrderedBlocks();
-        
-        state.generateProtectedRanges(codeOrderedBlocks);
-        state.splitHandlers();
+        List<CodeBlock> codeOrderedBlocks = ctx.executeStage("GetOrderedBlocks", state::getCodeOrderedBlocks);
+
+        ctx.executeStage("GenerateProtectedRanges", () -> state.generateProtectedRanges(codeOrderedBlocks));
+        ctx.executeStage("SplitHandlers", state::splitHandlers);
 
         return state.graph;
     }
@@ -179,11 +179,14 @@ public class AsmGenerator {
             
             AsmInterpCtx interpCtx = new AsmInterpCtx(block, inputStacks.get(block).copy());
 
+            ctx.getLogger().debug(" Processing block {}", block.id());
+
             InsnList insns = ctx.getMethod().instructions;
             for (int i = insns.indexOf(label) + 1, codeLen = insns.size(); i < codeLen; i++) {
                 AbstractInsnNode insn = insns.get(i);
                 
                 if (insn.getOpcode() != -1) {
+                    ctx.getLogger().debug(" Executing: {}", Printer.OPCODES[insn.getOpcode()]);
                     interpCtx.execute(insn);
                 }
 
@@ -203,13 +206,18 @@ public class AsmGenerator {
             });
         }
 
+        void addEdge(FlowEdge e) {
+            ctx.getLogger().debug(" Edge: {}", e);
+            graph.addEdge(e);
+        }
+
         boolean updateTransitions(AsmInterpCtx interpCtx, InsnList insns, int codeIndex, AbstractInsnNode insn) {
             int opcode = insn.getOpcode(), type = insn.getType();
             switch (type) {
                 case AbstractInsnNode.LABEL: {
                     // Found a new label, blockify and enqueue
                     CodeBlock succ = getOrMakeBlock((LabelNode) insn);
-                    graph.addEdge(new ImmediateEdge(interpCtx.block, succ));
+                    addEdge(new ImmediateEdge(interpCtx.block, succ));
                     return true;
                 }
                 case AbstractInsnNode.JUMP_INSN: {
@@ -217,9 +225,9 @@ public class AsmGenerator {
                     if(opcode == Opcodes.JSR) {
                         throw new UnsupportedOperationException();
                     } else if(opcode == Opcodes.GOTO) {
-                        graph.addEdge(new JumpEdge(interpCtx.block, target, FlowEdge.Kind.UNCONDITIONAL));
+                        addEdge(new JumpEdge(interpCtx.block, target, FlowEdge.Kind.UNCONDITIONAL));
                     } else {
-                        graph.addEdge(new JumpEdge(interpCtx.block, target, FlowEdge.Kind.CONDITIONAL));
+                        addEdge(new JumpEdge(interpCtx.block, target, FlowEdge.Kind.CONDITIONAL));
 
                         // We need a fall through label for the false branch. If it doesn't exist for some reason
                         // e.g. there are no jump offsets that target it, then we create a block at this point.
@@ -230,7 +238,7 @@ public class AsmGenerator {
                             nextInsn = immediateLabel;
                         }
                         CodeBlock immediateSucc = getOrMakeBlock((LabelNode) nextInsn);
-                        graph.addEdge(new ImmediateEdge(interpCtx.block, immediateSucc));
+                        addEdge(new ImmediateEdge(interpCtx.block, immediateSucc));
                     }
                     return true;
                 }
@@ -238,20 +246,20 @@ public class AsmGenerator {
                     LookupSwitchInsnNode lsin = (LookupSwitchInsnNode) insn;
                     for (int i = 0; i < lsin.keys.size(); i++) {
                         CodeBlock target = getOrMakeBlock(lsin.labels.get(i));
-                        graph.addEdge(new SwitchEdge(interpCtx.block, target, lsin.keys.get(i)));
+                        addEdge(new SwitchEdge(interpCtx.block, target, lsin.keys.get(i)));
                     }
                     CodeBlock defaultTarget = getOrMakeBlock(lsin.dflt);
-                    graph.addEdge(new DefaultEdge(interpCtx.block, defaultTarget));
+                    addEdge(new DefaultEdge(interpCtx.block, defaultTarget));
                     return true;
                 }
                 case AbstractInsnNode.TABLESWITCH_INSN: {
                     TableSwitchInsnNode tsin = (TableSwitchInsnNode) insn;
                     for (int i = tsin.min; i <= tsin.max; i++) {
                         CodeBlock target = getOrMakeBlock(tsin.labels.get(i - tsin.min));
-                        graph.addEdge(new SwitchEdge(interpCtx.block, target, i));
+                        addEdge(new SwitchEdge(interpCtx.block, target, i));
                     }
                     CodeBlock defaultTarget = getOrMakeBlock(tsin.dflt);
-                    graph.addEdge(new DefaultEdge(interpCtx.block, defaultTarget));
+                    addEdge(new DefaultEdge(interpCtx.block, defaultTarget));
                     return true;
                 }
                 default: {
@@ -356,7 +364,7 @@ public class AsmGenerator {
             LabelNode initialCodeLabel = getInitialLabel();
             CodeBlock initialCodeBlock = getOrMakeBlock(initialCodeLabel);
             setInputStack(initialCodeBlock, new LocalStack(16));
-            graph.addEdge(new ImmediateEdge(entryBlock, initialCodeBlock));
+            addEdge(new ImmediateEdge(entryBlock, initialCodeBlock));
         }
 
         void generateParameters(CodeBlock block) {
@@ -437,7 +445,7 @@ public class AsmGenerator {
             ExceptionRange erange = getOrCreateRange(order, handlerBlock, ctx.getTypeManager().asClassType(tc.type),
                     key);
 
-            range.forEach(block -> graph.addEdge(new ExceptionEdge(block, erange.handler(), erange)));
+            range.forEach(block -> addEdge(new ExceptionEdge(block, erange.handler(), erange)));
         }
 
         void generateProtectedRanges(List<CodeBlock> order) {
@@ -491,7 +499,7 @@ public class AsmGenerator {
             for(FlowEdge e : graph.getReverseEdges(oldHandler)) {
                 if(e.kind().equals(FlowEdge.Kind.EXCEPTION)) {
                     ExceptionEdge ee = (ExceptionEdge) e;
-                    graph.addEdge(new ExceptionEdge(e.getSource(), newHandler, ee.range()));
+                    addEdge(new ExceptionEdge(e.getSource(), newHandler, ee.range()));
                     graph.removeEdge(e);
                 }
             }
@@ -538,7 +546,7 @@ public class AsmGenerator {
                 redirectExceptions(realHandler, newHandler);
 
                 // Connect decapitated head so that it flows into the catch body
-                graph.addEdge(new ImmediateEdge(realHandler, newHandler));
+                addEdge(new ImmediateEdge(realHandler, newHandler));
             }
 
             /* Protected ranges and handlers may be nested inside of other protected ranges, so we need to
@@ -591,6 +599,7 @@ public class AsmGenerator {
             
             void addStmt(Stmt stmt) {
                 block.appendStmt(stmt);
+                ctx.getLogger().debug("    Stmt: {}", CodePrinter.toString(stmt));
             }
 
             void _push(Expr e) {
@@ -608,6 +617,8 @@ public class AsmGenerator {
                 // Generate svarY = e for stack size Y
                 addStmt(new AssignLocalStmt(nextSvar, e));
                 stack.push(new TypedLocal(nextSvar, e.type()));
+
+                ctx.getLogger().debug("    FinalStack: {}", stack);
             }
 
             LoadLocalExpr pop() {
@@ -745,7 +756,8 @@ public class AsmGenerator {
             }
 
             void _dup() {
-                push(pop());
+                TypedLocal topE = stack.peek();
+                push(new LoadLocalExpr(topE.getB(), topE.getA()));
             }
 
             void _dup2() {
