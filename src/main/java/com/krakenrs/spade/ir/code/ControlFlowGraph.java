@@ -58,4 +58,12 @@ public class ControlFlowGraph extends Digraph<CodeBlock, FlowEdge> {
         Objects.requireNonNull(range);
         ranges.add(range);
     }
+
+    public MethodType getMethodType() {
+        return methodType;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
+    }
 }
