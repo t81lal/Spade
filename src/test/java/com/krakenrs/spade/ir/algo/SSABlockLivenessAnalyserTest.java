@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import com.krakenrs.spade.commons.collections.graph.Digraph;
@@ -37,6 +38,7 @@ public class SSABlockLivenessAnalyserTest {
         return z;
     }
 
+    @Disabled
     @ParameterizedTest
     @IRSource(classes = { SSABlockLivenessAnalyserTest.class }, methodNames = { "myMethod" })
     void test1(ControlFlowGraph cfg) throws Exception {
