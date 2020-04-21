@@ -12,6 +12,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import com.krakenrs.spade.commons.collections.tuple.Tuple2;
+import com.krakenrs.spade.ir.algo.SSABlockLivenessAnalyser;
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodePrinter;
 import com.krakenrs.spade.ir.code.ControlFlowGraph;
@@ -178,5 +179,27 @@ public class AsmGeneratorTest {
             stack.push(tl[i]);
         }
         return stack;
+    }
+
+    public static void main(String[] args) throws IOException {
+        ClassReader cr = new ClassReader(AsmGeneratorTest.class.getName());
+        ClassNode cn = new ClassNode();
+        cr.accept(cn, 0);
+
+        for (MethodNode mn : cn.methods) {
+            if (mn.name.equals("myMethod")) {
+                AsmGenerationCtx gCtx = new AsmGenerationCtx(new ResolvingMockTypeManager(), cn, mn);
+                ControlFlowGraph cfg = AsmGenerator.run(gCtx);
+
+                System.out.println(CodePrinter.toString(cfg));
+                SSABlockLivenessAnalyser analyser = new SSABlockLivenessAnalyser(cfg);
+
+                for (CodeBlock block : cfg.getVertices()) {
+                    System.out.println(block.id());
+                    System.out.println(" in: " + analyser.getLiveIn(block));
+                    System.out.println(" out: " + analyser.getLiveOut(block));
+                }
+            }
+        }
     }
 }

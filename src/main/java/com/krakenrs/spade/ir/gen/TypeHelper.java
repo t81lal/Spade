@@ -120,7 +120,7 @@ public class TypeHelper implements org.objectweb.asm.Opcodes {
 
     public static ValueType getValueType(TypeManager types, Object cst) {
         if (cst == null) {
-            return types.asClassType(Object.class).asValueType();
+            throw new NullPointerException();
         } else if (cst instanceof String) {
             return types.asClassType(String.class).asValueType();
         } else if (cst instanceof Character) {
@@ -140,7 +140,7 @@ public class TypeHelper implements org.objectweb.asm.Opcodes {
         } else if (cst instanceof org.objectweb.asm.Type) {
             org.objectweb.asm.Type asmType = (org.objectweb.asm.Type) cst;
             int sort = asmType.getSort();
-            throw new UnsupportedOperationException(asmType.toString() + " :" + sort);
+            throw new UnsupportedOperationException(cst + " :: " + asmType.toString() + " | " + sort);
         } else {
             throw new UnsupportedOperationException(cst.getClass().getName());
         }

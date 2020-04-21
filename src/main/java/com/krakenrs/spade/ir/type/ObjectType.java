@@ -11,6 +11,10 @@ public class ObjectType implements ValueType {
         this.classType = requireNonNull(classType);
     }
 
+    protected ObjectType() {
+        this.classType = null;
+    }
+
     public ClassType getClassType() {
         return classType;
     }
@@ -42,23 +46,5 @@ public class ObjectType implements ValueType {
     @Override
     public int hashCode() {
         return Objects.hash(classType);
-    }
-
-    public static class NullType extends ObjectType {
-        public static final NullType INSTANCE = new NullType();
-
-        public NullType() {
-            super(null);
-        }
-
-        @Override
-        public String toString() {
-            return "null";
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return o == this;
-        }
     }
 }

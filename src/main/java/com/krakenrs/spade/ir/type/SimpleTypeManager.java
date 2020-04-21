@@ -3,7 +3,12 @@ package com.krakenrs.spade.ir.type;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SimpleTypeManager extends TypeManager {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleTypeManager.class);
+
     @Override
     protected ClassType findClassType(String name) {
         try {
@@ -15,7 +20,7 @@ public class SimpleTypeManager extends TypeManager {
             }
             return new ResolvedClassType(name, sT, iTs);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            LOGGER.error("", e);
             return new UnresolvedClassType(name);
         }
     }

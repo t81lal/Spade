@@ -15,11 +15,13 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.IincInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.IntInsnNode;
+import org.objectweb.asm.tree.InvokeDynamicInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LdcInsnNode;
@@ -75,7 +77,6 @@ import com.krakenrs.spade.ir.gen.LocalStack.TypedLocal;
 import com.krakenrs.spade.ir.type.ArrayType;
 import com.krakenrs.spade.ir.type.ClassType;
 import com.krakenrs.spade.ir.type.MethodType;
-import com.krakenrs.spade.ir.type.ObjectType.NullType;
 import com.krakenrs.spade.ir.type.PrimitiveType;
 import com.krakenrs.spade.ir.type.ValueType;
 import com.krakenrs.spade.ir.value.Constant;
@@ -179,14 +180,14 @@ public class AsmGenerator {
             
             AsmInterpCtx interpCtx = new AsmInterpCtx(block, inputStacks.get(block).copy());
 
-            ctx.getLogger().debug(" Processing block {}", block.id());
+            ctx.getLogger().trace(" Processing block {}", block.id());
 
             InsnList insns = ctx.getMethod().instructions;
             for (int i = insns.indexOf(label) + 1, codeLen = insns.size(); i < codeLen; i++) {
                 AbstractInsnNode insn = insns.get(i);
                 
                 if (insn.getOpcode() != -1) {
-                    ctx.getLogger().debug(" Executing: {}", Printer.OPCODES[insn.getOpcode()]);
+                    ctx.getLogger().trace(" Executing: {}", Printer.OPCODES[insn.getOpcode()]);
                     interpCtx.execute(insn);
                 }
 
@@ -207,7 +208,7 @@ public class AsmGenerator {
         }
 
         void addEdge(FlowEdge e) {
-            ctx.getLogger().debug(" Edge: {}", e);
+            ctx.getLogger().trace(" Edge: {}", e);
             graph.addEdge(e);
         }
 
@@ -599,7 +600,7 @@ public class AsmGenerator {
             
             void addStmt(Stmt stmt) {
                 block.appendStmt(stmt);
-                ctx.getLogger().debug("    Stmt: {}", CodePrinter.toString(stmt));
+                ctx.getLogger().trace("    Stmt: {}", CodePrinter.toString(stmt));
             }
 
             void _push(Expr e) {
@@ -618,7 +619,7 @@ public class AsmGenerator {
                 addStmt(new AssignLocalStmt(nextSvar, e));
                 stack.push(new TypedLocal(nextSvar, e.type()));
 
-                ctx.getLogger().debug("    FinalStack: {}", stack);
+                ctx.getLogger().trace("    FinalStack: {}", stack);
             }
 
             LoadLocalExpr pop() {
@@ -694,7 +695,7 @@ public class AsmGenerator {
 
             void _jmp_null(CodeBlock target, boolean eq) {
                 JumpCondStmt.Mode mode = eq ? JumpCondStmt.Mode.EQ : JumpCondStmt.Mode.NE;
-                _jmp_cmp(target, mode, pop(), new LoadConstExpr<>(new Constant<>(null, NullType.INSTANCE)));
+                _jmp_cmp(target, mode, pop(), new LoadConstExpr<>(new Constant<>(null, PrimitiveType.NULL)));
             }
 
             void _switch(Map<Integer, CodeBlock> cases, CodeBlock defaultTarget) {
@@ -858,7 +859,7 @@ public class AsmGenerator {
                         _const((short) ((IntInsnNode) insn).operand, PrimitiveType.SHORT);
                         break;
                     case Opcodes.ACONST_NULL:
-                        _const(null, NullType.INSTANCE);
+                        _const(null, PrimitiveType.NULL);
                         break;
                     case Opcodes.ICONST_M1:
                     case Opcodes.ICONST_0:
@@ -884,7 +885,23 @@ public class AsmGenerator {
                         break;
                     case Opcodes.LDC: {
                         Object cst = ((LdcInsnNode) insn).cst;
-                        _const(cst, TypeHelper.getValueType(ctx.getTypeManager(), cst));
+                        if (cst instanceof Type) {
+                            ValueType cstType;
+                            // ClassRef constant entry gets turned into:
+                            //  cst = ClassType(classRef)
+                            //  cstType = ObjectType(Class.class)
+                            Type refCst = (Type) cst;
+                            if (refCst.getSort() == Type.OBJECT) {
+                                cst = ctx.getTypeManager().asClassType(refCst.getClassName());
+                                cstType = ctx.getTypeManager().asClassType(Class.class).asValueType();
+                            } else {
+                                throw new UnsupportedOperationException(
+                                        cst + " :: " + refCst.toString() + " | " + refCst.getSort());
+                            }
+                            _const(cst, cstType);
+                        } else {
+                            _const(cst, TypeHelper.getValueType(ctx.getTypeManager(), cst));
+                        }
                         break;
                     }
                     case Opcodes.LCMP:
@@ -1186,6 +1203,12 @@ public class AsmGenerator {
                         MethodInsnNode min = (MethodInsnNode) insn;
                         _callVirtual(TypeHelper.getInvokeExprMode(opcode), min.owner, min.name, min.desc);
                         break;
+                    }
+                    case Opcodes.INVOKEDYNAMIC: {
+                        InvokeDynamicInsnNode indy = (InvokeDynamicInsnNode) insn;
+                        ctx.getLogger().trace("Target: {} {}", indy.name, indy.desc);
+                        ctx.getLogger().trace("BSM: ", indy.bsm);
+                        ctx.getLogger().trace("BSM Static Args{}: {}", indy.bsmArgs.length, indy.bsmArgs);
                     }
                     default:
                         throw new UnsupportedOperationException(

@@ -32,20 +32,20 @@ public class GenerationCtx {
 
     public void executeStage(String name, Runnable r) {
         long startTime = System.nanoTime();
-        logger.debug("Executing {}", name);
+        logger.trace("Executing {}", name);
         r.run();
         long elapsedTime = System.nanoTime() - startTime;
         double elapsedMs = elapsedTime / 1000000D;
-        logger.debug(" took {}ms", elapsedMs);
+        logger.trace(" took {}ms", elapsedMs);
     }
 
     public <T> T executeStage(String name, Supplier<T> r) {
         long startTime = System.nanoTime();
-        logger.debug("Executing {}", name);
+        logger.trace("Executing {}", name);
         T res = r.get();
         long elapsedTime = System.nanoTime() - startTime;
         double elapsedMs = elapsedTime / 1000000D;
-        logger.debug(" took {}ms", elapsedMs);
+        logger.trace(" took {}ms", elapsedMs);
         return res;
     }
 

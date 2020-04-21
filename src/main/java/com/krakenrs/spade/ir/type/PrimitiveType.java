@@ -19,9 +19,10 @@ public final class PrimitiveType implements ValueType {
     public static final PrimitiveType CHAR = new PrimitiveType("C", 1);
     public static final PrimitiveType BOOLEAN = new PrimitiveType("Z", 1);
     public static final PrimitiveType VOID = new PrimitiveType("V", 0);
+    public static final PrimitiveType NULL = new PrimitiveType("null", 1);
 
     public static final Map<String, PrimitiveType> DESCRIPTORS = List
-            .of(LONG, DOUBLE, FLOAT, INT, SHORT, BYTE, CHAR, BOOLEAN, VOID).stream()
+            .of(LONG, DOUBLE, FLOAT, INT, SHORT, BYTE, CHAR, BOOLEAN, VOID, NULL).stream()
             .collect(Collectors.toUnmodifiableMap(PrimitiveType::getDescriptor, Function.identity()));
 
     private final String descriptor;
