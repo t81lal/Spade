@@ -19,19 +19,8 @@ import com.krakenrs.spade.ir.code.expr.LoadFieldExpr;
 import com.krakenrs.spade.ir.code.expr.LoadFieldExpr.LoadVirtualFieldExpr;
 import com.krakenrs.spade.ir.code.expr.NegateExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
-import com.krakenrs.spade.ir.code.stmt.AssignArrayStmt;
-import com.krakenrs.spade.ir.code.stmt.AssignCatchStmt;
-import com.krakenrs.spade.ir.code.stmt.AssignFieldStmt;
+import com.krakenrs.spade.ir.code.stmt.*;
 import com.krakenrs.spade.ir.code.stmt.AssignFieldStmt.AssignVirtualFieldStmt;
-import com.krakenrs.spade.ir.code.stmt.AssignLocalStmt;
-import com.krakenrs.spade.ir.code.stmt.AssignParamStmt;
-import com.krakenrs.spade.ir.code.stmt.ConsumeStmt;
-import com.krakenrs.spade.ir.code.stmt.JumpCondStmt;
-import com.krakenrs.spade.ir.code.stmt.JumpSwitchStmt;
-import com.krakenrs.spade.ir.code.stmt.JumpUncondStmt;
-import com.krakenrs.spade.ir.code.stmt.MonitorStmt;
-import com.krakenrs.spade.ir.code.stmt.ReturnStmt;
-import com.krakenrs.spade.ir.code.stmt.ThrowStmt;
 import com.krakenrs.spade.ir.type.ArrayType;
 import com.krakenrs.spade.ir.type.ObjectType;
 
@@ -253,6 +242,23 @@ public class CodePrinter implements Opcodes {
                 case ASSIGN_PARAM: {
                     AssignParamStmt aps = (AssignParamStmt) stmt;
                     return emit("@param ").emit(aps.var());
+                }
+                case ASSIGN_PHI: {
+                    AssignPhiStmt aps = (AssignPhiStmt) stmt;
+                    emit(aps.var()).emit(" = \u0278{");
+                    final var it = aps.arguments().entrySet().iterator();
+                    while (it.hasNext()) {
+                        final var entry = it.next();
+                        final var block = entry.getKey();
+                        final var local = entry.getValue();
+
+                        emit('L').emit(block.id()).emit(':').emit(local);
+
+                        if (it.hasNext()) {
+                            emit(", ");
+                        }
+                    }
+                    return emit("}");
                 }
                 case CONSUME: {
                     ConsumeStmt cs = (ConsumeStmt) stmt;
