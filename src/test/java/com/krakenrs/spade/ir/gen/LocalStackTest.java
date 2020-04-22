@@ -287,7 +287,7 @@ public class LocalStackTest {
     public void testToStringSingle() {
         var stack = new LocalStack();
         stack.push(item(1));
-        assertEquals("top->btm[svar1:I]", stack.toString());
+        assertEquals("top->btm[svar1_0:I]", stack.toString());
     }
 
     @Test
@@ -297,6 +297,6 @@ public class LocalStackTest {
         stack.push(item(1));
         stack.push(item(2));
         stack.push(item(2));
-        assertEquals("top->btm[svar1:D, svar1:D, svar1:I, svar1:I]", stack.toString());
+        assertEquals("top->btm[svar1_0:D, svar1_0:D, svar1_0:I, svar1_0:I]", stack.toString());
     }
 }

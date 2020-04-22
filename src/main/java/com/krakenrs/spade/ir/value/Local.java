@@ -8,11 +8,17 @@ public class Local extends AbstractValue {
 
     private final int index;
     private final boolean isStack;
+    private final int version;
 
-    public Local(int index, boolean isStack) {
+    public Local(int index, boolean isStack, int version) {
         super(Kind.LOCAL);
         this.index = index;
         this.isStack = isStack;
+        this.version = version;
+    }
+
+    public Local(int index, boolean isStack) {
+        this(index, isStack, 0);
     }
 
     public int index() {
@@ -23,9 +29,13 @@ public class Local extends AbstractValue {
         return isStack;
     }
 
+    public int version() {
+        return version;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(index, isStack);
+        return Objects.hash(index, isStack, version);
     }
 
     @Override
@@ -37,11 +47,11 @@ public class Local extends AbstractValue {
         if (getClass() != obj.getClass())
             return false;
         Local other = (Local) obj;
-        return other.index == index && other.isStack == isStack;
+        return other.index == index && other.isStack == isStack && other.version == version;
     }
 
     @Override
     public String toString() {
-        return (isStack ? "s" : "l") + "var" + index;
+        return String.format("%cvar%d_%d", isStack ? 's' : 'l', index, version);
     }
 }
