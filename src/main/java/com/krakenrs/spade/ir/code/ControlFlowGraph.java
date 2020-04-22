@@ -66,4 +66,8 @@ public class ControlFlowGraph extends Digraph<CodeBlock, FlowEdge> {
     public boolean isStatic() {
         return isStatic;
     }
+
+    public Set<ExceptionRange> getExceptionRanges() {
+        return ranges;
+    }
 }

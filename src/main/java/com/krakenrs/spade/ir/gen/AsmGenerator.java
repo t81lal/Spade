@@ -96,6 +96,9 @@ public class AsmGenerator {
         ctx.executeStage("GenerateProtectedRanges", () -> state.generateProtectedRanges(codeOrderedBlocks));
         ctx.executeStage("SplitHandlers", state::splitHandlers);
 
+        SsaPass ssa = new SsaPass(ctx);
+        ctx.executeStage("SsaTransform", ssa::doTransform);
+
         return state.graph;
     }
 
