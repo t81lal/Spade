@@ -5,7 +5,6 @@ import com.krakenrs.spade.commons.collections.graph.Edge;
 import com.krakenrs.spade.commons.collections.graph.TestVertex;
 import com.krakenrs.spade.commons.collections.graph.Vertex;
 import com.krakenrs.spade.ir.code.CodeBlock;
-import com.krakenrs.spade.ir.code.CodePrinter;
 import com.krakenrs.spade.ir.code.ControlFlowGraph;
 import com.krakenrs.spade.ir.code.FlowEdge;
 import com.krakenrs.spade.ir.code.expr.ArithmeticExpr;
@@ -28,7 +27,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class SSABlockLivenessAnalyserTest {
+public class SsaBlockLivenessAnalyserTest {
     static ControlFlowGraph getMyMethod() {
         var tm = new SimpleTypeManager();
         var cfg = new ControlFlowGraph(tm.asMethodType("(ZII)I"), true);
@@ -142,7 +141,7 @@ public class SSABlockLivenessAnalyserTest {
     @ParameterizedTest
     @MethodSource("tests")
     void test1(ControlFlowGraph cfg, String g) throws Exception {
-        var analyser = new SSABlockLivenessAnalyser(cfg);
+        var analyser = new SsaBlockLivenessAnalyser(cfg);
         var g2 = makeLivenessGraph(cfg, analyser);
         var checker = createChecker(g, LivenessBlock::new, Edge::new);
         checker.verify(PropTime.POST, g2, varParser);
@@ -150,12 +149,12 @@ public class SSABlockLivenessAnalyserTest {
 
     static <V extends Vertex> GraphAssertionChecker<V, Edge<V>> createChecker(String fileName,
             Function<Integer, V> vertexCreator, BiFunction<V, V, Edge<V>> edgeCreator) throws Exception {
-        return GraphAssertionChecker.createChecker(SSABlockLivenessAnalyserTest.class, fileName, vertexCreator,
+        return GraphAssertionChecker.createChecker(SsaBlockLivenessAnalyserTest.class, fileName, vertexCreator,
                 edgeCreator, true);
     }
     
     static Digraph<LivenessBlock, Edge<LivenessBlock>> makeLivenessGraph(ControlFlowGraph cfg,
-            SSABlockLivenessAnalyser analyser) {
+            SsaBlockLivenessAnalyser analyser) {
         // Assumes that the blocks in the cfg are ordered with ids starting from 0 and that
         // the generator is deterministic in the way it generates the block ids.
         //  in fact, we can use the orderHint which should represent the order of the blocks

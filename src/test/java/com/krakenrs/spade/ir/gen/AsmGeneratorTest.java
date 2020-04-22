@@ -6,13 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 
+import com.krakenrs.spade.ir.algo.SsaBlockLivenessAnalyser;
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import com.krakenrs.spade.commons.collections.tuple.Tuple2;
-import com.krakenrs.spade.ir.algo.SSABlockLivenessAnalyser;
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodePrinter;
 import com.krakenrs.spade.ir.code.ControlFlowGraph;
@@ -192,7 +192,7 @@ public class AsmGeneratorTest {
                 ControlFlowGraph cfg = AsmGenerator.run(gCtx);
 
                 System.out.println(CodePrinter.toString(cfg));
-                SSABlockLivenessAnalyser analyser = new SSABlockLivenessAnalyser(cfg);
+                SsaBlockLivenessAnalyser analyser = new SsaBlockLivenessAnalyser(cfg);
 
                 for (CodeBlock block : cfg.getVertices()) {
                     System.out.println(block.id());

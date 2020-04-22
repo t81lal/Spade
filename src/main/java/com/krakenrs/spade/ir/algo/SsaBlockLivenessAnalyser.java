@@ -21,7 +21,7 @@ import com.krakenrs.spade.ir.code.stmt.AssignPhiStmt;
 import com.krakenrs.spade.ir.code.stmt.DeclareLocalStmt;
 import com.krakenrs.spade.ir.value.Local;
 
-public class SSABlockLivenessAnalyser {
+public class SsaBlockLivenessAnalyser {
 
     private final ControlFlowGraph graph;
 
@@ -31,7 +31,7 @@ public class SSABlockLivenessAnalyser {
 
     private Queue<CodeBlock> queue;
 
-    public SSABlockLivenessAnalyser(ControlFlowGraph graph) {
+    public SsaBlockLivenessAnalyser(ControlFlowGraph graph) {
         this.graph = graph;
 
         Indexer<Local> localIndexer = CachingBitSetIndexer.newSequentialIndexer();
