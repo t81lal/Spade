@@ -21,6 +21,7 @@ public class SsaPass {
     private final Map<CodeBlock, Integer> insertion;
     private final Set<Local> locals;
     private final Map<CodeBlock, Integer> process;
+    private final Map<Local, ReachingDefinition> reachingDefs;
 
     private DominatorComputer<CodeBlock> dominator;
     private SsaBlockLivenessAnalyser liveness;
@@ -33,6 +34,7 @@ public class SsaPass {
         insertion = new LazyCreationHashMap<>(() -> 0);
         locals = new HashSet<>();
         process = new LazyCreationHashMap<>(() -> 0);
+        reachingDefs = new HashMap<>();
     }
 
     public void doTransform() {
@@ -131,5 +133,63 @@ public class SsaPass {
 
     private void rename() {
 
+    }
+
+    private void updateReachingDef(Local local, CodeBlock block, Stmt stmt) {
+        var rd = reachingDefs.get(local);
+        while (!(rd == null || dominates(rd, block, stmt))) {
+            rd = reachingDefs.get(local);
+        }
+        reachingDefs.put(local, rd);
+    }
+
+    private boolean dominates(ReachingDefinition rd, CodeBlock block, Stmt stmt) {
+        if (rd.block.equals(block)) {
+            return block.indexOf(rd.stmt) < block.indexOf(stmt);
+        } else {
+            return dominator.getDominates(rd.block).contains(block);
+        }
+    }
+
+    private static class ReachingDefinition {
+        private final Local var;
+        private final CodeBlock block;
+        private final Stmt stmt;
+
+        public ReachingDefinition(Local var, CodeBlock block, Stmt stmt) {
+            this.var = Objects.requireNonNull(var);
+            this.block = Objects.requireNonNull(block);
+            this.stmt = Objects.requireNonNull(stmt);
+
+            if (stmt.getBlock() != block) {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+            ReachingDefinition that = (ReachingDefinition) o;
+            return Objects.equals(var, that.var) &&
+                    Objects.equals(block, that.block) &&
+                    Objects.equals(stmt, that.stmt);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(var, block, stmt);
+        }
+
+        @Override
+        public String toString() {
+            return "ReachingDefinition{" +
+                    "var=" + var +
+                    ", block=" + block +
+                    ", stmt=" + stmt +
+                    '}';
+        }
     }
 }
