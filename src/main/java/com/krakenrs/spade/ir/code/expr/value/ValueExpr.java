@@ -33,11 +33,6 @@ public abstract class ValueExpr<T extends Value> extends Expr {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), value);
-    }
-
-    @Override
     public boolean equivalent(CodeUnit u) {
         if (super.equivalent(u)) {
             return Objects.equals(((ValueExpr<?>) u).value, value);

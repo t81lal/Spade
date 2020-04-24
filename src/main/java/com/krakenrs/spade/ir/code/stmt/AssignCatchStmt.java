@@ -27,11 +27,6 @@ public class AssignCatchStmt extends DeclareLocalStmt {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), type);
-    }
-
-    @Override
     public boolean equivalent(CodeUnit u) {
         return super.equivalent(u) && Objects.equals(((AssignCatchStmt) u).type, type);
     }

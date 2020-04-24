@@ -59,11 +59,6 @@ public class JumpCondStmt extends Stmt {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), lhs, rhs, mode, target);
-    }
-
-    @Override
     public boolean equivalent(CodeUnit u) {
         if (super.equivalent(u)) {
             JumpCondStmt jcs = (JumpCondStmt) u;

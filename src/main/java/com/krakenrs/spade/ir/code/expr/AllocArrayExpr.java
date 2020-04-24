@@ -1,7 +1,6 @@
 package com.krakenrs.spade.ir.code.expr;
 
 import java.util.List;
-import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
@@ -27,11 +26,6 @@ public class AllocArrayExpr extends Expr {
 
     public List<ValueExpr<?>> bounds() {
         return bounds;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), bounds);
     }
 
     @Override

@@ -64,11 +64,6 @@ public class ArithmeticExpr extends Expr {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), operation, lhs, rhs);
-    }
-
-    @Override
     public boolean equivalent(CodeUnit u) {
         if (super.equivalent(u)) {
             ArithmeticExpr ae = (ArithmeticExpr) u;

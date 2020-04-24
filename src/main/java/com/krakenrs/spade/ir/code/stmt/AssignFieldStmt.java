@@ -49,11 +49,6 @@ public abstract class AssignFieldStmt extends Stmt {
     }
 
     public abstract boolean isStatic();
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), owner, name, fieldType, value);
-    }
 
     @Override
     public boolean equivalent(CodeUnit u) {
@@ -93,11 +88,6 @@ public abstract class AssignFieldStmt extends Stmt {
         @Override
         public boolean isStatic() {
             return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(super.hashCode(), accessor);
         }
 
         @Override

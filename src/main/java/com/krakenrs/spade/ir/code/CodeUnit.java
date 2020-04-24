@@ -39,12 +39,6 @@ public abstract class CodeUnit {
         vis.visitAny(this);
     }
 
-    @Override
-    public int hashCode() {
-        // Position independent hash
-        return opcode;
-    }
-
     public abstract boolean equivalent(CodeUnit u);
 
     public static boolean equivalent(CodeUnit u1, CodeUnit u2) {
@@ -64,6 +58,11 @@ public abstract class CodeUnit {
             }
         }
         return true;
+    }
+
+    @Override
+    public final int hashCode() {
+        return id;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.krakenrs.spade.ir.code.stmt;
 
-import java.util.Objects;
-
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
@@ -36,11 +34,6 @@ public class AssignArrayStmt extends Stmt {
 
     public ValueExpr<?> value() {
         return value;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), array, index, value);
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.krakenrs.spade.ir.code.expr;
 
-import java.util.Objects;
-
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -33,11 +31,6 @@ public class LoadArrayExpr extends Expr {
 
     public ValueExpr<?> index() {
         return index;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), array, index);
     }
 
     @Override

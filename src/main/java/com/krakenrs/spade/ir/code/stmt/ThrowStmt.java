@@ -28,11 +28,6 @@ public class ThrowStmt extends Stmt {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), var);
-    }
-
-    @Override
     public boolean equivalent(CodeUnit u) {
         return super.equivalent(u) && Objects.equals(((ThrowStmt) u).var, var);
     }

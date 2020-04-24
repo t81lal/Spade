@@ -1,7 +1,5 @@
 package com.krakenrs.spade.ir.code.stmt;
 
-import java.util.Objects;
-
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -24,11 +22,6 @@ public class AssignLocalStmt extends DeclareLocalStmt {
 
     public Expr value() {
         return value;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), value);
     }
 
     @Override

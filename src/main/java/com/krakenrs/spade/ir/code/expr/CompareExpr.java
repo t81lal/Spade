@@ -53,11 +53,6 @@ public class CompareExpr extends Expr {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), lhs, rhs, operation);
-    }
-
-    @Override
     public boolean equivalent(CodeUnit u) {
         if (super.equivalent(u)) {
             CompareExpr ce = (CompareExpr) u;

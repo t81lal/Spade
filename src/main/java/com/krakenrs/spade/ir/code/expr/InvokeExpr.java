@@ -59,11 +59,6 @@ public abstract class InvokeExpr extends Expr {
     public Mode mode() {
         return mode;
     }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), owner, name, methodType, mode);
-    }
 
     @Override
     public boolean equivalent(CodeUnit u) {
@@ -91,11 +86,6 @@ public abstract class InvokeExpr extends Expr {
 
         public LoadLocalExpr accessor() {
             return accessor;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(super.hashCode(), accessor);
         }
 
         @Override

@@ -28,11 +28,6 @@ public class JumpUncondStmt extends Stmt {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), target);
-    }
-
-    @Override
     public boolean equivalent(CodeUnit u) {
         return super.equivalent(u) && Objects.equals(((JumpUncondStmt) u).target, target);
     }

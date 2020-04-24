@@ -38,11 +38,6 @@ public class MonitorStmt extends Stmt {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), var, mode);
-    }
-
-    @Override
     public boolean equivalent(CodeUnit u) {
         if (super.equivalent(u)) {
             MonitorStmt ms = (MonitorStmt) u;

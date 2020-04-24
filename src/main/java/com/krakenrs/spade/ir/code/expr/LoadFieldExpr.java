@@ -38,11 +38,6 @@ public abstract class LoadFieldExpr extends Expr {
     public abstract boolean isStatic();
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), owner, name);
-    }
-
-    @Override
     public boolean equivalent(CodeUnit u) {
         if (super.equivalent(u)) {
             LoadFieldExpr lfe = (LoadFieldExpr) u;
@@ -73,11 +68,6 @@ public abstract class LoadFieldExpr extends Expr {
 
         public LoadLocalExpr accessor() {
             return accessor;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(super.hashCode(), accessor);
         }
 
         @Override

@@ -29,11 +29,6 @@ public class AssignPhiStmt extends DeclareLocalStmt {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), arguments);
-    }
-
-    @Override
     public boolean equivalent(CodeUnit u) {
         return super.equivalent(u) && Objects.equals(((AssignPhiStmt) u).arguments, arguments);
     }

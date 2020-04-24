@@ -36,11 +36,6 @@ public class InstanceOfExpr extends Expr {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), var, checkType);
-    }
-
-    @Override
     public boolean equivalent(CodeUnit u) {
         if (super.equivalent(u)) {
             InstanceOfExpr ioe = (InstanceOfExpr) u;

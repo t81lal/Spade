@@ -45,11 +45,6 @@ public class JumpSwitchStmt extends Stmt {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), expr, cases, defaultCase);
-    }
-
-    @Override
     public boolean equivalent(CodeUnit u) {
         if (super.equivalent(u)) {
             JumpSwitchStmt jss = (JumpSwitchStmt) u;
