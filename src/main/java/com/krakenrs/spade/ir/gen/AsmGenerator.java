@@ -838,11 +838,11 @@ public class AsmGenerator {
 
             void _callVirtual(InvokeExpr.Mode mode, String owner, String name, String desc) {
                 MethodType type = ctx.getTypeManager().asMethodType(desc);
-                LoadLocalExpr instance = pop();
                 ValueExpr<?>[] args = new ValueExpr<?>[type.getParamTypes().size()];
                 for (int i = args.length - 1; i >= 0; i--) {
                     args[i] = pop();
                 }
+                LoadLocalExpr instance = pop();
                 ClassType ownerType = ctx.getTypeManager().asClassType(owner);
                 _pushInvoke(
                         new InvokeExpr.InvokeVirtualExpr(ownerType, name, type, mode, instance, Arrays.asList(args)));
