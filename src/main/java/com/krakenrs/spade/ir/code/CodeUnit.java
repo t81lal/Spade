@@ -39,6 +39,25 @@ public abstract class CodeUnit {
         vis.visitAny(this);
     }
 
+    protected void onChildChange() {
+    }
+
+    protected void addChild(Expr e) {
+        Objects.requireNonNull(e);
+        if(e.parent != null) {
+            throw new IllegalStateException(e + " is already linked to a parent CodeUnit");
+        }
+        e.setParent(this);
+    }
+
+    protected void removeChild(Expr e) {
+        Objects.requireNonNull(e);
+        if (e.parent == null || !this.equals(e.parent)) {
+            throw new IllegalStateException(e + " is not a child of " + this);
+        }
+        e.setParent(null);
+    }
+
     public abstract boolean equivalent(CodeUnit u);
 
     public static boolean equivalent(CodeUnit u1, CodeUnit u2) {

@@ -6,16 +6,21 @@ import com.krakenrs.spade.ir.type.ValueType;
 
 public abstract class Expr extends CodeUnit {
 
-    protected final ValueType type;
+    protected ValueType type;
     protected CodeUnit parent;
 
     public Expr(int opcode, ValueType type) {
         super(opcode);
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
     }
 
     public ValueType type() {
         return type;
+    }
+
+    public void setType(ValueType type) {
+        this.type = Objects.requireNonNull(type);
+        this.notifyParent();
     }
 
     public CodeUnit parent() {
@@ -24,6 +29,12 @@ public abstract class Expr extends CodeUnit {
 
     void setParent(CodeUnit parent) {
         this.parent = parent;
+    }
+
+    protected void notifyParent() {
+        if(parent != null) {
+            parent.onChildChange();
+        }
     }
 
     @Override

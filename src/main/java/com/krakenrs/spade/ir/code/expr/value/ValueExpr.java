@@ -10,7 +10,7 @@ import com.krakenrs.spade.ir.value.Value;
 
 public abstract class ValueExpr<T extends Value> extends Expr {
 
-    private final T value;
+    private T value;
 
     public ValueExpr(int opcode, ValueType type, T value) {
         super(opcode, type);
@@ -19,6 +19,18 @@ public abstract class ValueExpr<T extends Value> extends Expr {
 
     public T value() {
         return value;
+    }
+
+    public void setValue(T value) {
+        this.setValue(type(), value);
+    }
+
+    public void setValue(ValueType type, T value) {
+        // TODO: do real type checking here
+        this.value = Objects.requireNonNull(value);
+        this.type = Objects.requireNonNull(type);
+
+        notifyParent();
     }
 
     @Override

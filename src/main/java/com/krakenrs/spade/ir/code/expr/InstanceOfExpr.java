@@ -9,16 +9,22 @@ import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.PrimitiveType;
 import com.krakenrs.spade.ir.type.Type;
+import com.krakenrs.spade.ir.type.ValueType;
 
 public class InstanceOfExpr extends Expr {
 
-    private final LoadLocalExpr var;
-    private final Type checkType;
+    private LoadLocalExpr var;
+    private Type checkType;
 
     public InstanceOfExpr(LoadLocalExpr var, Type checkType) {
         super(Opcodes.INSTANCEOF, PrimitiveType.BOOLEAN);
         this.var = var;
         this.checkType = checkType;
+    }
+
+    @Override
+    public void setType(ValueType type) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -31,8 +37,21 @@ public class InstanceOfExpr extends Expr {
         return var;
     }
 
+    public void setVar(LoadLocalExpr var) {
+        Objects.requireNonNull(var);
+        removeChild(this.var);
+        this.var = var;
+        addChild(this.var);
+        notifyParent();
+    }
+
     public Type checkType() {
         return checkType;
+    }
+
+    public void setCheckType(Type checkType) {
+        this.checkType = checkType;
+        notifyParent();
     }
 
     @Override
