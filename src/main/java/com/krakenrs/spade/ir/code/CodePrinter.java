@@ -134,7 +134,7 @@ public class CodePrinter implements Opcodes {
             return emit("L").emit(block.id());
         }
 
-        Emitter emitExpr(Expr e) {
+        Emitter _emitExpr(Expr e) {
             switch (e.opcode()) {
                 case LOAD_CONST:
                 case LOAD_LOCAL: {
@@ -212,6 +212,10 @@ public class CodePrinter implements Opcodes {
                     throw new IllegalArgumentException("Opcode: " + e.opcode());
                 }
             }
+        }
+
+        Emitter emitExpr(Expr expr) {
+            return _emitExpr(expr).emit(" :: ").emit(expr.type());
         }
 
         Emitter emitStmt(Stmt stmt) {
