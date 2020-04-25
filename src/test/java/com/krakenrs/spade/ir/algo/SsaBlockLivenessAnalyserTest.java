@@ -66,8 +66,8 @@ public class SsaBlockLivenessAnalyserTest {
             cb2.appendStmt(new ConsumeStmt(
                     new InvokeExpr.InvokeVirtualExpr(tm.asClassType("java/io/PrintStream"), "println",
                             tm.asMethodType("(Z)V"), InvokeExpr.Mode.VIRTUAL,
-                            new LoadLocalExpr(tm.asValueType("I"), new Local(1, true)),
-                            List.of(new LoadLocalExpr(tm.asValueType("Ljava/io/PrintStream;"), new Local(0, true))))));
+                            new LoadLocalExpr(tm.asValueType("Ljava/io/PrintStream;"), new Local(0, true)),
+                            List.of(new LoadLocalExpr(tm.asValueType("I"), new Local(1, true))))));
             cfg.addVertex(cb2);
         }
 
@@ -120,12 +120,12 @@ public class SsaBlockLivenessAnalyserTest {
         }
 
         {
-            cfg.addEdge(new FlowEdge.ImmediateEdge(cb4, cb6));
-            cfg.addEdge(new FlowEdge.ImmediateEdge(cb1, cb2));
+            cfg.addEdge(new FlowEdge.ImmediateEdge(cb3, cb5));
             cfg.addEdge(new FlowEdge.JumpEdge(cb5, cb6, FlowEdge.Kind.UNCONDITIONAL));
             cfg.addEdge(new FlowEdge.ImmediateEdge(cb2, cb3));
+            cfg.addEdge(new FlowEdge.ImmediateEdge(cb1, cb2));
+            cfg.addEdge(new FlowEdge.ImmediateEdge(cb4, cb6));
             cfg.addEdge(new FlowEdge.JumpEdge(cb3, cb4, FlowEdge.Kind.CONDITIONAL));
-            cfg.addEdge(new FlowEdge.ImmediateEdge(cb3, cb5));
             cfg.addEdge(new FlowEdge.ImmediateEdge(cb0, cb1));
         }
 
