@@ -35,17 +35,14 @@ public class ArithmeticExpr extends Expr {
         }
     }
 
-    private Operation operation;
-    private ValueExpr<?> lhs, rhs;
+    private final Operation operation;
+    private final ValueExpr<?> lhs, rhs;
 
     public ArithmeticExpr(ValueType resultType, Operation operation, ValueExpr<?> lhs, ValueExpr<?> rhs) {
         super(Opcodes.ARITHMETIC, resultType);
-        this.operation = Objects.requireNonNull(operation);
-        this.lhs = Objects.requireNonNull(lhs);
-        this.rhs = Objects.requireNonNull(rhs);
-
-        addChild(lhs);
-        addChild(rhs);
+        this.operation = operation;
+        this.lhs = lhs;
+        this.rhs = rhs;
     }
 
     @Override
@@ -54,50 +51,16 @@ public class ArithmeticExpr extends Expr {
         vis.visitArithmeticExpr(this);
     }
 
-    @Override
-    public void setType(ValueType type) {
-        // TODO: figure out if this is a good idea
-        throw new UnsupportedOperationException();
-    }
-
     public Operation op() {
         return operation;
-    }
-
-    public void setOp(Operation operation) {
-        this.operation = Objects.requireNonNull(operation);
-        notifyParent();
     }
 
     public ValueExpr<?> lhs() {
         return lhs;
     }
 
-    public void setLhs(ValueExpr<?> lhs) {
-        checkArgType(lhs, rhs);
-        removeChild(this.lhs);
-        this.lhs = lhs;
-        addChild(lhs);
-        notifyParent();
-    }
-
     public ValueExpr<?> rhs() {
         return rhs;
-    }
-
-    public void setRhs(ValueExpr<?> rhs) {
-        checkArgType(rhs, lhs);
-        removeChild(this.rhs);
-        this.rhs = rhs;
-        addChild(rhs);
-        notifyParent();
-    }
-
-    private void checkArgType(ValueExpr<?> newArg, ValueExpr<?> otherArg) {
-        Objects.requireNonNull(newArg);
-        if (!newArg.type().equals(otherArg.type())) {
-            throw new IllegalArgumentException("Expected " + otherArg.type() + " but got " + newArg.type());
-        }
     }
 
     @Override

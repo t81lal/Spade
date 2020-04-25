@@ -8,13 +8,12 @@ import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ClassType;
-import com.krakenrs.spade.ir.type.ObjectType;
 import com.krakenrs.spade.ir.type.ValueType;
 
 public abstract class LoadFieldExpr extends Expr {
 
-    private ClassType owner;
-    private String name;
+    private final ClassType owner;
+    private final String name;
 
     public LoadFieldExpr(ClassType owner, String name, ValueType fieldType) {
         super(Opcodes.LOAD_FIELD, fieldType);
@@ -32,17 +31,8 @@ public abstract class LoadFieldExpr extends Expr {
         return owner;
     }
 
-    public void setOwner(ClassType owner) {
-        this.owner = owner;
-    }
-
     public String name() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-        notifyParent();
     }
 
     public abstract boolean isStatic();
@@ -69,31 +59,14 @@ public abstract class LoadFieldExpr extends Expr {
     }
 
     public static class LoadVirtualFieldExpr extends LoadFieldExpr {
-        private LoadLocalExpr accessor;
+        private final LoadLocalExpr accessor;
 
         public LoadVirtualFieldExpr(ClassType owner, String name, ValueType fieldType, LoadLocalExpr accessor) {
             super(owner, name, fieldType);
-            this.accessor = validateAccessor(accessor);
-            addChild(accessor);
+            this.accessor = accessor;
         }
 
         public LoadLocalExpr accessor() {
-            return accessor;
-        }
-
-        public void setAccessor(LoadLocalExpr accessor) {
-            validateAccessor(accessor);
-
-            removeChild(this.accessor);
-            this.accessor = accessor;
-            addChild(this.accessor);
-            notifyParent();
-        }
-
-        private LoadLocalExpr validateAccessor(LoadLocalExpr accessor) {
-            if (!(accessor.type() instanceof ObjectType)) {
-                throw new IllegalArgumentException(accessor + " is not an object: " + accessor.type());
-            }
             return accessor;
         }
 

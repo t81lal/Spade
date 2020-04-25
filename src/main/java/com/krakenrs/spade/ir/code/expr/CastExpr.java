@@ -1,7 +1,5 @@
 package com.krakenrs.spade.ir.code.expr;
 
-import java.util.Objects;
-
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -10,20 +8,11 @@ import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ValueType;
 
 public class CastExpr extends Expr {
-
-    private LoadLocalExpr var;
+    private final LoadLocalExpr var;
 
     public CastExpr(ValueType type, LoadLocalExpr var) {
         super(Opcodes.CAST, type);
-        this.var = Objects.requireNonNull(var);
-
-        addChild(var);
-    }
-
-    @Override
-    public void setType(ValueType type) {
-        // TODO: check whether var is assignable to this new type
-        super.setType(type); // calls notifyParent
+        this.var = var;
     }
 
     @Override
@@ -34,16 +23,6 @@ public class CastExpr extends Expr {
 
     public LoadLocalExpr var() {
         return var;
-    }
-
-    public void setVar(LoadLocalExpr var) {
-        Objects.requireNonNull(var);
-
-        removeChild(this.var);
-        this.var = var;
-        addChild(var);
-
-        notifyParent();
     }
 
     @Override

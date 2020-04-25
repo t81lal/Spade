@@ -24,17 +24,14 @@ public class CompareExpr extends Expr {
         }
     }
 
-    private LoadLocalExpr lhs, rhs;
-    private Operation operation;
+    private final LoadLocalExpr lhs, rhs;
+    private final Operation operation;
 
     public CompareExpr(LoadLocalExpr lhs, LoadLocalExpr rhs, Operation operation) {
         super(Opcodes.COMPARE, PrimitiveType.INT);
-        this.lhs = Objects.requireNonNull(lhs);
-        this.rhs = Objects.requireNonNull(rhs);
-        this.operation = Objects.requireNonNull(operation);
-
-        addChild(lhs);
-        addChild(rhs);
+        this.lhs = lhs;
+        this.rhs = rhs;
+        this.operation = operation;
     }
 
     @Override
@@ -47,33 +44,12 @@ public class CompareExpr extends Expr {
         return lhs;
     }
 
-    public void setLhs(LoadLocalExpr lhs) {
-        Objects.requireNonNull(lhs);
-        removeChild(this.lhs);
-        this.lhs = lhs;
-        addChild(lhs);
-        notifyParent();
-    }
-
     public LoadLocalExpr rhs() {
         return rhs;
     }
 
-    public void setRhs(LoadLocalExpr rhs) {
-        Objects.requireNonNull(rhs);
-        removeChild(this.rhs);
-        this.rhs = rhs;
-        addChild(rhs);
-        notifyParent();
-    }
-
     public Operation op() {
         return operation;
-    }
-
-    public void setOp(Operation operation) {
-        this.operation = Objects.requireNonNull(operation);
-        notifyParent();
     }
 
     @Override
