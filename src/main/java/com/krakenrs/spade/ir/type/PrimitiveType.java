@@ -13,10 +13,10 @@ public final class PrimitiveType implements ValueType {
     public static final PrimitiveType LONG = new PrimitiveType("J", 2);
     public static final PrimitiveType DOUBLE = new PrimitiveType("D", 2);
     public static final PrimitiveType FLOAT = new PrimitiveType("F", 1);
-    public static final PrimitiveType INT = new PrimitiveType("I", 1);
-    public static final PrimitiveType SHORT = new PrimitiveType("S", 1);
-    public static final PrimitiveType BYTE = new PrimitiveType("B", 1);
-    public static final PrimitiveType CHAR = new PrimitiveType("C", 1);
+    public static final PrimitiveType INT = new PrimitiveType("I", 1, true);
+    public static final PrimitiveType SHORT = new PrimitiveType("S", 1, true);
+    public static final PrimitiveType BYTE = new PrimitiveType("B", 1, true);
+    public static final PrimitiveType CHAR = new PrimitiveType("C", 1, true);
     public static final PrimitiveType BOOLEAN = new PrimitiveType("Z", 1);
     public static final PrimitiveType VOID = new PrimitiveType("V", 0);
     public static final PrimitiveType NULL = new PrimitiveType("null", 1);
@@ -27,14 +27,24 @@ public final class PrimitiveType implements ValueType {
 
     private final String descriptor;
     private final int size;
+    private final boolean isIntLike;
 
     private PrimitiveType(String descriptor, int size) {
+        this(descriptor, size, false);
+    }
+
+    private PrimitiveType(String descriptor, int size, boolean isIntLike) {
         this.descriptor = requireNonNull(descriptor);
         this.size = size;
+        this.isIntLike = isIntLike;
     }
 
     public String getDescriptor() {
         return descriptor;
+    }
+
+    public boolean isIntLike() {
+        return isIntLike;
     }
 
     @Override
