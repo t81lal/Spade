@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.krakenrs.spade.ir.type.*;
 import org.junit.jupiter.api.Test;
 
 import com.krakenrs.spade.ir.code.CodeBlock;
@@ -38,10 +39,6 @@ import com.krakenrs.spade.ir.code.stmt.MonitorStmt;
 import com.krakenrs.spade.ir.code.stmt.ReturnStmt;
 import com.krakenrs.spade.ir.code.stmt.ThrowStmt;
 import com.krakenrs.spade.ir.code.visitor.AbstractCodeVisitor;
-import com.krakenrs.spade.ir.type.ArrayType;
-import com.krakenrs.spade.ir.type.MethodType;
-import com.krakenrs.spade.ir.type.PrimitiveType;
-import com.krakenrs.spade.ir.type.UnresolvedClassType;
 import com.krakenrs.spade.ir.value.Constant;
 import com.krakenrs.spade.ir.value.Local;
 
@@ -220,6 +217,14 @@ public class CodeVisitorTest {
         return new LoadLocalExpr(PrimitiveType.INT, new Local(index, false));
     }
 
+    LoadLocalExpr localArr(int index) {
+        return new LoadLocalExpr(new ArrayType(PrimitiveType.INT), new Local(index, false));
+    }
+
+    LoadLocalExpr localObject(int index) {
+        return new LoadLocalExpr(new ObjectType(new UnresolvedClassType("Foo")), new Local(index, false));
+    }
+
     @Test
     void testLoadConstExpr() {
         var e = cst(5);
@@ -270,7 +275,7 @@ public class CodeVisitorTest {
 
     @Test
     void testArrayLengthExpr() {
-        var x = local(1);
+        var x = localArr(1);
         var e = new ArrayLengthExpr(x);
         var v = new MockCodeVisitor();
         e.accept(v);
@@ -323,7 +328,7 @@ public class CodeVisitorTest {
 
     @Test
     void testInvokeVirtualExpr() {
-        var acc = local(1);
+        var acc = localObject(1);
         var args = List.<ValueExpr<?>>of(cst(4), local(2), cst(1));
         var e = new InvokeExpr.InvokeVirtualExpr(new UnresolvedClassType("TestClass"), "testM",
                 new MethodType(List.of(PrimitiveType.INT, PrimitiveType.INT, PrimitiveType.INT), PrimitiveType.VOID),
@@ -337,7 +342,7 @@ public class CodeVisitorTest {
 
     @Test
     void testLoadArrayExpr() {
-        var arr = local(1);
+        var arr = localArr(1);
         var val = cst(5);
         var e = new LoadArrayExpr(PrimitiveType.INT, arr, val);
         var v = new MockCodeVisitor();
@@ -357,7 +362,7 @@ public class CodeVisitorTest {
 
     @Test
     void testLoadVirtualFieldExpr() {
-        var acc = local(1);
+        var acc = localObject(1);
         var e = new LoadFieldExpr.LoadVirtualFieldExpr(new UnresolvedClassType("TestClass"), "testF",
                 PrimitiveType.INT, acc);
         var v = new MockCodeVisitor();
