@@ -11,7 +11,7 @@ import com.krakenrs.spade.ir.type.PrimitiveType;
 
 public class CompareExpr extends Expr {
 
-    public static enum Operation {
+    public enum Operation {
         LT("<"), GT(">"), NONE("==");
         private final String symbol;
         Operation(String symbol) {

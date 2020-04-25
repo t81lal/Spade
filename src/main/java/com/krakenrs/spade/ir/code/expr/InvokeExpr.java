@@ -15,7 +15,7 @@ import com.krakenrs.spade.ir.type.MethodType;
 
 public abstract class InvokeExpr extends Expr {
 
-    public static enum Mode {
+    public enum Mode {
         STATIC, VIRTUAL, INTERFACE, SPECIAL, DYNAMIC
     }
     

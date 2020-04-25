@@ -11,7 +11,7 @@ import com.krakenrs.spade.ir.type.ValueType;
 
 public class ArithmeticExpr extends Expr {
 
-    public static enum Operation {
+    public enum Operation {
         ADD("+"),
         SUB("-"),
         DIV("/"),
@@ -25,7 +25,7 @@ public class ArithmeticExpr extends Expr {
         XOR("^");
         private final String symbol;
 
-        private Operation(String symbol) {
+        Operation(String symbol) {
             this.symbol = symbol;
         }
 

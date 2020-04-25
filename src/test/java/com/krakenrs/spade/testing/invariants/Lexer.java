@@ -1,7 +1,7 @@
 package com.krakenrs.spade.testing.invariants;
 
 public class Lexer {
-    static enum TokenType {
+    enum TokenType {
         COMMA, COLON, IDENT, STRING_LIT, INT_LIT, FLOAT_LIT, LBRACKET, RBRACKET, LBRACE, RBRACE, NL, EOF
     }
 

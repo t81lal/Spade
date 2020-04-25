@@ -10,7 +10,7 @@ import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 
 public class MonitorStmt extends Stmt {
 
-    public static enum Mode {
+    public enum Mode {
         ENTER, EXIT
     }
 
