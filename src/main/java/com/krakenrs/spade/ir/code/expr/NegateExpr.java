@@ -1,7 +1,5 @@
 package com.krakenrs.spade.ir.code.expr;
 
-import java.util.Objects;
-
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -16,7 +14,7 @@ public class NegateExpr extends Expr {
 
     public NegateExpr(LoadLocalExpr var) {
         super(Opcodes.NEGATE, var.type());
-        this.var = var;
+        this.var = validateVar(var);
 
         addChild(var);
     }
@@ -32,18 +30,21 @@ public class NegateExpr extends Expr {
     }
 
     public void setVar(LoadLocalExpr var) {
-        Objects.requireNonNull(var);
-
-        ValueType t = var.type();
-        if (!(t instanceof PrimitiveType) || !((PrimitiveType) t).isIntLike()) {
-            throw new IllegalArgumentException(var + " must be int type, was: " + t);
-        }
+        validateVar(var);
 
         removeChild(this.var);
         this.var = var;
         addChild(var);
 
         notifyParent();
+    }
+
+    private LoadLocalExpr validateVar(LoadLocalExpr var) {
+        final ValueType t = var.type();
+        if (!(t instanceof PrimitiveType) || !((PrimitiveType) t).isIntLike()) {
+            throw new IllegalArgumentException(var + " must be int type, was: " + t);
+        }
+        return var;
     }
 
     @Override

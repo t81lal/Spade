@@ -40,9 +40,9 @@ public class ArithmeticExpr extends Expr {
 
     public ArithmeticExpr(ValueType resultType, Operation operation, ValueExpr<?> lhs, ValueExpr<?> rhs) {
         super(Opcodes.ARITHMETIC, resultType);
-        this.operation = operation;
-        this.lhs = lhs;
-        this.rhs = rhs;
+        this.operation = Objects.requireNonNull(operation);
+        this.lhs = Objects.requireNonNull(lhs);
+        this.rhs = Objects.requireNonNull(rhs);
 
         addChild(lhs);
         addChild(rhs);

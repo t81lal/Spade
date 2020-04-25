@@ -73,7 +73,7 @@ public abstract class LoadFieldExpr extends Expr {
 
         public LoadVirtualFieldExpr(ClassType owner, String name, ValueType fieldType, LoadLocalExpr accessor) {
             super(owner, name, fieldType);
-            this.accessor = accessor;
+            this.accessor = validateAccessor(accessor);
             addChild(accessor);
         }
 
@@ -82,16 +82,19 @@ public abstract class LoadFieldExpr extends Expr {
         }
 
         public void setAccessor(LoadLocalExpr accessor) {
-            Objects.requireNonNull(accessor);
-
-            if (!(accessor.type() instanceof ObjectType)) {
-                throw new IllegalArgumentException(accessor + " is not an object: " + accessor.type());
-            }
+            validateAccessor(accessor);
 
             removeChild(this.accessor);
             this.accessor = accessor;
             addChild(this.accessor);
             notifyParent();
+        }
+
+        private LoadLocalExpr validateAccessor(LoadLocalExpr accessor) {
+            if (!(accessor.type() instanceof ObjectType)) {
+                throw new IllegalArgumentException(accessor + " is not an object: " + accessor.type());
+            }
+            return accessor;
         }
 
         @Override

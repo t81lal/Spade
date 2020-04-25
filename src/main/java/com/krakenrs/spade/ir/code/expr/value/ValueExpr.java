@@ -14,7 +14,7 @@ public abstract class ValueExpr<T extends Value> extends Expr {
 
     public ValueExpr(int opcode, ValueType type, T value) {
         super(opcode, type);
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
     }
 
     public T value() {

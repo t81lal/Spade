@@ -1,7 +1,5 @@
 package com.krakenrs.spade.ir.code.expr;
 
-import java.util.Objects;
-
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -17,7 +15,7 @@ public class ArrayLengthExpr extends Expr {
 
     public ArrayLengthExpr(LoadLocalExpr var) {
         super(Opcodes.ARRAYLEN, PrimitiveType.INT);
-        this.var = var;
+        this.var = validateVar(var);
 
         addChild(var);
     }
@@ -38,17 +36,21 @@ public class ArrayLengthExpr extends Expr {
     }
 
     public void setVar(LoadLocalExpr var) {
-        Objects.requireNonNull(var);
+        validateVar(var);
 
-        ValueType varType = var.type();
-        if (!(varType instanceof ArrayType)) {
-            throw new IllegalArgumentException(var + " must be an array, got " + varType);
-        }
         removeChild(this.var);
         this.var = var;
         addChild(var);
         
         notifyParent();
+    }
+
+    private LoadLocalExpr validateVar(LoadLocalExpr var) {
+        ValueType varType = var.type();
+        if (!(varType instanceof ArrayType)) {
+            throw new IllegalArgumentException(var + " must be an array, got " + varType);
+        }
+        return var;
     }
 
     @Override

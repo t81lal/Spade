@@ -1,7 +1,5 @@
 package com.krakenrs.spade.ir.code.expr;
 
-import java.util.Objects;
-
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -19,8 +17,8 @@ public class LoadArrayExpr extends Expr {
 
     public LoadArrayExpr(ValueType componentType, LoadLocalExpr array, ValueExpr<?> index) {
         super(Opcodes.LOAD_ARR, componentType);
-        this.array = array;
-        this.index = index;
+        this.array = validateArray(array);
+        this.index = validateIndex(index);
 
         addChild(array);
         addChild(index);
@@ -42,18 +40,13 @@ public class LoadArrayExpr extends Expr {
     }
 
     public void setArray(LoadLocalExpr array) {
-        Objects.requireNonNull(array);
-
-        ValueType t = array.type();
-        if (!(t instanceof ArrayType)) {
-            throw new IllegalArgumentException(array + " must be int type, was: " + t);
-        }
+        validateArray(array);
 
         removeChild(this.array);
         this.array = array;
         addChild(array);
 
-        this.type = ((ArrayType) t).componentType();
+        this.type = ((ArrayType) array.type()).componentType();
 
         notifyParent();
     }
@@ -63,18 +56,29 @@ public class LoadArrayExpr extends Expr {
     }
 
     public void setIndex(ValueExpr<?> index) {
-        Objects.requireNonNull(index);
-
-        ValueType t = index.type();
-        if (!(t instanceof PrimitiveType) || !((PrimitiveType) t).isIntLike()) {
-            throw new IllegalArgumentException(index + " must be int type, was: " + t);
-        }
+        validateIndex(index);
 
         removeChild(this.index);
         this.index = index;
         addChild(index);
 
         notifyParent();
+    }
+
+    private LoadLocalExpr validateArray(LoadLocalExpr array) {
+        ValueType t = array.type();
+        if (!(t instanceof ArrayType)) {
+            throw new IllegalArgumentException(array + " must be int type, was: " + t);
+        }
+        return array;
+    }
+
+    private ValueExpr<?> validateIndex(ValueExpr<?> index) {
+        ValueType t = index.type();
+        if (!(t instanceof PrimitiveType) || !((PrimitiveType) t).isIntLike()) {
+            throw new IllegalArgumentException(index + " must be int type, was: " + t);
+        }
+        return index;
     }
 
     @Override

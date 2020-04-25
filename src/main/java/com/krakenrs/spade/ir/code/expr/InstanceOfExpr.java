@@ -18,8 +18,8 @@ public class InstanceOfExpr extends Expr {
 
     public InstanceOfExpr(LoadLocalExpr var, Type checkType) {
         super(Opcodes.INSTANCEOF, PrimitiveType.BOOLEAN);
-        this.var = var;
-        this.checkType = checkType;
+        this.var = Objects.requireNonNull(var);
+        this.checkType = Objects.requireNonNull(checkType);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class InstanceOfExpr extends Expr {
     }
 
     public void setCheckType(Type checkType) {
-        this.checkType = checkType;
+        this.checkType = Objects.requireNonNull(checkType);
         notifyParent();
     }
 

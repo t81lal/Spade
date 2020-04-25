@@ -29,9 +29,9 @@ public class CompareExpr extends Expr {
 
     public CompareExpr(LoadLocalExpr lhs, LoadLocalExpr rhs, Operation operation) {
         super(Opcodes.COMPARE, PrimitiveType.INT);
-        this.lhs = lhs;
-        this.rhs = rhs;
-        this.operation = operation;
+        this.lhs = Objects.requireNonNull(lhs);
+        this.rhs = Objects.requireNonNull(rhs);
+        this.operation = Objects.requireNonNull(operation);
 
         addChild(lhs);
         addChild(rhs);
