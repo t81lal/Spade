@@ -262,6 +262,12 @@ public class Irifier {
             sw.print(Integer.toString(local.index()));
             sw.print(", ");
             sw.print(Boolean.toString(local.isStack()));
+            
+            if(local.isVersioned()) {
+                sw.print(", ");
+                sw.print(Integer.toString(local.version()));
+            }
+            
             sw.print(")");
         }
 

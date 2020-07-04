@@ -14,11 +14,17 @@ public class Local extends AbstractValue {
         super(Kind.LOCAL);
         this.index = index;
         this.isStack = isStack;
+        if(version < 0) {
+        	throw new IllegalArgumentException("version must be positive");
+        }
         this.version = version;
     }
 
     public Local(int index, boolean isStack) {
-        this(index, isStack, 0);
+        super(Kind.LOCAL);
+        this.index = index;
+        this.isStack = isStack;
+        this.version = -1;
     }
 
     public int index() {
@@ -28,8 +34,15 @@ public class Local extends AbstractValue {
     public boolean isStack() {
         return isStack;
     }
+    
+    public boolean isVersioned() {
+    	return version >= 0;
+    }
 
     public int version() {
+    	if(version < 0) {
+    		throw new UnsupportedOperationException("Unversioned local");
+    	}
         return version;
     }
 
@@ -52,6 +65,10 @@ public class Local extends AbstractValue {
 
     @Override
     public String toString() {
-        return String.format("%cvar%d_%d", isStack ? 's' : 'l', index, version);
+    	if(isVersioned()) {
+            return String.format("%cvar%d_%d", isStack ? 's' : 'l', index, version);
+    	} else {
+            return String.format("%cvar%d", isStack ? 's' : 'l', index);
+    	}
     }
 }
