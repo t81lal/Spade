@@ -12,6 +12,7 @@ import com.krakenrs.spade.ir.code.expr.InvokeExpr;
 import com.krakenrs.spade.ir.code.expr.LoadArrayExpr;
 import com.krakenrs.spade.ir.code.expr.LoadFieldExpr;
 import com.krakenrs.spade.ir.code.expr.NegateExpr;
+import com.krakenrs.spade.ir.code.expr.NewObjectExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
 import com.krakenrs.spade.ir.code.stmt.AssignArrayStmt;
 import com.krakenrs.spade.ir.code.stmt.AssignCatchStmt;
@@ -79,4 +80,6 @@ public interface CodeVisitor {
     void visitLoadArrayExpr(LoadArrayExpr e);
 
     void visitLoadFieldExpr(LoadFieldExpr e);
+    
+    void visitNewObjectExpr(NewObjectExpr e);
 }

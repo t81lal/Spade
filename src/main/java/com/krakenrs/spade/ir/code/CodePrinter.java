@@ -18,6 +18,7 @@ import com.krakenrs.spade.ir.code.expr.LoadArrayExpr;
 import com.krakenrs.spade.ir.code.expr.LoadFieldExpr;
 import com.krakenrs.spade.ir.code.expr.LoadFieldExpr.LoadVirtualFieldExpr;
 import com.krakenrs.spade.ir.code.expr.NegateExpr;
+import com.krakenrs.spade.ir.code.expr.NewObjectExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
 import com.krakenrs.spade.ir.code.stmt.*;
 import com.krakenrs.spade.ir.code.stmt.AssignFieldStmt.AssignVirtualFieldStmt;
@@ -207,6 +208,19 @@ public class CodePrinter implements Opcodes {
                 case NEGATE: {
                     NegateExpr ne = (NegateExpr) e;
                     return emit("-").emitExpr(ne.var());
+                }
+                case NEWOBJ: {
+                    NewObjectExpr noe = (NewObjectExpr) e;
+                    emit("new ").emit(noe.owner().getClassName()).emit("(");
+                    Iterator<ValueExpr<?>> it = noe.arguments().iterator();
+                    while (it.hasNext()) {
+                        emitExpr(it.next());
+                        if (it.hasNext()) {
+                            emit(", ");
+                        }
+                    }
+                    emit(")");
+                    return this;
                 }
                 default: {
                     throw new IllegalArgumentException("Opcode: " + e.opcode());

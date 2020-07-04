@@ -17,6 +17,7 @@ import com.krakenrs.spade.ir.code.expr.InvokeExpr;
 import com.krakenrs.spade.ir.code.expr.LoadArrayExpr;
 import com.krakenrs.spade.ir.code.expr.LoadFieldExpr;
 import com.krakenrs.spade.ir.code.expr.NegateExpr;
+import com.krakenrs.spade.ir.code.expr.NewObjectExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadConstExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
@@ -127,4 +128,6 @@ public interface CodeReducer {
     default Expr reduceLoadArrayExpr(LoadArrayExpr e) { return e; }
 
     default Expr reduceLoadFieldExpr(LoadFieldExpr e) { return e; }
+    
+    default Expr reduceNewObjectExpr(NewObjectExpr e) { return e; }
 }

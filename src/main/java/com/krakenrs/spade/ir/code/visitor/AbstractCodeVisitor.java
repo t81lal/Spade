@@ -14,6 +14,7 @@ import com.krakenrs.spade.ir.code.expr.LoadArrayExpr;
 import com.krakenrs.spade.ir.code.expr.LoadFieldExpr;
 import com.krakenrs.spade.ir.code.expr.LoadFieldExpr.LoadVirtualFieldExpr;
 import com.krakenrs.spade.ir.code.expr.NegateExpr;
+import com.krakenrs.spade.ir.code.expr.NewObjectExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
 import com.krakenrs.spade.ir.code.stmt.AssignArrayStmt;
 import com.krakenrs.spade.ir.code.stmt.AssignCatchStmt;
@@ -172,6 +173,13 @@ public abstract class AbstractCodeVisitor implements CodeVisitor {
     public void visitLoadFieldExpr(LoadFieldExpr e) {
         if (!e.isStatic()) {
             ((LoadVirtualFieldExpr) e).accessor().accept(this);
+        }
+    }
+    
+    @Override
+    public void visitNewObjectExpr(NewObjectExpr e) {
+        for (ValueExpr<?> aE : e.arguments()) {
+            aE.accept(this);
         }
     }
 }

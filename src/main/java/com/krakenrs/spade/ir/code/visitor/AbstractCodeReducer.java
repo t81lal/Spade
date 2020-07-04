@@ -17,6 +17,7 @@ import com.krakenrs.spade.ir.code.expr.InvokeExpr;
 import com.krakenrs.spade.ir.code.expr.LoadArrayExpr;
 import com.krakenrs.spade.ir.code.expr.LoadFieldExpr;
 import com.krakenrs.spade.ir.code.expr.NegateExpr;
+import com.krakenrs.spade.ir.code.expr.NewObjectExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadConstExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
@@ -318,6 +319,16 @@ public class AbstractCodeReducer implements CodeReducer {
             } else {
                 return new LoadFieldExpr.LoadVirtualFieldExpr(e.owner(), e.name(), e.getType(), accessor);
             }
+        }
+    }
+
+    @Override
+    public Expr reduceNewObjectExpr(NewObjectExpr e) {
+        List<ValueExpr<?>> args = reduceExprListTo(e.arguments(), this::reduceExprToValue);
+        if (args == null) {
+            return e;
+        } else {
+            return new NewObjectExpr(e.owner(), e.methodType(), args);
         }
     }
 }

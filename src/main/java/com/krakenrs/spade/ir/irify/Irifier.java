@@ -411,6 +411,24 @@ public class Irifier {
         }
 
         @Override
+        public void visitNewObjectExpr(NewObjectExpr e) {
+            sw.print("new NewObjectExpr(");
+            sw.print("tm.asClassType(\"");
+            sw.print(e.owner().toString());
+            sw.print("\"), \"");
+            sw.print("tm.asMethodType(\"");
+            sw.print(e.methodType().toString());
+            sw.print("\"), List.of(");
+            for (int i = 0; i < e.arguments().size(); i++) {
+                e.arguments().get(i).accept(this);
+                if (i != e.arguments().size() - 1) {
+                    sw.print(", ");
+                }
+            }
+            sw.print("))");
+        }
+
+        @Override
         public void visitLoadArrayExpr(LoadArrayExpr e) {
             throw new UnsupportedOperationException();
         }
