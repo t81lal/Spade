@@ -8,6 +8,8 @@ import java.util.Objects;
 import com.krakenrs.spade.commons.collections.graph.Vertex;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 
+import lombok.NonNull;
+
 public class CodeBlock implements Vertex {
     private final int id;
     private final List<Stmt> stmts = new ArrayList<>();
@@ -94,6 +96,21 @@ public class CodeBlock implements Vertex {
         int index = stmts.indexOf(pos) + offset;
         stmts.add(index, stmt);
         stmt.setBlock(this);
+    }
+
+    public void replaceStmt(@NonNull Stmt oldStmt, @NonNull Stmt newStmt) {
+        if(!stmts.contains(oldStmt)) {
+            throw new IllegalArgumentException("Old statement is not part of this block");
+        }
+
+        if(newStmt.getBlock() != null) {
+            throw new IllegalArgumentException("New statement is already in a block");
+        }
+
+        oldStmt.setBlock(null);
+        int index = stmts.indexOf(oldStmt);
+        stmts.set(index, newStmt);
+        newStmt.setBlock(this);
     }
 
     public List<Stmt> stmts() {
