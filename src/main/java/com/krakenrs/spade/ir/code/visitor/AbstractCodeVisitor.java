@@ -109,7 +109,7 @@ public class AbstractCodeVisitor implements CodeVisitor {
 
     @Override
     public void visitAllocArrayExpr(AllocArrayExpr e) {
-        for (ValueExpr<?> bE : e.bounds()) {
+        for (ValueExpr<?> bE : e.getBounds()) {
             bE.accept(this);
         }
     }

@@ -4,37 +4,35 @@ import java.util.Objects;
 
 import com.krakenrs.spade.ir.type.ValueType;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+
 public abstract class Expr extends CodeUnit {
 
-    protected final ValueType type;
+	@Getter @Setter
+    protected ValueType type;
+	@Getter @Setter
     protected CodeUnit parent;
 
-    public Expr(int opcode, ValueType type) {
+    public Expr(int opcode) {
         super(opcode);
-        this.type = type;
     }
-
-    public ValueType type() {
-        return type;
+    
+    public Expr(int opcode, ValueType type) {
+    	super(opcode);
+    	this.type = type;
     }
-
-    public CodeUnit parent() {
-        return parent;
-    }
-
-    void setParent(CodeUnit parent) {
-        this.parent = parent;
-    }
-
+    
     @Override
     public Stmt stmt() {
         return parent != null ? parent.stmt() : null;
     }
 
     @Override
-    public boolean equivalent(CodeUnit u) {
-        Objects.requireNonNull(u);
-
+    public boolean equivalent(@NonNull CodeUnit u) {
+    	// Expr type needs to be the exact same as this
+    	// TODO: maybe relax this to check the subtype?
         if (!getClass().equals(u.getClass())) {
             return false;
         }

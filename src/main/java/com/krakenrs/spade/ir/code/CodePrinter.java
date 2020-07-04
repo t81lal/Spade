@@ -142,15 +142,15 @@ public class CodePrinter implements Opcodes {
                 }
                 case ALLOCARR: {
                     AllocArrayExpr aae = (AllocArrayExpr) e;
-                    emit("new ").emit(((ArrayType) aae.type()).elementType());
-                    for (ValueExpr<?> bound : aae.bounds()) {
+                    emit("new ").emit(((ArrayType) aae.getType()).elementType());
+                    for (ValueExpr<?> bound : aae.getBounds()) {
                         emit('[').emitExpr(bound).emit(']');
                     }
                     return this;
                 }
                 case ALLOCOBJ: {
                     AllocObjectExpr aoe = (AllocObjectExpr) e;
-                    return emit("new ").emit(((ObjectType) aoe.type()).getClassType());
+                    return emit("new ").emit(((ObjectType) aoe.getType()).getClassType());
                 }
                 case ARITHMETIC: {
                     ArithmeticExpr ae = (ArithmeticExpr) e;
@@ -160,7 +160,7 @@ public class CodePrinter implements Opcodes {
                     return emitExpr(((ArrayLengthExpr) e).var()).emit(".length");
                 }
                 case CAST: {
-                    return emit("(").emit(e.type()).emit(") ").emitExpr(((CastExpr) e).var());
+                    return emit("(").emit(e.getType()).emit(") ").emitExpr(((CastExpr) e).var());
                 }
                 case COMPARE: {
                     CompareExpr ce = (CompareExpr) e;
@@ -215,7 +215,7 @@ public class CodePrinter implements Opcodes {
         }
 
         Emitter emitExpr(Expr expr) {
-            return _emitExpr(expr).emit(" :: ").emit(expr.type());
+            return _emitExpr(expr).emit(" :: ").emit(expr.getType());
         }
 
         Emitter emitStmt(Stmt stmt) {

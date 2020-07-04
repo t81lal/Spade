@@ -96,7 +96,7 @@ public class AsmGenerator {
         ctx.executeStage("GenerateProtectedRanges", () -> state.generateProtectedRanges(codeOrderedBlocks));
         ctx.executeStage("SplitHandlers", state::splitHandlers);
 
-        SsaPass ssa = new SsaPass(ctx);
+        SSAPass ssa = new SSAPass(ctx);
         ctx.executeStage("SsaTransform", ssa::doTransform);
 
         return state.graph;
@@ -613,14 +613,14 @@ public class AsmGenerator {
                     LoadLocalExpr lle = (LoadLocalExpr) e;
                     if (lle.value().equals(nextSvar)) {
                         // Don't need to generate x = x copy
-                        stack.push(new TypedLocal(nextSvar, e.type()));
+                        stack.push(new TypedLocal(nextSvar, e.getType()));
                         return;
                     }
                 }
 
                 // Generate svarY = e for stack size Y
                 addStmt(new AssignLocalStmt(nextSvar, e));
-                stack.push(new TypedLocal(nextSvar, e.type()));
+                stack.push(new TypedLocal(nextSvar, e.getType()));
 
                 ctx.getLogger().trace("    FinalStack: {}", stack);
             }

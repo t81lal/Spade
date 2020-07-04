@@ -276,7 +276,7 @@ public class Irifier {
                 sw.print(ee.name());
                 sw.print("\", ");
                 sw.print("tm.asValueType(\"");
-                sw.print(ee.type().toString());
+                sw.print(ee.getType().toString());
                 sw.print("\"))");
             } else {
                 // TODO: Implement.
@@ -316,7 +316,7 @@ public class Irifier {
                     var loadLocal = (LoadLocalExpr) e;
                     sw.print("new LoadLocalExpr(");
                     sw.print("tm.asValueType(\"");
-                    sw.print(loadLocal.type().toString());
+                    sw.print(loadLocal.getType().toString());
                     sw.print("\"), ");
                     visitLocal(loadLocal.value());
                     sw.print(")");
@@ -341,7 +341,7 @@ public class Irifier {
         public void visitArithmeticExpr(ArithmeticExpr e) {
             sw.print("new ArithmeticExpr(");
             sw.print("tm.asValueType(\"");
-            sw.print(e.type().toString());
+            sw.print(e.getType().toString());
             sw.print("\"), ArithmeticExpr.Operation.");
             sw.print(e.op().name());
             sw.print(", ");

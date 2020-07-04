@@ -10,7 +10,7 @@ public class NegateExpr extends Expr {
     private final LoadLocalExpr var;
 
     public NegateExpr(LoadLocalExpr var) {
-        super(Opcodes.NEGATE, var.type());
+        super(Opcodes.NEGATE, var.getType());
         this.var = var;
     }
 
