@@ -99,7 +99,7 @@ public class AsmGenerator {
         });
 
         ctx.executePhase("SSAGenerator", () -> {
-        	SSAPass ssa = new SSAPass(ctx);
+        	SSAGenerator ssa = new SSAGenerator(ctx);
             ctx.executeStage("SsaTransform", ssa::doTransform);
         });
         

@@ -13,7 +13,7 @@ import com.krakenrs.spade.ir.value.Local;
 
 import java.util.*;
 
-public class SSAPass {
+public class SSAGenerator {
     private final GenerationCtx ctx;
     private final Map<Local, Set<CodeBlock>> assignments;
     private final Map<Local, Integer> counter;
@@ -26,7 +26,7 @@ public class SSAPass {
     private DominatorComputer<CodeBlock> dominator;
     private SsaBlockLivenessAnalyser liveness;
 
-    public SSAPass(GenerationCtx ctx) {
+    public SSAGenerator(GenerationCtx ctx) {
         this.ctx = Objects.requireNonNull(ctx);
         assignments = new LazyCreationHashMap<>(HashSet::new);
         counter = new LazyCreationHashMap<>(() -> 0);
