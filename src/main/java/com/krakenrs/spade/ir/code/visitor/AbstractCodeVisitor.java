@@ -95,7 +95,9 @@ public class AbstractCodeVisitor implements CodeVisitor {
 
     @Override
     public void visitReturnStmt(ReturnStmt s) {
-        s.var().accept(this);
+    	if(s.var() != null) {
+            s.var().accept(this);
+    	}
     }
 
     @Override
