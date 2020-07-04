@@ -6,6 +6,7 @@ import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 
 public class MonitorStmt extends Stmt {
@@ -27,6 +28,11 @@ public class MonitorStmt extends Stmt {
     public void accept(CodeVisitor vis) {
         super.accept(vis);
         vis.visitMonitorStmt(this);
+    }
+
+    @Override
+    public Stmt reduceStmt(CodeReducer reducer) {
+        return reducer.reduceMonitorStmt(this);
     }
 
     public LoadLocalExpr var() {

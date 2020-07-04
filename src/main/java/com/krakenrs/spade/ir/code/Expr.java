@@ -2,6 +2,7 @@ package com.krakenrs.spade.ir.code;
 
 import java.util.Objects;
 
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.type.ValueType;
 
 import lombok.Getter;
@@ -39,4 +40,6 @@ public abstract class Expr extends CodeUnit {
 
         return Objects.equals(type, ((Expr) u).type);
     }
+    
+    public abstract Expr reduceExpr(CodeReducer reducer);
 }

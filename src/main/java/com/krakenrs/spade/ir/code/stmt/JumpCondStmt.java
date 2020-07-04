@@ -7,6 +7,7 @@ import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 
 public class JumpCondStmt extends Stmt {
@@ -40,6 +41,11 @@ public class JumpCondStmt extends Stmt {
     public void accept(CodeVisitor vis) {
         super.accept(vis);
         vis.visitJumpCondStmt(this);
+    }
+
+    @Override
+    public Stmt reduceStmt(CodeReducer reducer) {
+        return reducer.reduceJumpCondStmt(this);
     }
 
     public ValueExpr<?> lhs() {

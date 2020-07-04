@@ -6,6 +6,7 @@ import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ValueType;
 
@@ -49,6 +50,11 @@ public class ArithmeticExpr extends Expr {
     public void accept(CodeVisitor vis) {
         super.accept(vis);
         vis.visitArithmeticExpr(this);
+    }
+
+    @Override
+    public Expr reduceExpr(CodeReducer reducer) {
+        return reducer.reduceArithmeticExpr(this);
     }
 
     public Operation op() {

@@ -4,6 +4,7 @@ import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 
 public class ConsumeStmt extends Stmt {
@@ -18,6 +19,11 @@ public class ConsumeStmt extends Stmt {
     public void accept(CodeVisitor vis) {
         super.accept(vis);
         vis.visitConsumeStmt(this);
+    }
+
+    @Override
+    public Stmt reduceStmt(CodeReducer reducer) {
+        return reducer.reduceConsumeStmt(this);
     }
 
     public Expr expr() {

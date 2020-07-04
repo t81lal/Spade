@@ -7,6 +7,7 @@ import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ClassType;
 import com.krakenrs.spade.ir.type.ValueType;
@@ -30,6 +31,11 @@ public abstract class AssignFieldStmt extends Stmt {
     public void accept(CodeVisitor vis) {
         super.accept(vis);
         vis.visitAssignFieldStmt(this);
+    }
+    
+    @Override
+    public Stmt reduceStmt(CodeReducer reducer) {
+        return reducer.reduceAssignFieldStmt(this);
     }
 
     public ClassType owner() {

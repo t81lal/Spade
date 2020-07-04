@@ -5,6 +5,7 @@ import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 
 public class AssignArrayStmt extends Stmt {
@@ -24,6 +25,11 @@ public class AssignArrayStmt extends Stmt {
         vis.visitAssignArrayStmt(this);
     }
 
+    @Override
+    public Stmt reduceStmt(CodeReducer reducer) {
+        return reducer.reduceAssignArrayStmt(this);
+    }
+    
     public LoadLocalExpr array() {
         return array;
     }

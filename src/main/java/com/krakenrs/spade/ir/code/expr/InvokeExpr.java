@@ -9,6 +9,7 @@ import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ClassType;
 import com.krakenrs.spade.ir.type.MethodType;
@@ -38,6 +39,11 @@ public abstract class InvokeExpr extends Expr {
     public void accept(CodeVisitor vis) {
         super.accept(vis);
         vis.visitInvokeExpr(this);
+    }
+
+    @Override
+    public Expr reduceExpr(CodeReducer reducer) {
+        return reducer.reduceInvokeExpr(this);
     }
 
     public ClassType owner() {

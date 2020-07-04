@@ -6,6 +6,7 @@ import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.PrimitiveType;
 
@@ -38,6 +39,11 @@ public class CompareExpr extends Expr {
     public void accept(CodeVisitor vis) {
         super.accept(vis);
         vis.visitCompareExpr(this);
+    }
+
+    @Override
+    public Expr reduceExpr(CodeReducer reducer) {
+        return reducer.reduceCompareExpr(this);
     }
 
     public LoadLocalExpr lhs() {

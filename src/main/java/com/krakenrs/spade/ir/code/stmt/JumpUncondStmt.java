@@ -6,6 +6,7 @@ import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 
 public class JumpUncondStmt extends Stmt {
@@ -21,6 +22,11 @@ public class JumpUncondStmt extends Stmt {
     public void accept(CodeVisitor vis) {
         super.accept(vis);
         vis.visitJumpUncondStmt(this);
+    }
+
+    @Override
+    public Stmt reduceStmt(CodeReducer reducer) {
+        return reducer.reduceJumpUncondStmt(this);
     }
 
     public CodeBlock target() {

@@ -7,6 +7,8 @@ import java.util.Objects;
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
+import com.krakenrs.spade.ir.code.Stmt;
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.value.Local;
 
@@ -24,6 +26,11 @@ public class AssignPhiStmt extends DeclareLocalStmt {
         vis.visitAssignPhiStmt(this);
     }
 
+    @Override
+    public Stmt reduceStmt(CodeReducer reducer) {
+        return reducer.reduceAssignPhiStmt(this);
+    }
+
     public Map<CodeBlock, Local> arguments() {
         return arguments;
     }
@@ -31,5 +38,10 @@ public class AssignPhiStmt extends DeclareLocalStmt {
     @Override
     public boolean equivalent(CodeUnit u) {
         return super.equivalent(u) && Objects.equals(((AssignPhiStmt) u).arguments, arguments);
+    }
+
+    @Override
+    public AssignPhiStmt copy(Local newVar) {
+        return new AssignPhiStmt(newVar, arguments);
     }
 }

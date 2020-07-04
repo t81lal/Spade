@@ -6,6 +6,7 @@ import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.PrimitiveType;
 import com.krakenrs.spade.ir.type.Type;
@@ -25,6 +26,11 @@ public class InstanceOfExpr extends Expr {
     public void accept(CodeVisitor vis) {
         super.accept(vis);
         vis.visitInstanceOfExpr(this);
+    }
+
+    @Override
+    public Expr reduceExpr(CodeReducer reducer) {
+        return reducer.reduceInstanceOfExpr(this);
     }
 
     public LoadLocalExpr var() {

@@ -5,6 +5,7 @@ import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ValueType;
 
@@ -23,6 +24,11 @@ public class LoadArrayExpr extends Expr {
     public void accept(CodeVisitor vis) {
         super.accept(vis);
         vis.visitLoadArrayExpr(this);
+    }
+
+    @Override
+    public Expr reduceExpr(CodeReducer reducer) {
+        return reducer.reduceLoadArrayExpr(this);
     }
 
     public LoadLocalExpr array() {

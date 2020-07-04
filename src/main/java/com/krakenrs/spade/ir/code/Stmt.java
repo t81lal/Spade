@@ -1,5 +1,7 @@
 package com.krakenrs.spade.ir.code;
 
+import com.krakenrs.spade.ir.code.visitor.CodeReducer;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -23,4 +25,6 @@ public abstract class Stmt extends CodeUnit {
     	// See Expr.equivalent
         return getClass().equals(u.getClass());
     }
+    
+    public abstract Stmt reduceStmt(CodeReducer reducer);
 }
