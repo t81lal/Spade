@@ -30,7 +30,7 @@ import com.krakenrs.spade.ir.code.stmt.MonitorStmt;
 import com.krakenrs.spade.ir.code.stmt.ReturnStmt;
 import com.krakenrs.spade.ir.code.stmt.ThrowStmt;
 
-public class AbstractCodeVisitor implements CodeVisitor {
+public abstract class AbstractCodeVisitor implements CodeVisitor {
 
     @Override
     public void visitAny(CodeUnit u) {
