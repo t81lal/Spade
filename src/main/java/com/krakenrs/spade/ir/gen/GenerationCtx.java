@@ -11,7 +11,7 @@ import com.krakenrs.spade.ir.type.TypeManager;
 
 public class GenerationCtx {
 
-    private final Logger logger;
+    private Logger logger;
     private final TypeManager typeManager;
     private final ClassType ownerType;
     private final MethodType methodType;
@@ -29,14 +29,19 @@ public class GenerationCtx {
 
         this.graph = new ControlFlowGraph(methodType, isStaticMethod);
     }
+    
+    public void executePhase(String phase, Runnable r) {
+    	logger.trace("Phase: {}", phase);
+    	r.run();
+    }
 
     public void executeStage(String name, Runnable r) {
-        long startTime = System.nanoTime();
-        logger.trace("Executing {}", name);
-        r.run();
-        long elapsedTime = System.nanoTime() - startTime;
-        double elapsedMs = elapsedTime / 1000000D;
-        logger.trace(" took {}ms", elapsedMs);
+    	// Delegate to executeStage(String, Suppler) but we
+    	// have no meaningful return value
+    	executeStage(name, () -> {
+    		r.run();
+    		return null;
+    	});
     }
 
     public <T> T executeStage(String name, Supplier<T> r) {
@@ -51,6 +56,10 @@ public class GenerationCtx {
 
     public Logger getLogger() {
         return logger;
+    }
+    
+    public void setLogger(Logger logger) {
+    	this.logger = logger;
     }
 
     public TypeManager getTypeManager() {

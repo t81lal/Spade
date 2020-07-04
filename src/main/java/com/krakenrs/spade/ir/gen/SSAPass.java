@@ -13,7 +13,7 @@ import com.krakenrs.spade.ir.value.Local;
 
 import java.util.*;
 
-public class SsaPass {
+public class SSAPass {
     private final GenerationCtx ctx;
     private final Map<Local, Set<CodeBlock>> assignments;
     private final Map<Local, Integer> counter;
@@ -26,7 +26,7 @@ public class SsaPass {
     private DominatorComputer<CodeBlock> dominator;
     private SsaBlockLivenessAnalyser liveness;
 
-    public SsaPass(GenerationCtx ctx) {
+    public SSAPass(GenerationCtx ctx) {
         this.ctx = Objects.requireNonNull(ctx);
         assignments = new LazyCreationHashMap<>(HashSet::new);
         counter = new LazyCreationHashMap<>(() -> 0);
@@ -38,11 +38,11 @@ public class SsaPass {
     }
 
     public void doTransform() {
-        getHandlers();
-        updateDominators();
-        updateLiveness();
-        insertPhis();
-        rename();
+    	ctx.executeStage("getHandlers", this::getHandlers);
+    	ctx.executeStage("updateDominators", this::updateDominators);
+    	ctx.executeStage("updateLiveness", this::updateLiveness);
+    	ctx.executeStage("insertPhis", this::insertPhis);
+    	ctx.executeStage("rename", this::rename);
     }
 
     private void getHandlers() {
@@ -71,7 +71,7 @@ public class SsaPass {
                 q.add(block);
             }
             while (!q.isEmpty()) {
-                insertPhis(q.poll(), local, i, q);
+                insertPhisForBlock(q.poll(), local, i, q);
             }
         }
     }
@@ -97,7 +97,7 @@ public class SsaPass {
         }
     }
 
-    private void insertPhis(CodeBlock block, Local local, int i, LinkedList<CodeBlock> queue) {
+    private void insertPhisForBlock(CodeBlock block, Local local, int i, LinkedList<CodeBlock> queue) {
         if (block == ctx.getGraph().getEntryBlock()) {
             return;
         }

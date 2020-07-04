@@ -85,20 +85,24 @@ import com.krakenrs.spade.ir.value.Local;
 public class AsmGenerator {
     public static ControlFlowGraph run(AsmGenerationCtx ctx) {
         AsmGenerationState state = new AsmGenerationState(ctx);
-
-        ctx.executeStage("GenerateEntry", state::generateEntry);
-        ctx.executeStage("GenerateHandlers", state::generateHandlers);
-        ctx.executeStage("ProcessQueue", state::processQueue);
-        ctx.executeStage("EnsureMarks", state::ensureMarks);
         
-        List<CodeBlock> codeOrderedBlocks = ctx.executeStage("GetOrderedBlocks", state::getCodeOrderedBlocks);
+        ctx.executePhase("AsmGenerator", () -> {
+            ctx.executeStage("GenerateEntry", state::generateEntry);
+            ctx.executeStage("GenerateHandlers", state::generateHandlers);
+            ctx.executeStage("ProcessQueue", state::processQueue);
+            ctx.executeStage("EnsureMarks", state::ensureMarks);
+            
+            List<CodeBlock> codeOrderedBlocks = ctx.executeStage("GetOrderedBlocks", state::getCodeOrderedBlocks);
 
-        ctx.executeStage("GenerateProtectedRanges", () -> state.generateProtectedRanges(codeOrderedBlocks));
-        ctx.executeStage("SplitHandlers", state::splitHandlers);
+            ctx.executeStage("GenerateProtectedRanges", () -> state.generateProtectedRanges(codeOrderedBlocks));
+            ctx.executeStage("SplitHandlers", state::splitHandlers);
+        });
 
-        SSAPass ssa = new SSAPass(ctx);
-        ctx.executeStage("SsaTransform", ssa::doTransform);
-
+        ctx.executePhase("SSAGenerator", () -> {
+        	SSAPass ssa = new SSAPass(ctx);
+            ctx.executeStage("SsaTransform", ssa::doTransform);
+        });
+        
         return state.graph;
     }
 
