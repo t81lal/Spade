@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.krakenrs.spade.commons.collections.graph.Vertex;
+import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 
 public class CodeBlock implements Vertex {
     private final int id;
@@ -97,6 +98,12 @@ public class CodeBlock implements Vertex {
 
     public List<Stmt> stmts() {
         return Collections.unmodifiableList(stmts);
+    }
+    
+    public void accept(CodeVisitor vis) {
+        for(Stmt stmt : stmts) {
+        	stmt.accept(vis);
+        }
     }
 
     @Override
