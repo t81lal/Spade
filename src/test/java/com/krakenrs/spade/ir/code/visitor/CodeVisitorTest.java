@@ -22,6 +22,7 @@ import com.krakenrs.spade.ir.code.expr.InvokeExpr;
 import com.krakenrs.spade.ir.code.expr.LoadArrayExpr;
 import com.krakenrs.spade.ir.code.expr.LoadFieldExpr;
 import com.krakenrs.spade.ir.code.expr.NegateExpr;
+import com.krakenrs.spade.ir.code.expr.NewObjectExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadConstExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
@@ -206,6 +207,12 @@ public class CodeVisitorTest {
         public void visitLoadFieldExpr(LoadFieldExpr e) {
             addToCallPath();
             super.visitLoadFieldExpr(e);
+        }
+        
+        @Override
+        public void visitNewObjectExpr(NewObjectExpr e) {
+            addToCallPath();
+            super.visitNewObjectExpr(e);
         }
     }
 
@@ -521,5 +528,15 @@ public class CodeVisitorTest {
         s.accept(v);
         assertEquals(List.of(s, l), v.searchPath);
         assertEquals(List.of("visitThrowStmt", "visitValueExpr"), v.callPath);
+    }
+    
+    @Test
+    void testNewObjectExpr() {
+        var c = cst(5);
+        var n = new NewObjectExpr(new UnresolvedClassType("TestClass"), new MethodType(List.of(PrimitiveType.INT), PrimitiveType.VOID), List.of(c));
+        var v = new MockCodeVisitor();
+        n.accept(v);
+        assertEquals(List.of(n, c), v.searchPath);
+        assertEquals(List.of("visitNewObjectExpr", "visitValueExpr"), v.callPath);
     }
 }
