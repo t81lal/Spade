@@ -22,6 +22,11 @@ public final class Def {
         this.uses = new HashSet<>();
     }
 
+    public Def(DeclareLocalStmt stmt, Set<Use> uses) {
+        this.stmt = stmt;
+        this.uses = uses;
+    }
+
     public boolean addUse(Use use) {
         return uses.add(use);
     }
