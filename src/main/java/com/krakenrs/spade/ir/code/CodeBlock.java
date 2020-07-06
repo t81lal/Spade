@@ -41,13 +41,13 @@ public class CodeBlock implements Vertex {
     }
 
     public void removeStmt(int index) {
-        if(index < 0 || index > stmts.size()-1) {
+        if (index < 0 || index > stmts.size() - 1) {
             throw new IllegalArgumentException();
         }
         Stmt stmt = stmts.remove(index);
         stmt.setBlock(null);
     }
-    
+
     public void removeStmt(Stmt stmt) {
         Objects.requireNonNull(stmt);
         if (!stmts.contains(stmt)) {
@@ -73,7 +73,7 @@ public class CodeBlock implements Vertex {
         }
         stmt.setBlock(this);
     }
-    
+
     public void insertBefore(Stmt pos, Stmt stmt) {
         insertAbout(pos, stmt, 0);
     }
@@ -99,11 +99,11 @@ public class CodeBlock implements Vertex {
     }
 
     public void replaceStmt(@NonNull Stmt oldStmt, @NonNull Stmt newStmt) {
-        if(!stmts.contains(oldStmt)) {
+        if (!stmts.contains(oldStmt)) {
             throw new IllegalArgumentException("Old statement is not part of this block");
         }
 
-        if(newStmt.getBlock() != null) {
+        if (newStmt.getBlock() != null) {
             throw new IllegalArgumentException("New statement is already in a block");
         }
 
@@ -116,14 +116,14 @@ public class CodeBlock implements Vertex {
     public List<Stmt> stmts() {
         return Collections.unmodifiableList(stmts);
     }
-    
+
     public List<Stmt> modSafeStmts() {
         return new ArrayList<>(stmts);
     }
-    
+
     public void accept(CodeVisitor vis) {
-        for(Stmt stmt : stmts) {
-        	stmt.accept(vis);
+        for (Stmt stmt : stmts) {
+            stmt.accept(vis);
         }
     }
 
