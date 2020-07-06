@@ -117,6 +117,10 @@ public class CodeBlock implements Vertex {
         return Collections.unmodifiableList(stmts);
     }
     
+    public List<Stmt> modSafeStmts() {
+        return new ArrayList<>(stmts);
+    }
+    
     public void accept(CodeVisitor vis) {
         for(Stmt stmt : stmts) {
         	stmt.accept(vis);
