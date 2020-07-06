@@ -46,6 +46,12 @@ public class SSADefUseMapTest {
     }
 
     @Test
+    void testReplaceDefNPE() {
+        SSADefUseMap map = new SSADefUseMap();
+        assertThrows(NullPointerException.class, () -> map.replaceDef(null));
+    }
+
+    @Test
     void testGetDefNPE() {
         SSADefUseMap map = new SSADefUseMap();
         assertThrows(NullPointerException.class, () -> map.getDef(null));
@@ -382,7 +388,5 @@ public class SSADefUseMapTest {
         assertEquals(yDecl, map.getDef(y));
         assertEquals(Set.of(new ExprUse(xUse)), map.getUses(x));
         assertEquals(Set.of(), map.getUses(y));
-
-        System.out.println(map);
     }
 }
