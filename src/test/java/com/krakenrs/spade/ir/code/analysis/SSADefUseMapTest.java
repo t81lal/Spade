@@ -2,6 +2,7 @@ package com.krakenrs.spade.ir.code.analysis;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,12 +10,16 @@ import org.junit.jupiter.api.Test;
 
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.expr.ArithmeticExpr;
+import com.krakenrs.spade.ir.code.expr.InvokeExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadConstExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.stmt.AssignLocalStmt;
 import com.krakenrs.spade.ir.code.stmt.AssignParamStmt;
 import com.krakenrs.spade.ir.code.stmt.AssignPhiStmt;
+import com.krakenrs.spade.ir.code.stmt.ConsumeStmt;
+import com.krakenrs.spade.ir.type.MethodType;
 import com.krakenrs.spade.ir.type.PrimitiveType;
+import com.krakenrs.spade.ir.type.UnresolvedClassType;
 import com.krakenrs.spade.ir.value.Constant;
 import com.krakenrs.spade.ir.value.Local;
 
@@ -181,5 +186,40 @@ public class SSADefUseMapTest {
         assertEquals(Set.of(new PhiUse(l1, x1, phi)), map.getUses(x1));
         assertEquals(Set.of(new PhiUse(l2, x2, phi)), map.getUses(x2));
         assertEquals(Set.of(), map.getUses(x3));
+    }
+
+    @Test
+    void testAddNonDeclStmt() {
+        /* @param x
+         * @param y
+         * consume(TestClass.testMethod(x, y)) */
+        SSADefUseMap map = new SSADefUseMap();
+
+        var x = lvar(0, 0);
+        var y = lvar(1, 0);
+
+        assertFalse(map.isDefined(x));
+        assertFalse(map.isDefined(y));
+
+        var xDecl = new AssignParamStmt(x);
+        var yDecl = new AssignParamStmt(y);
+
+        map.addStmt(xDecl);
+        map.addStmt(yDecl);
+
+        assertEquals(xDecl, map.getDef(x));
+        assertEquals(yDecl, map.getDef(y));
+
+        var xUse = new LoadLocalExpr(PrimitiveType.INT, x);
+        var yUse = new LoadLocalExpr(PrimitiveType.INT, y);
+
+        var testStmt = new ConsumeStmt(new InvokeExpr.InvokeStaticExpr(new UnresolvedClassType("TestClass"),
+                "testMethod", new MethodType(List.of(PrimitiveType.INT, PrimitiveType.INT), PrimitiveType.INT),
+                List.of(xUse, yUse)));
+
+        map.addStmt(testStmt);
+
+        assertEquals(Set.of(new ExprUse(xUse)), map.getUses(x));
+        assertEquals(Set.of(new ExprUse(yUse)), map.getUses(y));
     }
 }
