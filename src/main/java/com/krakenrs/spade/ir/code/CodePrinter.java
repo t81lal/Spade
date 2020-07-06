@@ -43,6 +43,10 @@ public class CodePrinter implements Opcodes {
         return new Emitter().emitStmt(stmt).toString();
     }
 
+    public static String toString(Expr expr) {
+        return new Emitter().emitExpr(expr).toString();
+    }
+
     static class Emitter {
         final String tab = "  ";
 
