@@ -17,7 +17,7 @@ public abstract class DeclareLocalStmt extends Stmt {
     public Local var() {
         return var;
     }
-    
+
     public abstract DeclareLocalStmt copy(Local newVar);
 
     @Override

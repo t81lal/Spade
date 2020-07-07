@@ -25,6 +25,8 @@ public abstract class AssignFieldStmt extends Stmt {
         this.name = name;
         this.fieldType = fieldType;
         this.value = value;
+
+        value.setParent(this);
     }
 
     @Override
@@ -32,7 +34,7 @@ public abstract class AssignFieldStmt extends Stmt {
         super.accept(vis);
         vis.visitAssignFieldStmt(this);
     }
-    
+
     @Override
     public Stmt reduceStmt(CodeReducer reducer) {
         return reducer.reduceAssignFieldStmt(this);
@@ -85,6 +87,8 @@ public abstract class AssignFieldStmt extends Stmt {
                 LoadLocalExpr accessor) {
             super(owner, name, fieldType, value);
             this.accessor = accessor;
+
+            accessor.setParent(this);
         }
 
         public LoadLocalExpr accessor() {

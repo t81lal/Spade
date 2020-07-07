@@ -15,6 +15,8 @@ public class ArrayLengthExpr extends Expr {
     public ArrayLengthExpr(LoadLocalExpr var) {
         super(Opcodes.ARRAYLEN, PrimitiveType.INT);
         this.var = var;
+
+        var.setParent(this);
     }
 
     @Override

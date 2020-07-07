@@ -22,6 +22,8 @@ public class MonitorStmt extends Stmt {
         super(Opcodes.MONITOR);
         this.var = var;
         this.mode = mode;
+
+        var.setParent(this);
     }
 
     @Override

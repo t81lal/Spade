@@ -14,6 +14,8 @@ public class AssignLocalStmt extends DeclareLocalStmt {
     public AssignLocalStmt(Local var, Expr value) {
         super(Opcodes.ASSIGN_LOCAL, var);
         this.value = value;
+
+        value.setParent(this);
     }
 
     @Override

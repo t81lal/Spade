@@ -14,11 +14,13 @@ public class CompareExpr extends Expr {
 
     public enum Operation {
         LT("<"), GT(">"), NONE("==");
+
         private final String symbol;
+
         Operation(String symbol) {
             this.symbol = symbol;
         }
-        
+
         @Override
         public String toString() {
             return symbol;
@@ -33,6 +35,9 @@ public class CompareExpr extends Expr {
         this.lhs = lhs;
         this.rhs = rhs;
         this.operation = operation;
+
+        lhs.setParent(this);
+        rhs.setParent(this);
     }
 
     @Override

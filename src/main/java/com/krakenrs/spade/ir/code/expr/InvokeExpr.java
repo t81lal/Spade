@@ -19,7 +19,7 @@ public abstract class InvokeExpr extends Expr {
     public enum Mode {
         STATIC, VIRTUAL, INTERFACE, SPECIAL, DYNAMIC
     }
-    
+
     private final ClassType owner;
     private final String name;
     private final MethodType methodType;
@@ -33,6 +33,10 @@ public abstract class InvokeExpr extends Expr {
         this.methodType = methodType;
         this.mode = mode;
         this.arguments = Collections.unmodifiableList(arguments);
+
+        for (ValueExpr<?> a : arguments) {
+            a.setParent(this);
+        }
     }
 
     @Override
@@ -88,6 +92,8 @@ public abstract class InvokeExpr extends Expr {
                 throw new IllegalArgumentException();
             }
             this.accessor = accessor;
+
+            accessor.setParent(this);
         }
 
         public LoadLocalExpr accessor() {

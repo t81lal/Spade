@@ -13,6 +13,8 @@ public class ConsumeStmt extends Stmt {
     public ConsumeStmt(Expr expr) {
         super(Opcodes.CONSUME);
         this.expr = expr;
+
+        expr.setParent(this);
     }
 
     @Override

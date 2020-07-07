@@ -24,6 +24,7 @@ public class ArithmeticExpr extends Expr {
         OR("|"),
         AND("&"),
         XOR("^");
+
         private final String symbol;
 
         Operation(String symbol) {
@@ -44,6 +45,9 @@ public class ArithmeticExpr extends Expr {
         this.operation = operation;
         this.lhs = lhs;
         this.rhs = rhs;
+
+        lhs.setParent(this);
+        rhs.setParent(this);
     }
 
     @Override

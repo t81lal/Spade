@@ -52,7 +52,7 @@ public abstract class LoadFieldExpr extends Expr {
             return false;
         }
     }
-    
+
     public static class LoadStaticFieldExpr extends LoadFieldExpr {
         public LoadStaticFieldExpr(ClassType owner, String name, ValueType fieldType) {
             super(owner, name, fieldType);
@@ -70,6 +70,8 @@ public abstract class LoadFieldExpr extends Expr {
         public LoadVirtualFieldExpr(ClassType owner, String name, ValueType fieldType, LoadLocalExpr accessor) {
             super(owner, name, fieldType);
             this.accessor = accessor;
+
+            accessor.setParent(this);
         }
 
         public LoadLocalExpr accessor() {

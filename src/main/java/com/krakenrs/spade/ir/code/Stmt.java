@@ -8,7 +8,8 @@ import lombok.Setter;
 
 public abstract class Stmt extends CodeUnit {
 
-	@Getter @Setter
+    @Getter
+    @Setter
     private CodeBlock block;
 
     public Stmt(int opcode) {
@@ -22,9 +23,9 @@ public abstract class Stmt extends CodeUnit {
 
     @Override
     public boolean equivalent(@NonNull CodeUnit u) {
-    	// See Expr.equivalent
+        // See Expr.equivalent
         return getClass().equals(u.getClass());
     }
-    
+
     public abstract Stmt reduceStmt(CodeReducer reducer);
 }

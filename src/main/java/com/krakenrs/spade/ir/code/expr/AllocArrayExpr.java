@@ -16,12 +16,16 @@ import lombok.NonNull;
 
 public class AllocArrayExpr extends Expr {
 
-	@Getter
+    @Getter
     private final List<ValueExpr<?>> bounds;
 
     public AllocArrayExpr(ValueType type, @NonNull List<ValueExpr<?>> bounds) {
         super(Opcodes.ALLOCARR, type);
         this.bounds = new ArrayList<>(bounds);
+
+        for (ValueExpr<?> b : bounds) {
+            b.setParent(this);
+        }
     }
 
     @Override

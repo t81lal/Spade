@@ -18,6 +18,9 @@ public class LoadArrayExpr extends Expr {
         super(Opcodes.LOAD_ARR, componentType);
         this.array = array;
         this.index = index;
+
+        array.setParent(this);
+        index.setParent(this);
     }
 
     @Override

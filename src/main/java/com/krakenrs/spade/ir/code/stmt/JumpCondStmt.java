@@ -13,6 +13,7 @@ import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 public class JumpCondStmt extends Stmt {
     public enum Mode {
         EQ("=="), NE("!="), LT("<"), GE(">="), GT(">"), LE("<=");
+
         private final String symbol;
 
         private Mode(String symbol) {
@@ -35,6 +36,9 @@ public class JumpCondStmt extends Stmt {
         this.rhs = rhs;
         this.mode = mode;
         this.target = target;
+
+        lhs.setParent(this);
+        rhs.setParent(this);
     }
 
     @Override

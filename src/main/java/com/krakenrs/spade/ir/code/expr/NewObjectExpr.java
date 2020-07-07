@@ -24,6 +24,10 @@ public class NewObjectExpr extends Expr {
         this.owner = owner;
         this.methodType = methodType;
         this.arguments = Collections.unmodifiableList(arguments);
+
+        for (ValueExpr<?> a : arguments) {
+            a.setParent(this);
+        }
     }
 
     public ClassType owner() {
@@ -48,7 +52,7 @@ public class NewObjectExpr extends Expr {
     public Expr reduceExpr(CodeReducer reducer) {
         return reducer.reduceNewObjectExpr(this);
     }
-    
+
     @Override
     public boolean equivalent(CodeUnit u) {
         if (super.equivalent(u)) {

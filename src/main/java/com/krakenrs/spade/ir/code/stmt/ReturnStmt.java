@@ -16,6 +16,8 @@ public class ReturnStmt extends Stmt {
     public ReturnStmt(LoadLocalExpr var) {
         super(Opcodes.RETURN);
         this.var = var;
+
+        var.setParent(this);
     }
 
     @Override

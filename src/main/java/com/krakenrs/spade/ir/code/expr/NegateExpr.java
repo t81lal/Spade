@@ -13,6 +13,8 @@ public class NegateExpr extends Expr {
     public NegateExpr(LoadLocalExpr var) {
         super(Opcodes.NEGATE, var.getType());
         this.var = var;
+
+        var.setParent(this);
     }
 
     @Override

@@ -20,6 +20,8 @@ public class InstanceOfExpr extends Expr {
         super(Opcodes.INSTANCEOF, PrimitiveType.BOOLEAN);
         this.var = var;
         this.checkType = checkType;
+
+        var.setParent(this);
     }
 
     @Override

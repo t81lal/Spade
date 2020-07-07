@@ -14,6 +14,8 @@ public class CastExpr extends Expr {
     public CastExpr(ValueType type, LoadLocalExpr var) {
         super(Opcodes.CAST, type);
         this.var = var;
+
+        var.setParent(this);
     }
 
     @Override

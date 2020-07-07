@@ -25,6 +25,8 @@ public class JumpSwitchStmt extends Stmt {
         this.expr = expr;
         this.cases = Collections.unmodifiableMap(cases);
         this.defaultCase = defaultCase;
+
+        expr.setParent(this);
     }
 
     @Override

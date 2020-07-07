@@ -17,6 +17,10 @@ public class AssignArrayStmt extends Stmt {
         this.array = array;
         this.index = index;
         this.value = value;
+
+        array.setParent(this);
+        index.setParent(this);
+        value.setParent(this);
     }
 
     @Override
@@ -29,7 +33,7 @@ public class AssignArrayStmt extends Stmt {
     public Stmt reduceStmt(CodeReducer reducer) {
         return reducer.reduceAssignArrayStmt(this);
     }
-    
+
     public LoadLocalExpr array() {
         return array;
     }

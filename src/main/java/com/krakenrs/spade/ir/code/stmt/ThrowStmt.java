@@ -16,6 +16,8 @@ public class ThrowStmt extends Stmt {
     public ThrowStmt(LoadLocalExpr var) {
         super(Opcodes.THROW);
         this.var = var;
+
+        var.setParent(this);
     }
 
     @Override
