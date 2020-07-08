@@ -27,7 +27,8 @@ import com.krakenrs.spade.pipeline.execution.PipelineExecutorImpl;
  * @param <I> The input type to this particular part of the pipeline
  * @param <O> The output type of this particular part of the pipeline
  */
-public abstract class Pipeline<S, I, O> implements PipelineProducer<S, O> {
+public abstract class Pipeline<S, I, O>
+        implements PipelineProducer<S, O>, PipelineComposable<S, O>, PipelineComposed<S, I, O> {
     protected final PipelineHeadStub<S> head;
     protected final PipelineProducer<S, I> inputProducer;
 
@@ -52,6 +53,7 @@ public abstract class Pipeline<S, I, O> implements PipelineProducer<S, O> {
      * 
      * @return A basic executor
      */
+    @Override
     public PipelineExecutor<S, O> build() {
         return new PipelineExecutorImpl<>(this);
     }
@@ -64,6 +66,7 @@ public abstract class Pipeline<S, I, O> implements PipelineProducer<S, O> {
      * @return An executor from the given type
      * @throws Exception If any reflection errors occur when instantiating the executor
      */
+    @Override
     public PipelineExecutor<S, O> build(Class<? extends PipelineExecutor<S, O>> executorClass) throws Exception {
         return executorClass.getConstructor(Pipeline.class).newInstance(this);
     }
@@ -75,6 +78,7 @@ public abstract class Pipeline<S, I, O> implements PipelineProducer<S, O> {
      * @param contextCreator The {@link PipelineExecutionContext} factory
      * @return An executor that uses the given context factory
      */
+    @Override
     public PipelineExecutor<S, O> build(Function<S, PipelineExecutionContext<S>> contextCreator) {
         return new PipelineExecutorImpl<>(this, contextCreator);
     }
@@ -85,7 +89,7 @@ public abstract class Pipeline<S, I, O> implements PipelineProducer<S, O> {
      * @param <T>
      * @return
      */
-    public static <T> PipelineProducer<T, T> from() {
+    public static <T> PipelineComposable<T, T> from() {
         return new PipelineHeadStub<>();
     }
 }

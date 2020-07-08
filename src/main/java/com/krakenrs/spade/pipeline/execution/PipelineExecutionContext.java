@@ -1,6 +1,5 @@
 package com.krakenrs.spade.pipeline.execution;
 
-import com.krakenrs.spade.pipeline.Pipeline;
 import com.krakenrs.spade.pipeline.PipelineProducer;
 import com.krakenrs.spade.pipeline.PipelineStep;
 
@@ -24,15 +23,5 @@ public abstract class PipelineExecutionContext<V> implements PipelineProducer<V,
             throw new IllegalStateException();
         }
         return input;
-    }
-
-    @Override
-    public <T> Pipeline<V, V, T> then(PipelineStep<V, T> step) {
-        throw new UnsupportedOperationException("Non composable");
-    }
-
-    @Override
-    public <T> Pipeline<V, V, T> then(Class<? extends PipelineStep<V, T>> stepClass) {
-        throw new UnsupportedOperationException("Non composable");
     }
 }

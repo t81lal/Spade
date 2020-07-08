@@ -26,23 +26,4 @@ public interface PipelineProducer<S, I> {
      *     pipeline framework
      */
     I get(PipelineExecutionContext<S> context) throws ExecutionException;
-
-    /**
-     * Fluent-api method for linking another computation step to be executed after this.
-     * 
-     * @param <T> The output type of the given computation
-     * @param step The computation itself
-     * @return The updated pipeline
-     */
-    <T> Pipeline<S, I, T> then(PipelineStep<I, T> step);
-
-    /**
-     * Fluent-api method for linking another computation step to be executed after this. The difference between this and
-     * {@link #then(PipelineStep)} is that this {@link PipelineStep} must be constructed ondemand.
-     * 
-     * @param <T> The output type of the given computation
-     * @param step A class representing a computation
-     * @return The updated pipeline
-     */
-    <T> Pipeline<S, I, T> then(Class<? extends PipelineStep<I, T>> stepClass);
 }
