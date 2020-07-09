@@ -38,6 +38,6 @@ public final class ExprUse extends Use {
 
     @Override
     public String toString() {
-        return CodePrinter.toString(expr);
+        return CodePrinter.toString(expr.stmt());
     }
 }

@@ -25,7 +25,8 @@ public class SSADefUseMap {
     private final Map<Local, Def> defs = new HashMap<>();
     private final AddStmtVisitor addStmtVisitor = new AddStmtVisitor();
     private final RemoveStmtVisitor removeStmtVisitor = new RemoveStmtVisitor();
-
+    private boolean enforceSSA = true;
+    
     public SSADefUseMap() {
     }
 
@@ -79,7 +80,7 @@ public class SSADefUseMap {
     }
 
     private Local assertVersioned(Local local) {
-        if (!local.isVersioned()) {
+        if (enforceSSA && !local.isVersioned()) {
             throw new IllegalArgumentException("Not an SSA local: " + local);
         }
         return local;
@@ -173,8 +174,8 @@ public class SSADefUseMap {
         while (defIt.hasNext()) {
             Entry<Local, Def> e = defIt.next();
             DeclareLocalStmt s = e.getValue().getStmt();
-            String blockId = s.getBlock() != null ? String.valueOf(s.getBlock().id()) : "? ";
-            sb.append(" ").append(e.getKey()).append(" => L").append(blockId).append(CodePrinter.toString(s));
+            String blockId = s.getBlock() != null ? String.valueOf(s.getBlock().id()) : "?";
+            sb.append(" ").append(e.getKey()).append(" @ L").append(blockId).append(" | ").append(CodePrinter.toString(s));
             uses.addAll(e.getValue().getUses());
 
             if (defIt.hasNext() || !uses.isEmpty()) {
@@ -190,7 +191,7 @@ public class SSADefUseMap {
         Iterator<Use> useIt = uses.iterator();
         while (useIt.hasNext()) {
             Use use = useIt.next();
-            sb.append(" ").append(use.getLocal()).append(" => ").append(use);
+            sb.append(" ").append(use.getLocal()).append(" @ ").append(use);
             if (useIt.hasNext()) {
                 sb.append("\n");
             }

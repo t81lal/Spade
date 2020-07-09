@@ -3,6 +3,7 @@ package com.krakenrs.spade.ir.code.analysis;
 import java.util.Objects;
 
 import com.krakenrs.spade.ir.code.CodeBlock;
+import com.krakenrs.spade.ir.code.CodePrinter;
 import com.krakenrs.spade.ir.code.stmt.AssignPhiStmt;
 import com.krakenrs.spade.ir.value.Local;
 
@@ -43,6 +44,6 @@ public final class PhiUse extends Use {
 
     @Override
     public String toString() {
-        return stmt.var() + " in: L" + stmt.getBlock().id() + ", pred: L" + predBlock.id();
+        return CodePrinter.toString(stmt) + ", L" + predBlock.id() + "/" + local;
     }
 }
