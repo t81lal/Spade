@@ -17,7 +17,9 @@ public class ReturnStmt extends Stmt {
         super(Opcodes.RETURN);
         this.var = var;
 
-        var.setParent(this);
+        if(var != null) {
+            var.setParent(this);
+        }
     }
 
     @Override
