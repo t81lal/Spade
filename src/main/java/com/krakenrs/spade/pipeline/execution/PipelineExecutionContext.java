@@ -17,6 +17,8 @@ public abstract class PipelineExecutionContext<V> implements PipelineProducer<V,
     public abstract <I, O> PipelineStep<I, O> getStep(Class<? extends PipelineStep<I, O>> stepClass)
             throws ExecutionException;
 
+    public abstract <I, O> PipelineStep<I, O> getEmbellishedStep(PipelineStep<I, O> step) throws ExecutionException;
+
     @Override
     public V get(PipelineExecutionContext<V> ctx) {
         if (ctx != this) {

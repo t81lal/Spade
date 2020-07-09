@@ -14,6 +14,7 @@ public class ApplicativePipeline<S, I, O> extends Pipeline<S, I, O> {
 
     @Override
     public O get(PipelineExecutionContext<S> context) throws ExecutionException {
-        return step.apply(inputProducer.get(context));
+        PipelineStep<I, O> embellishedStep = context.getEmbellishedStep(step);
+        return embellishedStep.apply(inputProducer.get(context));
     }
 }

@@ -17,4 +17,9 @@ public class SimplePipelineExecutionContext<V> extends PipelineExecutionContext<
             throw new ExecutionException(e);
         }
     }
+
+    @Override
+    public <I, O> PipelineStep<I, O> getEmbellishedStep(PipelineStep<I, O> step) throws ExecutionException {
+        return step;
+    }
 }
