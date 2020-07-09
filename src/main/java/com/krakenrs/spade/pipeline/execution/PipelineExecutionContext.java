@@ -9,6 +9,12 @@ public abstract class PipelineExecutionContext<V> implements PipelineProducer<V,
     public PipelineExecutionContext(V input) {
         this.input = input;
     }
+    
+    public void onExecutionStart() {
+    }
+
+    public void onExecutionEnd() {
+    }
 
     public V getInput() {
         return input;

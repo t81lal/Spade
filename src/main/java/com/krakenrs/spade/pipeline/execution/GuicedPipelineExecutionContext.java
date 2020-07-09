@@ -22,6 +22,15 @@ public class GuicedPipelineExecutionContext<V> extends PipelineExecutionContext<
         this.withObjectInjection = withObjectInjection;
     }
 
+    @Override
+    public void onExecutionStart() {
+    }
+
+    @Override
+    public void onExecutionEnd() {
+    }
+
+    @Override
     public <I, O> PipelineStep<I, O> getStep(@NonNull Class<? extends PipelineStep<I, O>> stepClass)
             throws ExecutionException {
         try {

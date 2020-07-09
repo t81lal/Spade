@@ -9,6 +9,15 @@ public class SimplePipelineExecutionContext<V> extends PipelineExecutionContext<
         super(input);
     }
 
+    @Override
+    public void onExecutionStart() {
+    }
+
+    @Override
+    public void onExecutionEnd() {
+    }
+
+    @Override
     public <I, O> PipelineStep<I, O> getStep(Class<? extends PipelineStep<I, O>> stepClass) throws ExecutionException {
         try {
             return stepClass.getConstructor().newInstance();
