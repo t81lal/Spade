@@ -2,6 +2,8 @@ package com.krakenrs.spade.ir.code.expr;
 
 import java.util.Objects;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -40,7 +42,8 @@ public class ArithmeticExpr extends Expr {
     private final Operation operation;
     private final ValueExpr<?> lhs, rhs;
 
-    public ArithmeticExpr(ValueType resultType, Operation operation, ValueExpr<?> lhs, ValueExpr<?> rhs) {
+    @Inject
+    public ArithmeticExpr(@Assisted ValueType resultType, @Assisted Operation operation, @Assisted("left") ValueExpr<?> lhs, @Assisted("right") ValueExpr<?> rhs) {
         super(Opcodes.ARITHMETIC, resultType);
         this.operation = operation;
         this.lhs = lhs;

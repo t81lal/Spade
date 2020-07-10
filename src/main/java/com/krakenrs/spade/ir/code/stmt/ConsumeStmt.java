@@ -1,5 +1,7 @@
 package com.krakenrs.spade.ir.code.stmt;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -10,7 +12,8 @@ import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 public class ConsumeStmt extends Stmt {
     private final Expr expr;
 
-    public ConsumeStmt(Expr expr) {
+    @Inject
+    public ConsumeStmt(@Assisted Expr expr) {
         super(Opcodes.CONSUME);
         this.expr = expr;
 

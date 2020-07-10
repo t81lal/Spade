@@ -2,6 +2,8 @@ package com.krakenrs.spade.ir.code.stmt;
 
 import java.util.Objects;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
@@ -18,7 +20,8 @@ public class MonitorStmt extends Stmt {
     private final LoadLocalExpr var;
     private final Mode mode;
 
-    public MonitorStmt(LoadLocalExpr var, Mode mode) {
+    @Inject
+    public MonitorStmt(@Assisted LoadLocalExpr var, @Assisted Mode mode) {
         super(Opcodes.MONITOR);
         this.var = var;
         this.mode = mode;

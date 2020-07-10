@@ -1,5 +1,7 @@
 package com.krakenrs.spade.ir.code.stmt;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
@@ -12,7 +14,8 @@ public class AssignArrayStmt extends Stmt {
     private final LoadLocalExpr array;
     private final ValueExpr<?> index, value;
 
-    public AssignArrayStmt(LoadLocalExpr array, ValueExpr<?> index, ValueExpr<?> value) {
+    @Inject
+    public AssignArrayStmt(@Assisted LoadLocalExpr array, @Assisted("index") ValueExpr<?> index, @Assisted("value") ValueExpr<?> value) {
         super(Opcodes.ASSIGN_ARRAY);
         this.array = array;
         this.index = index;

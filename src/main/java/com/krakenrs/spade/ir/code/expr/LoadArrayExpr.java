@@ -1,5 +1,7 @@
 package com.krakenrs.spade.ir.code.expr;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -14,7 +16,8 @@ public class LoadArrayExpr extends Expr {
     private LoadLocalExpr array;
     private ValueExpr<?> index;
 
-    public LoadArrayExpr(ValueType componentType, LoadLocalExpr array, ValueExpr<?> index) {
+    @Inject
+    public LoadArrayExpr(@Assisted ValueType componentType, @Assisted LoadLocalExpr array, @Assisted ValueExpr<?> index) {
         super(Opcodes.LOAD_ARR, componentType);
         this.array = array;
         this.index = index;

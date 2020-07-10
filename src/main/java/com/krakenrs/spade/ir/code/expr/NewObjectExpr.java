@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -19,7 +21,8 @@ public class NewObjectExpr extends Expr {
     private final MethodType methodType;
     private final List<ValueExpr<?>> arguments;
 
-    public NewObjectExpr(ClassType owner, MethodType methodType, List<ValueExpr<?>> arguments) {
+    @Inject
+    public NewObjectExpr(@Assisted ClassType owner, @Assisted MethodType methodType, @Assisted List<ValueExpr<?>> arguments) {
         super(Opcodes.NEWOBJ, owner.asValueType());
         this.owner = owner;
         this.methodType = methodType;

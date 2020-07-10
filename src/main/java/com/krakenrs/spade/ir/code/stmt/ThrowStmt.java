@@ -2,6 +2,8 @@ package com.krakenrs.spade.ir.code.stmt;
 
 import java.util.Objects;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
@@ -13,7 +15,8 @@ public class ThrowStmt extends Stmt {
 
     private final LoadLocalExpr var;
 
-    public ThrowStmt(LoadLocalExpr var) {
+    @Inject
+    public ThrowStmt(@Assisted LoadLocalExpr var) {
         super(Opcodes.THROW);
         this.var = var;
 

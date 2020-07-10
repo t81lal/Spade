@@ -1,5 +1,7 @@
 package com.krakenrs.spade.ir.code.stmt;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -11,7 +13,8 @@ import com.krakenrs.spade.ir.value.Local;
 public class AssignLocalStmt extends DeclareLocalStmt {
     private final Expr value;
 
-    public AssignLocalStmt(Local var, Expr value) {
+    @Inject
+    public AssignLocalStmt(@Assisted Local var, @Assisted Expr value) {
         super(Opcodes.ASSIGN_LOCAL, var);
         this.value = value;
 

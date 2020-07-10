@@ -1,5 +1,7 @@
 package com.krakenrs.spade.ir.code.expr;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -10,7 +12,8 @@ import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 public class NegateExpr extends Expr {
     private final LoadLocalExpr var;
 
-    public NegateExpr(LoadLocalExpr var) {
+    @Inject
+    public NegateExpr(@Assisted LoadLocalExpr var) {
         super(Opcodes.NEGATE, var.getType());
         this.var = var;
 

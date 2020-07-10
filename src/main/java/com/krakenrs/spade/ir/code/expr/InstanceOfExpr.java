@@ -2,6 +2,8 @@ package com.krakenrs.spade.ir.code.expr;
 
 import java.util.Objects;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -16,7 +18,8 @@ public class InstanceOfExpr extends Expr {
     private final LoadLocalExpr var;
     private final Type checkType;
 
-    public InstanceOfExpr(LoadLocalExpr var, Type checkType) {
+    @Inject
+    public InstanceOfExpr(@Assisted LoadLocalExpr var, @Assisted Type checkType) {
         super(Opcodes.INSTANCEOF, PrimitiveType.BOOLEAN);
         this.var = var;
         this.checkType = checkType;

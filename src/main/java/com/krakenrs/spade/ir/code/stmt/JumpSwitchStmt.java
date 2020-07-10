@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -20,7 +22,8 @@ public class JumpSwitchStmt extends Stmt {
     private final Map<Integer, CodeBlock> cases;
     private final CodeBlock defaultCase;
 
-    public JumpSwitchStmt(ValueExpr<?> expr, Map<Integer, CodeBlock> cases, CodeBlock defaultCase) {
+    @Inject
+    public JumpSwitchStmt(@Assisted ValueExpr<?> expr, @Assisted Map<Integer, CodeBlock> cases, @Assisted CodeBlock defaultCase) {
         super(Opcodes.JUMP_SWITCH);
         this.expr = expr;
         this.cases = Collections.unmodifiableMap(cases);

@@ -1,5 +1,7 @@
 package com.krakenrs.spade.ir.code.expr;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -12,7 +14,8 @@ public class ArrayLengthExpr extends Expr {
 
     private final LoadLocalExpr var;
 
-    public ArrayLengthExpr(LoadLocalExpr var) {
+    @Inject
+    public ArrayLengthExpr(@Assisted LoadLocalExpr var) {
         super(Opcodes.ARRAYLEN, PrimitiveType.INT);
         this.var = var;
 

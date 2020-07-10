@@ -1,5 +1,7 @@
 package com.krakenrs.spade.ir.code.expr;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.visitor.CodeReducer;
@@ -7,7 +9,8 @@ import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ClassType;
 
 public class AllocObjectExpr extends Expr {
-    public AllocObjectExpr(ClassType type) {
+    @Inject
+    public AllocObjectExpr(@Assisted ClassType type) {
         super(Opcodes.ALLOCOBJ, type.asValueType());
     }
 

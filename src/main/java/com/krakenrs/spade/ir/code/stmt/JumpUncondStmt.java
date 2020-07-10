@@ -2,6 +2,8 @@ package com.krakenrs.spade.ir.code.stmt;
 
 import java.util.Objects;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -13,7 +15,8 @@ public class JumpUncondStmt extends Stmt {
 
     private final CodeBlock target;
 
-    public JumpUncondStmt(CodeBlock target) {
+    @Inject
+    public JumpUncondStmt(@Assisted CodeBlock target) {
         super(Opcodes.JUMP_UNCOND);
         this.target = target;
     }

@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -85,8 +87,9 @@ public abstract class InvokeExpr extends Expr {
     public static class InvokeVirtualExpr extends InvokeExpr {
         private final LoadLocalExpr accessor;
 
-        public InvokeVirtualExpr(ClassType owner, String name, MethodType methodType, Mode mode, LoadLocalExpr accessor,
-                List<ValueExpr<?>> arguments) {
+        @Inject
+        public InvokeVirtualExpr(@Assisted ClassType owner, @Assisted String name, @Assisted MethodType methodType, @Assisted Mode mode, @Assisted LoadLocalExpr accessor,
+                @Assisted List<ValueExpr<?>> arguments) {
             super(owner, name, methodType, mode, arguments);
             if (mode == Mode.STATIC || mode == Mode.DYNAMIC) {
                 throw new IllegalArgumentException();
@@ -107,7 +110,8 @@ public abstract class InvokeExpr extends Expr {
     }
 
     public static class InvokeStaticExpr extends InvokeExpr {
-        public InvokeStaticExpr(ClassType owner, String name, MethodType methodType, List<ValueExpr<?>> arguments) {
+        @Inject
+        public InvokeStaticExpr(@Assisted ClassType owner, @Assisted String name, @Assisted MethodType methodType, @Assisted List<ValueExpr<?>> arguments) {
             super(owner, name, methodType, Mode.STATIC, arguments);
         }
     }

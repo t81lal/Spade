@@ -2,6 +2,8 @@ package com.krakenrs.spade.ir.code.stmt;
 
 import java.util.Objects;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -30,7 +32,8 @@ public class JumpCondStmt extends Stmt {
     private final Mode mode;
     private final CodeBlock target;
 
-    public JumpCondStmt(ValueExpr<?> lhs, ValueExpr<?> rhs, Mode mode, CodeBlock target) {
+    @Inject
+    public JumpCondStmt(@Assisted("left") ValueExpr<?> lhs, @Assisted("right") ValueExpr<?> rhs, @Assisted Mode mode, @Assisted CodeBlock target) {
         super(Opcodes.JUMP_COND);
         this.lhs = lhs;
         this.rhs = rhs;

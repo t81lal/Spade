@@ -1,5 +1,7 @@
 package com.krakenrs.spade.ir.code.stmt;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.visitor.CodeReducer;
@@ -7,7 +9,8 @@ import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.value.Local;
 
 public class AssignParamStmt extends DeclareLocalStmt {
-    public AssignParamStmt(Local var) {
+    @Inject
+    public AssignParamStmt(@Assisted Local var) {
         super(Opcodes.ASSIGN_PARAM, var);
     }
 

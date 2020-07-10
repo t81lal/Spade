@@ -2,6 +2,8 @@ package com.krakenrs.spade.ir.code.stmt;
 
 import java.util.Objects;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
@@ -70,7 +72,8 @@ public abstract class AssignFieldStmt extends Stmt {
     }
 
     public static class AssignStaticFieldStmt extends AssignFieldStmt {
-        public AssignStaticFieldStmt(ClassType owner, String name, ValueType fieldType, ValueExpr<?> value) {
+        @Inject
+        public AssignStaticFieldStmt(@Assisted ClassType owner, @Assisted String name, @Assisted ValueType fieldType, @Assisted ValueExpr<?> value) {
             super(owner, name, fieldType, value);
         }
 
@@ -83,8 +86,9 @@ public abstract class AssignFieldStmt extends Stmt {
     public static class AssignVirtualFieldStmt extends AssignFieldStmt {
         private final LoadLocalExpr accessor;
 
-        public AssignVirtualFieldStmt(ClassType owner, String name, ValueType fieldType, ValueExpr<?> value,
-                LoadLocalExpr accessor) {
+        @Inject
+        public AssignVirtualFieldStmt(@Assisted ClassType owner, @Assisted String name, @Assisted ValueType fieldType, @Assisted ValueExpr<?> value,
+                @Assisted LoadLocalExpr accessor) {
             super(owner, name, fieldType, value);
             this.accessor = accessor;
 

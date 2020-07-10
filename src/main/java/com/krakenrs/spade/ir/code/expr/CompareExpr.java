@@ -2,6 +2,8 @@ package com.krakenrs.spade.ir.code.expr;
 
 import java.util.Objects;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -30,7 +32,8 @@ public class CompareExpr extends Expr {
     private final LoadLocalExpr lhs, rhs;
     private final Operation operation;
 
-    public CompareExpr(LoadLocalExpr lhs, LoadLocalExpr rhs, Operation operation) {
+    @Inject
+    public CompareExpr(@Assisted("left") LoadLocalExpr lhs, @Assisted("right") LoadLocalExpr rhs, @Assisted Operation operation) {
         super(Opcodes.COMPARE, PrimitiveType.INT);
         this.lhs = lhs;
         this.rhs = rhs;

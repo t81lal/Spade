@@ -1,5 +1,7 @@
 package com.krakenrs.spade.ir.code.expr;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -11,7 +13,8 @@ import com.krakenrs.spade.ir.type.ValueType;
 public class CastExpr extends Expr {
     private final LoadLocalExpr var;
 
-    public CastExpr(ValueType type, LoadLocalExpr var) {
+    @Inject
+    public CastExpr(@Assisted ValueType type, @Assisted LoadLocalExpr var) {
         super(Opcodes.CAST, type);
         this.var = var;
 

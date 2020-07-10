@@ -2,6 +2,8 @@ package com.krakenrs.spade.ir.code.expr;
 
 import java.util.Objects;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.ir.code.CodeUnit;
 import com.krakenrs.spade.ir.code.Expr;
 import com.krakenrs.spade.ir.code.Opcodes;
@@ -54,7 +56,8 @@ public abstract class LoadFieldExpr extends Expr {
     }
 
     public static class LoadStaticFieldExpr extends LoadFieldExpr {
-        public LoadStaticFieldExpr(ClassType owner, String name, ValueType fieldType) {
+        @Inject
+        public LoadStaticFieldExpr(@Assisted ClassType owner, @Assisted String name, @Assisted ValueType fieldType) {
             super(owner, name, fieldType);
         }
 
@@ -67,7 +70,8 @@ public abstract class LoadFieldExpr extends Expr {
     public static class LoadVirtualFieldExpr extends LoadFieldExpr {
         private final LoadLocalExpr accessor;
 
-        public LoadVirtualFieldExpr(ClassType owner, String name, ValueType fieldType, LoadLocalExpr accessor) {
+        @Inject
+        public LoadVirtualFieldExpr(@Assisted ClassType owner, @Assisted String name, @Assisted ValueType fieldType, @Assisted LoadLocalExpr accessor) {
             super(owner, name, fieldType);
             this.accessor = accessor;
 
