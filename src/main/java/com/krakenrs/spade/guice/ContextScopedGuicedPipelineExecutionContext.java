@@ -9,15 +9,19 @@ import lombok.NonNull;
 public class ContextScopedGuicedPipelineExecutionContext<V> extends GuicedPipelineExecutionContext<V> {
     @Getter @NonNull
     private final ContextScope<V> scope;
-
-    public ContextScopedGuicedPipelineExecutionContext(V input, Injector injector, ContextScope<V> scope) {
+    private final Class<V> contextClass;
+    
+    public ContextScopedGuicedPipelineExecutionContext(V input, Injector injector, ContextScope<V> scope, Class<V> contextClass) {
         super(input, injector);
         this.scope = scope;
+        this.contextClass = contextClass;
     }
 
     @Override
     public void onExecutionStart() {
-        scope.enter(getInput());
+        V context = getInput();
+        scope.enter(context);
+        scope.seed(contextClass, context);
     }
 
     @Override

@@ -88,6 +88,7 @@ public class ContextScope<C> implements Scope {
         if (!contextValues.containsKey(currentContext)) {
             throw new UnsupportedOperationException();
         } else {
+            LOGGER.trace(" Scope destroy: {}", contextValues.get(currentContext));
             context.set(null);
             contextValues.remove(currentContext);
         }
