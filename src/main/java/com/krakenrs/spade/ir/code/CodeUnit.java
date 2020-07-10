@@ -1,17 +1,12 @@
 package com.krakenrs.spade.ir.code;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import com.krakenrs.spade.ir.code.observer.CodeObserver;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.code.visitor.LocalUsageVisitor;
 import com.krakenrs.spade.ir.value.Local;
-
-import lombok.NonNull;
 
 public abstract class CodeUnit {
     private static int codeUnitIds = 0;
@@ -19,12 +14,9 @@ public abstract class CodeUnit {
     final int id;
     final int opcode;
 
-    final List<CodeObserver> observers;
-
     public CodeUnit(int opcode) {
         this.id = codeUnitIds++;
         this.opcode = opcode;
-        this.observers = new ArrayList<>();
     }
 
     public int id() {
@@ -33,18 +25,6 @@ public abstract class CodeUnit {
 
     public int opcode() {
         return opcode;
-    }
-
-    public boolean addCodeObserver(@NonNull CodeObserver observer) {
-        return observers.add(observer);
-    }
-
-    public boolean removeCodeObserver(@NonNull CodeObserver observer) {
-        return observers.remove(observer);
-    }
-
-    public List<CodeObserver> getCodeObservers() {
-        return Collections.unmodifiableList(observers);
     }
 
     public Set<Local> getUses() {
