@@ -7,18 +7,27 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.commons.collections.graph.Digraph;
 import com.krakenrs.spade.ir.type.MethodType;
 
 public class ControlFlowGraph extends Digraph<CodeBlock, FlowEdge> {
 
+    public static interface Factory {
+        ControlFlowGraph create(MethodType methodType, boolean isStatic);
+    }
+    
     private final MethodType methodType;
     private final boolean isStatic;
     private final CodeBlock entryBlock;
-
     private final Set<ExceptionRange> ranges;
+    
+    private final CodeBlock.Factory codeBlockFactory;
 
-    public ControlFlowGraph(MethodType methodType, boolean isStatic) {
+    @Inject
+    public ControlFlowGraph(CodeBlock.Factory codeBlockFactory, @Assisted MethodType methodType, @Assisted boolean isStatic) {
+        this.codeBlockFactory = codeBlockFactory;
         this.methodType = methodType;
         this.isStatic = isStatic;
         this.ranges = new HashSet<>();
@@ -32,7 +41,7 @@ public class ControlFlowGraph extends Digraph<CodeBlock, FlowEdge> {
     }
 
     public CodeBlock makeBlock() {
-        return new CodeBlock(size());
+        return codeBlockFactory.create(size());
     }
 
     public CodeBlock getTarget(CodeBlock block, FlowEdge.Kind kind) {

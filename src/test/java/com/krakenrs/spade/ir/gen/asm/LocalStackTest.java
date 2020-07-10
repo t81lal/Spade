@@ -1,11 +1,11 @@
-package com.krakenrs.spade.ir.gen;
+package com.krakenrs.spade.ir.gen.asm;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
 import org.junit.jupiter.api.Test;
 
-import com.krakenrs.spade.ir.gen.LocalStack.TypedLocal;
+import com.krakenrs.spade.ir.gen.asm.LocalStack.TypedLocal;
 import com.krakenrs.spade.ir.type.PrimitiveType;
 import com.krakenrs.spade.ir.type.ValueType;
 import com.krakenrs.spade.ir.value.Local;

@@ -1,4 +1,4 @@
-package com.krakenrs.spade.ir.gen;
+package com.krakenrs.spade.ir.gen.asm;
 
 import java.util.Arrays;
 import java.util.Objects;

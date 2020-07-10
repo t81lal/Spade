@@ -16,8 +16,9 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import com.krakenrs.spade.ir.code.ControlFlowGraph;
-import com.krakenrs.spade.ir.gen.AsmGenerationCtx;
-import com.krakenrs.spade.ir.gen.AsmGenerator;
+import com.krakenrs.spade.ir.code.MockCodeFactory;
+import com.krakenrs.spade.ir.gen.asm.AsmGenerationCtx;
+import com.krakenrs.spade.ir.gen.asm.AsmGenerator;
 import com.krakenrs.spade.ir.type.ResolvingMockTypeManager;
 
 public class IRArgumentsProvider implements ArgumentsProvider, AnnotationConsumer<IRSource> {
@@ -47,8 +48,10 @@ public class IRArgumentsProvider implements ArgumentsProvider, AnnotationConsume
                     throw new JUnitException(String.format("Found %d methods with for %s.%s", mns.size(), cn.name, m));
                 }
 
-                AsmGenerationCtx ctx = new AsmGenerationCtx(new ResolvingMockTypeManager(), cn, mns.get(0));
-                cfgs[i] = AsmGenerator.run(ctx);
+                var typeManager = new ResolvingMockTypeManager();
+                AsmGenerationCtx ctx = new AsmGenerationCtx(typeManager, cn, mns.get(0));
+                AsmGenerator generator= new AsmGenerator(ctx, typeManager, new MockCodeFactory());
+                cfgs[i] = generator.run();
             } catch (IOException e) {
                 throw new JUnitException(String.format("Error loading %s.%s", c.getName(), m), e);
             }

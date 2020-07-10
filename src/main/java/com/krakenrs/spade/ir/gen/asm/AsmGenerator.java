@@ -1,4 +1,4 @@
-package com.krakenrs.spade.ir.gen;
+package com.krakenrs.spade.ir.gen.asm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +34,8 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 import org.objectweb.asm.util.Printer;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.commons.collections.tuple.Tuple3.ImmutableTuple3;
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodePrinter;
@@ -73,18 +75,38 @@ import com.krakenrs.spade.ir.code.stmt.JumpUncondStmt;
 import com.krakenrs.spade.ir.code.stmt.MonitorStmt;
 import com.krakenrs.spade.ir.code.stmt.ReturnStmt;
 import com.krakenrs.spade.ir.code.stmt.ThrowStmt;
-import com.krakenrs.spade.ir.gen.LocalStack.TypedLocal;
+import com.krakenrs.spade.ir.gen.Generator;
+import com.krakenrs.spade.ir.gen.asm.LocalStack.TypedLocal;
 import com.krakenrs.spade.ir.type.ArrayType;
 import com.krakenrs.spade.ir.type.ClassType;
 import com.krakenrs.spade.ir.type.MethodType;
 import com.krakenrs.spade.ir.type.PrimitiveType;
+import com.krakenrs.spade.ir.type.TypeManager;
 import com.krakenrs.spade.ir.type.ValueType;
 import com.krakenrs.spade.ir.value.Constant;
 import com.krakenrs.spade.ir.value.Local;
 
-public class AsmGenerator {
-    public static ControlFlowGraph run(AsmGenerationCtx ctx) {
-        AsmGenerationState state = new AsmGenerationState(ctx);
+public class AsmGenerator implements Generator {
+    public interface AsmGeneratorFactory extends GeneratorFactory<AsmGenerationCtx> {
+        AsmGenerator create(AsmGenerationCtx ctx);
+    }
+    
+    private final AsmGenerationCtx ctx;
+    private final TypeManager typeManager;
+    private final ControlFlowGraph.Factory cfgFactory;
+//    private final CodeFactory codeFactory;
+    
+    @Inject
+    public AsmGenerator(@Assisted AsmGenerationCtx ctx, TypeManager typeManager, ControlFlowGraph.Factory cfgFactory) {
+        this.ctx = ctx;
+        this.typeManager = typeManager;
+        this.cfgFactory = cfgFactory;
+//        this.codeFactory = codeFactory;
+    }
+    
+    @Override
+    public ControlFlowGraph run() {
+        AsmGenerationState state = new AsmGenerationState();
         
         ctx.executePhase("AsmGenerator", () -> {
             ctx.executeStage("GenerateEntry", state::generateEntry);
@@ -98,17 +120,10 @@ public class AsmGenerator {
             ctx.executeStage("SplitHandlers", state::splitHandlers);
         });
 
-        ctx.executePhase("SSAGenerator", () -> {
-        	SSAGenerator ssa = new SSAGenerator(ctx);
-            ctx.executeStage("SsaTransform", ssa::doTransform);
-        });
-        
         return state.graph;
     }
 
-    static class AsmGenerationState {
-        final AsmGenerationCtx ctx;
-
+    class AsmGenerationState {
         final Set<CodeBlock> finished;
         final Set<CodeBlock> stacks;
         final Map<CodeBlock, LocalStack> inputStacks;
@@ -123,9 +138,7 @@ public class AsmGenerator {
         
         final ControlFlowGraph graph;
 
-        AsmGenerationState(AsmGenerationCtx ctx) {
-            this.ctx = ctx;
-
+        AsmGenerationState() {
             this.finished = new HashSet<>();
             this.stacks = new HashSet<>();
             this.inputStacks = new HashMap<>();
@@ -138,8 +151,8 @@ public class AsmGenerator {
             
             this.ranges = new HashMap<>();
 
-            this.graph = ctx.getGraph();
-
+            this.graph = cfgFactory.create(ctx.getMethodType(), ctx.isStaticMethod());
+            
             // generateEntry
             // generateHandlers
             // processQueue
@@ -398,9 +411,9 @@ public class AsmGenerator {
                 Local svar0 = new Local(0, true);
                 ClassType catchClassType;
                 if (tcbn.type != null) {
-                    catchClassType = ctx.getTypeManager().asClassType(tcbn.type);
+                    catchClassType = typeManager.asClassType(tcbn.type);
                 } else {
-                    catchClassType = ctx.getTypeManager().asClassType(Throwable.class);
+                    catchClassType = typeManager.asClassType(Throwable.class);
                 }
                 ValueType catchType = catchClassType.asValueType();
 
@@ -450,7 +463,7 @@ public class AsmGenerator {
             List<CodeBlock> range = computeProtectedRange(order, start, end);
             String key = String.format("%d:%d:%d", start, end, handler);
 
-            ExceptionRange erange = getOrCreateRange(order, handlerBlock, ctx.getTypeManager().asClassType(tc.type),
+            ExceptionRange erange = getOrCreateRange(order, handlerBlock, typeManager.asClassType(tc.type),
                     key);
 
             range.forEach(block -> addEdge(new ExceptionEdge(block, erange.handler(), erange)));
@@ -543,7 +556,7 @@ public class AsmGenerator {
                     continue;
 
                 // Create decapitated head block
-                CodeBlock newHandler = makeHandlerBlock(ctx.getTypeManager().lca(erange.catchTypes()));
+                CodeBlock newHandler = makeHandlerBlock(typeManager.lca(erange.catchTypes()));
                 erange.setHandler(newHandler);
                 splitHandlers.put(realHandler, newHandler);
 
@@ -711,8 +724,8 @@ public class AsmGenerator {
 
             void _loadfield(String owner, String name, String desc, boolean isStatic) {
                 LoadFieldExpr lfe;
-                ClassType ownerType = ctx.getTypeManager().asClassType(owner);
-                ValueType fieldType = ctx.getTypeManager().asValueType(desc);
+                ClassType ownerType = typeManager.asClassType(owner);
+                ValueType fieldType = typeManager.asValueType(desc);
                 if (isStatic) {
                     lfe = new LoadFieldExpr.LoadStaticFieldExpr(ownerType, name, fieldType);
                 } else {
@@ -723,8 +736,8 @@ public class AsmGenerator {
 
             void _storefield(String owner, String name, String desc, boolean isStatic) {
                 AssignFieldStmt afs;
-                ClassType ownerType = ctx.getTypeManager().asClassType(owner);
-                ValueType fieldType = ctx.getTypeManager().asValueType(desc);
+                ClassType ownerType = typeManager.asClassType(owner);
+                ValueType fieldType = typeManager.asValueType(desc);
                 LoadLocalExpr value = pop();
                 if(isStatic) {
                     afs = new AssignFieldStmt.AssignStaticFieldStmt(ownerType, name, fieldType, value);
@@ -831,23 +844,23 @@ public class AsmGenerator {
             }
 
             void _callStatic(String owner, String name, String desc) {
-                MethodType type = ctx.getTypeManager().asMethodType(desc);
+                MethodType type = typeManager.asMethodType(desc);
                 ValueExpr<?>[] args = new ValueExpr<?>[type.getParamTypes().size()];
                 for (int i = args.length - 1; i >= 0; i--) {
                     args[i] = pop();
                 }
-                ClassType ownerType = ctx.getTypeManager().asClassType(owner);
+                ClassType ownerType = typeManager.asClassType(owner);
                 _pushInvoke(new InvokeExpr.InvokeStaticExpr(ownerType, name, type, Arrays.asList(args)));
             }
 
             void _callVirtual(InvokeExpr.Mode mode, String owner, String name, String desc) {
-                MethodType type = ctx.getTypeManager().asMethodType(desc);
+                MethodType type = typeManager.asMethodType(desc);
                 ValueExpr<?>[] args = new ValueExpr<?>[type.getParamTypes().size()];
                 for (int i = args.length - 1; i >= 0; i--) {
                     args[i] = pop();
                 }
                 LoadLocalExpr instance = pop();
-                ClassType ownerType = ctx.getTypeManager().asClassType(owner);
+                ClassType ownerType = typeManager.asClassType(owner);
                 _pushInvoke(
                         new InvokeExpr.InvokeVirtualExpr(ownerType, name, type, mode, instance, Arrays.asList(args)));
             }
@@ -899,15 +912,15 @@ public class AsmGenerator {
                             //  cstType = ObjectType(Class.class)
                             Type refCst = (Type) cst;
                             if (refCst.getSort() == Type.OBJECT) {
-                                cst = ctx.getTypeManager().asClassType(refCst.getClassName());
-                                cstType = ctx.getTypeManager().asClassType(Class.class).asValueType();
+                                cst = typeManager.asClassType(refCst.getClassName());
+                                cstType = typeManager.asClassType(Class.class).asValueType();
                             } else {
                                 throw new UnsupportedOperationException(
                                         cst + " :: " + refCst.toString() + " | " + refCst.getSort());
                             }
                             _const(cst, cstType);
                         } else {
-                            _const(cst, TypeHelper.getValueType(ctx.getTypeManager(), cst));
+                            _const(cst, TypeHelper.getValueType(typeManager, cst));
                         }
                         break;
                     }
@@ -925,7 +938,7 @@ public class AsmGenerator {
                     case Opcodes.NEWARRAY: {
                         IntInsnNode iin = (IntInsnNode) insn;
                         PrimitiveType elementType = TypeHelper.getPrimitiveType(iin.operand);
-                        push(new AllocArrayExpr(ctx.getTypeManager().asArrayType(elementType, 1),
+                        push(new AllocArrayExpr(typeManager.asArrayType(elementType, 1),
                                 Arrays.asList(pop())));
                         break;
                     }
@@ -933,10 +946,10 @@ public class AsmGenerator {
                         TypeInsnNode tin = (TypeInsnNode) insn;
                         ArrayType type;
                         if (tin.desc.startsWith("[")) {
-                            type = (ArrayType) ctx.getTypeManager().asValueType(tin.desc);
+                            type = (ArrayType) typeManager.asValueType(tin.desc);
                         } else {
-                            type = ctx.getTypeManager()
-                                    .asArrayType(ctx.getTypeManager().asClassType(tin.desc).asValueType(), 1);
+                            type = typeManager
+                                    .asArrayType(typeManager.asClassType(tin.desc).asValueType(), 1);
                         }
                         push(new AllocArrayExpr(type, Arrays.asList(pop())));
                         break;
@@ -947,7 +960,7 @@ public class AsmGenerator {
                         for (int i = bounds.length - 1; i >= 0; i--) {
                             bounds[i] = pop();
                         }
-                        ArrayType arrayType = (ArrayType) ctx.getTypeManager().asValueType(main.desc);
+                        ArrayType arrayType = (ArrayType) typeManager.asValueType(main.desc);
                         push(new AllocArrayExpr(arrayType, Arrays.asList(bounds)));
                         break;
                     }
@@ -956,14 +969,14 @@ public class AsmGenerator {
                     case Opcodes.FLOAD:
                     case Opcodes.DLOAD:
                     case Opcodes.ALOAD:
-                        _load(((VarInsnNode) insn).var, TypeHelper.getLoadType(ctx.getTypeManager(), opcode));
+                        _load(((VarInsnNode) insn).var, TypeHelper.getLoadType(typeManager, opcode));
                         break;
                     case Opcodes.ISTORE:
                     case Opcodes.LSTORE:
                     case Opcodes.FSTORE:
                     case Opcodes.DSTORE:
                     case Opcodes.ASTORE:
-                        _store(((VarInsnNode) insn).var, TypeHelper.getStoreType(ctx.getTypeManager(), opcode));
+                        _store(((VarInsnNode) insn).var, TypeHelper.getStoreType(typeManager, opcode));
                         break;
                     case Opcodes.IINC: {
                         IincInsnNode iinc = (IincInsnNode) insn;
@@ -1041,7 +1054,7 @@ public class AsmGenerator {
                     case Opcodes.BALOAD:
                     case Opcodes.CALOAD:
                     case Opcodes.SALOAD:
-                        _loadarray(TypeHelper.getArrayLoadType(ctx.getTypeManager(), opcode));
+                        _loadarray(TypeHelper.getArrayLoadType(typeManager, opcode));
                         break;
                     case Opcodes.IASTORE:
                     case Opcodes.LASTORE:
@@ -1051,7 +1064,7 @@ public class AsmGenerator {
                     case Opcodes.BASTORE:
                     case Opcodes.CASTORE:
                     case Opcodes.SASTORE:
-                        _storearray(TypeHelper.getArrayStoreType(ctx.getTypeManager(), opcode));
+                        _storearray(TypeHelper.getArrayStoreType(typeManager, opcode));
                         break;
                     case Opcodes.IFEQ:
                     case Opcodes.IFNE:
@@ -1179,24 +1192,24 @@ public class AsmGenerator {
                     case Opcodes.CHECKCAST: {
                         TypeInsnNode tin = (TypeInsnNode) insn;
                         if (tin.desc.startsWith("[")) {
-                            _cast(ctx.getTypeManager().asValueType(tin.desc));
+                            _cast(typeManager.asValueType(tin.desc));
                         } else {
-                            _cast(ctx.getTypeManager().asClassType(tin.desc).asValueType());
+                            _cast(typeManager.asClassType(tin.desc).asValueType());
                         }
                         break;
                     }
                     case Opcodes.INSTANCEOF: {
                         TypeInsnNode tin = (TypeInsnNode) insn;
                         if (tin.desc.startsWith("[")) {
-                            _instanceof(ctx.getTypeManager().asValueType(tin.desc));
+                            _instanceof(typeManager.asValueType(tin.desc));
                         } else {
-                            _instanceof(ctx.getTypeManager().asClassType(tin.desc).asValueType());
+                            _instanceof(typeManager.asClassType(tin.desc).asValueType());
                         }
                         break;
                     }
                     case Opcodes.NEW: {
                         TypeInsnNode tin = (TypeInsnNode) insn;
-                        _new(ctx.getTypeManager().asClassType(tin.desc));
+                        _new(typeManager.asClassType(tin.desc));
                         break;
                     }
                     case Opcodes.INVOKESTATIC: {

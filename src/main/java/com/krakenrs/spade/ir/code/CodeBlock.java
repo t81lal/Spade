@@ -5,17 +5,30 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.krakenrs.spade.commons.collections.graph.Vertex;
+import com.krakenrs.spade.ir.code.observer.CodeObservationManager;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 
 import lombok.NonNull;
 
 public class CodeBlock implements Vertex {
+    
+    public static interface Factory {
+        CodeBlock create(int id);
+    }
+    
     private final int id;
     private final List<Stmt> stmts = new ArrayList<>();
     private int orderHint;
+    
+    @NonNull
+    private CodeObservationManager codeObservationManager;
 
-    public CodeBlock(int id) {
+    @Inject
+    public CodeBlock(CodeObservationManager codeObservationManager, @Assisted int id) {
+        this.codeObservationManager = codeObservationManager;
         this.id = id;
         this.orderHint = id;
     }

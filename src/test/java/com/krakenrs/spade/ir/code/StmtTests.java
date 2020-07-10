@@ -88,7 +88,7 @@ public class StmtTests {
         var lhs = child();
         var rhs = child();
 
-        var stmt = new JumpCondStmt(lhs, rhs, JumpCondStmt.Mode.EQ, new CodeBlock(1));
+        var stmt = new JumpCondStmt(lhs, rhs, JumpCondStmt.Mode.EQ, MockCodeFactory.makeBlock(1));
 
         assertEquals(stmt, lhs.getParent());
         assertEquals(stmt, rhs.getParent());
@@ -98,7 +98,7 @@ public class StmtTests {
     void testParent_JumpSwitchStmt() {
         var expr = child();
 
-        var stmt = new JumpSwitchStmt(expr, Map.of(), new CodeBlock(1));
+        var stmt = new JumpSwitchStmt(expr, Map.of(), MockCodeFactory.makeBlock(1));
 
         assertEquals(stmt, expr.getParent());
     }

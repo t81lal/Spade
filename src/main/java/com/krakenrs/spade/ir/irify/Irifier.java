@@ -1,20 +1,42 @@
 package com.krakenrs.spade.ir.irify;
 
-import com.krakenrs.spade.ir.code.*;
-import com.krakenrs.spade.ir.code.expr.*;
+import java.util.Comparator;
+
+import com.krakenrs.spade.ir.code.CodeBlock;
+import com.krakenrs.spade.ir.code.CodeUnit;
+import com.krakenrs.spade.ir.code.ControlFlowGraph;
+import com.krakenrs.spade.ir.code.FlowEdge;
+import com.krakenrs.spade.ir.code.Opcodes;
+import com.krakenrs.spade.ir.code.expr.AllocArrayExpr;
+import com.krakenrs.spade.ir.code.expr.AllocObjectExpr;
+import com.krakenrs.spade.ir.code.expr.ArithmeticExpr;
+import com.krakenrs.spade.ir.code.expr.ArrayLengthExpr;
+import com.krakenrs.spade.ir.code.expr.CastExpr;
+import com.krakenrs.spade.ir.code.expr.CompareExpr;
+import com.krakenrs.spade.ir.code.expr.InstanceOfExpr;
+import com.krakenrs.spade.ir.code.expr.InvokeExpr;
+import com.krakenrs.spade.ir.code.expr.LoadArrayExpr;
+import com.krakenrs.spade.ir.code.expr.LoadFieldExpr;
+import com.krakenrs.spade.ir.code.expr.NegateExpr;
+import com.krakenrs.spade.ir.code.expr.NewObjectExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadConstExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
 import com.krakenrs.spade.ir.code.expr.value.ValueExpr;
-import com.krakenrs.spade.ir.code.stmt.*;
+import com.krakenrs.spade.ir.code.stmt.AssignArrayStmt;
+import com.krakenrs.spade.ir.code.stmt.AssignCatchStmt;
+import com.krakenrs.spade.ir.code.stmt.AssignFieldStmt;
+import com.krakenrs.spade.ir.code.stmt.AssignLocalStmt;
+import com.krakenrs.spade.ir.code.stmt.AssignParamStmt;
+import com.krakenrs.spade.ir.code.stmt.AssignPhiStmt;
+import com.krakenrs.spade.ir.code.stmt.ConsumeStmt;
+import com.krakenrs.spade.ir.code.stmt.JumpCondStmt;
+import com.krakenrs.spade.ir.code.stmt.JumpSwitchStmt;
+import com.krakenrs.spade.ir.code.stmt.JumpUncondStmt;
+import com.krakenrs.spade.ir.code.stmt.MonitorStmt;
+import com.krakenrs.spade.ir.code.stmt.ReturnStmt;
+import com.krakenrs.spade.ir.code.stmt.ThrowStmt;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
-import com.krakenrs.spade.ir.gen.AsmGenerationCtx;
-import com.krakenrs.spade.ir.gen.AsmGenerator;
-import com.krakenrs.spade.ir.type.SimpleTypeManager;
 import com.krakenrs.spade.ir.value.Local;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.ClassNode;
-
-import java.util.Comparator;
 
 public class Irifier {
     static int myMethod(boolean b, int x, int y) {
@@ -26,21 +48,6 @@ public class Irifier {
             z = x - y;
         }
         return z;
-    }
-
-    public static void main(String[] args) throws Exception {
-        var sw = new IndentedStringWriter();
-
-        var cr = new ClassReader(Irifier.class.getName());
-        var cn = new ClassNode();
-        cr.accept(cn, 0);
-        var mn = cn.methods.stream().filter(mn_ -> mn_.name.equals("myMethod")).findFirst().orElseThrow();
-        var ctx = new AsmGenerationCtx(new SimpleTypeManager(), cn, mn);
-        var cfg = AsmGenerator.run(ctx);
-
-        print(cfg, sw);
-
-        System.out.println(sw.toString());
     }
 
     public static void print(ControlFlowGraph cfg, IndentedStringWriter sw) {

@@ -1,4 +1,4 @@
-package com.krakenrs.spade.ir.gen;
+package com.krakenrs.spade.ir.gen.asm;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 
-import com.krakenrs.spade.ir.algo.SsaBlockLivenessAnalyser;
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
@@ -18,9 +17,11 @@ import com.krakenrs.spade.ir.code.CodePrinter;
 import com.krakenrs.spade.ir.code.ControlFlowGraph;
 import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.expr.value.LoadConstExpr;
-import com.krakenrs.spade.ir.gen.AsmGenerator.AsmGenerationState;
-import com.krakenrs.spade.ir.gen.AsmGenerator.AsmGenerationState.AsmInterpCtx;
-import com.krakenrs.spade.ir.gen.LocalStack.TypedLocal;
+import com.krakenrs.spade.ir.code.observer.CodeObservationManager;
+import com.krakenrs.spade.ir.code.observer.DefaultCodeObservationManager;
+import com.krakenrs.spade.ir.gen.asm.AsmGenerator.AsmGenerationState;
+import com.krakenrs.spade.ir.gen.asm.AsmGenerator.AsmGenerationState.AsmInterpCtx;
+import com.krakenrs.spade.ir.gen.asm.LocalStack.TypedLocal;
 import com.krakenrs.spade.ir.type.PrimitiveType;
 import com.krakenrs.spade.ir.type.ResolvingMockTypeManager;
 import com.krakenrs.spade.ir.type.TypeManager;
@@ -29,29 +30,20 @@ import com.krakenrs.spade.ir.value.Constant;
 import com.krakenrs.spade.ir.value.Local;
 
 public class AsmGeneratorTest {
-
-    final TypeManager tm = new ResolvingMockTypeManager();
-
-    // Convenience for getting a context
-    ControlFlowGraph cfg() throws IOException {
-        StackTraceElement e = new Exception().getStackTrace()[1];
-        ClassReader cr = new ClassReader(e.getClassName());
-        ClassNode cn = new ClassNode();
-        cr.accept(cn, 0);
-
-        for (MethodNode mn : cn.methods) {
-            if (mn.name.equals(e.getMethodName())) {
-
-                AsmGenerationCtx gCtx = new AsmGenerationCtx(tm, cn, mn);
-                return AsmGenerator.run(gCtx);
-            }
-        }
-
-        return null;
-    }
+    static final TypeManager mockTM = new ResolvingMockTypeManager();
+    
+    static final CodeObservationManager mockCOM = new DefaultCodeObservationManager();
+    
+    static final CodeBlock.Factory mockBlockFactory = (id) -> {
+        return new CodeBlock(mockCOM, id);
+    };
+    
+    static final ControlFlowGraph.Factory mockCfgFactory = (mt, s) -> {
+        return new ControlFlowGraph(mockBlockFactory, mt, s);
+    };
 
     // Convenience for getting a context
-    AsmInterpCtx ctx() throws IOException {
+    AsmGenerator.AsmGenerationState.AsmInterpCtx ctx() throws IOException {
         StackTraceElement e = new Exception().getStackTrace()[1];
         ClassReader cr = new ClassReader(e.getClassName());
         ClassNode cn = new ClassNode();
@@ -59,11 +51,10 @@ public class AsmGeneratorTest {
 
         for (MethodNode mn : cn.methods) {
             if (mn.name.equals(e.getMethodName())) {
-
-                AsmGenerationCtx gCtx = new AsmGenerationCtx(tm, cn, mn);
-                AsmGenerationState state = new AsmGenerationState(gCtx);
-                AsmInterpCtx ctx = state.new AsmInterpCtx(new CodeBlock(1), new LocalStack());
-
+                AsmGenerationCtx gCtx = new AsmGenerationCtx(mockTM, cn, mn);
+                AsmGenerator generator = new AsmGenerator(gCtx, mockTM, mockCfgFactory);
+                AsmGenerationState state = generator.new AsmGenerationState();
+                AsmInterpCtx ctx = state.new AsmInterpCtx(mockBlockFactory.create(1), new LocalStack());
                 return ctx;
             }
         }
@@ -79,11 +70,10 @@ public class AsmGeneratorTest {
 
         for (MethodNode mn : cn.methods) {
             if (mn.name.equals(e.getMethodName())) {
-
-                AsmGenerationCtx gCtx = new AsmGenerationCtx(tm, cn, mn);
-                AsmGenerationState state = new AsmGenerationState(gCtx);
+                AsmGenerationCtx gCtx = new AsmGenerationCtx(mockTM, cn, mn);
+                AsmGenerator generator = new AsmGenerator(gCtx, mockTM, mockCfgFactory);
+                AsmGenerationState state = generator.new AsmGenerationState();
                 AsmInterpCtx ctx = state.new AsmInterpCtx(state.graph.getEntryBlock(), new LocalStack());
-
                 return new Tuple2.ImmutableTuple2<>(state, ctx);
             }
         }
@@ -179,27 +169,5 @@ public class AsmGeneratorTest {
             stack.push(tl[i]);
         }
         return stack;
-    }
-
-    public static void main(String[] args) throws IOException {
-        ClassReader cr = new ClassReader(AsmGeneratorTest.class.getName());
-        ClassNode cn = new ClassNode();
-        cr.accept(cn, 0);
-
-        for (MethodNode mn : cn.methods) {
-            if (mn.name.equals("myMethod")) {
-                AsmGenerationCtx gCtx = new AsmGenerationCtx(new ResolvingMockTypeManager(), cn, mn);
-                ControlFlowGraph cfg = AsmGenerator.run(gCtx);
-
-                System.out.println(CodePrinter.toString(cfg));
-                SsaBlockLivenessAnalyser analyser = new SsaBlockLivenessAnalyser(cfg);
-
-                for (CodeBlock block : cfg.getVertices()) {
-                    System.out.println(block.id());
-                    System.out.println(" in: " + analyser.getLiveIn(block));
-                    System.out.println(" out: " + analyser.getLiveOut(block));
-                }
-            }
-        }
     }
 }

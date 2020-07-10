@@ -12,7 +12,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.krakenrs.spade.ir.code.CodeBlock;
+import com.krakenrs.spade.ir.code.MockCodeFactory;
 import com.krakenrs.spade.ir.code.expr.ArithmeticExpr;
 import com.krakenrs.spade.ir.code.expr.InvokeExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadConstExpr;
@@ -171,6 +171,8 @@ public class SSADefUseMapTest {
 
     @Test
     void testAddPhiDeclStmt() {
+        var codeFactory = new MockCodeFactory();
+        
         /* L1: x1
          * L2: x2
          * L3: x3 = PHI{ L1: x1, L2: x2 } */
@@ -180,17 +182,17 @@ public class SSADefUseMapTest {
         var x2 = lvar(0, 2);
         var x3 = lvar(0, 3);
 
-        var l1 = new CodeBlock(1);
+        var l1 = codeFactory.create(1);
         var a1 = new AssignParamStmt(x1);
         l1.appendStmt(a1);
         map.addStmt(a1);
 
-        var l2 = new CodeBlock(2);
+        var l2 = codeFactory.create(2);
         var a2 = new AssignParamStmt(x2);
         l2.appendStmt(a2);
         map.addStmt(a2);
 
-        var l3 = new CodeBlock(3);
+        var l3 = codeFactory.create(3);
         var phi = new AssignPhiStmt(x3, Map.of(l1, x1, l2, x2));
         l3.appendStmt(phi);
         map.addStmt(phi);
@@ -319,6 +321,7 @@ public class SSADefUseMapTest {
 
     @Test
     void testRemovePhiDeclStmt() {
+        var codeFactory = new MockCodeFactory();
         /* L1: x1
          * L2: x2
          * L3: x3 = PHI{ L1: x1, L2: x2 }
@@ -329,17 +332,17 @@ public class SSADefUseMapTest {
         var x2 = lvar(0, 2);
         var x3 = lvar(0, 3);
 
-        var l1 = new CodeBlock(1);
+        var l1 = codeFactory.create(1);
         var a1 = new AssignParamStmt(x1);
         l1.appendStmt(a1);
         map.addStmt(a1);
 
-        var l2 = new CodeBlock(2);
+        var l2 = codeFactory.create(2);
         var a2 = new AssignParamStmt(x2);
         l2.appendStmt(a2);
         map.addStmt(a2);
 
-        var l3 = new CodeBlock(3);
+        var l3 = codeFactory.create(3);
         var phi = new AssignPhiStmt(x3, Map.of(l1, x1, l2, x2));
         l3.appendStmt(phi);
         map.addStmt(phi);

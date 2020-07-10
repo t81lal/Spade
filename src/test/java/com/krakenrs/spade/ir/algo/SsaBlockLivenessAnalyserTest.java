@@ -7,6 +7,7 @@ import com.krakenrs.spade.commons.collections.graph.Vertex;
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.ControlFlowGraph;
 import com.krakenrs.spade.ir.code.FlowEdge;
+import com.krakenrs.spade.ir.code.MockCodeFactory;
 import com.krakenrs.spade.ir.code.expr.ArithmeticExpr;
 import com.krakenrs.spade.ir.code.expr.InvokeExpr;
 import com.krakenrs.spade.ir.code.expr.LoadFieldExpr;
@@ -29,16 +30,18 @@ import java.util.stream.Stream;
 
 public class SsaBlockLivenessAnalyserTest {
     static ControlFlowGraph getMyMethod() {
+        var codeFactory = new MockCodeFactory();
+
         var tm = new SimpleTypeManager();
-        var cfg = new ControlFlowGraph(tm.asMethodType("(ZII)I"), true);
+        var cfg = codeFactory.create(tm.asMethodType("(ZII)I"), true);
 
         var cb0 = cfg.getEntryBlock();
-        var cb1 = new CodeBlock(1);
-        var cb2 = new CodeBlock(2);
-        var cb3 = new CodeBlock(3);
-        var cb4 = new CodeBlock(4);
-        var cb5 = new CodeBlock(5);
-        var cb6 = new CodeBlock(6);
+        var cb1 = codeFactory.create(1);
+        var cb2 = codeFactory.create(2);
+        var cb3 = codeFactory.create(3);
+        var cb4 = codeFactory.create(4);
+        var cb5 = codeFactory.create(5);
+        var cb6 = codeFactory.create(6);
 
         {
             cb0.setOrderHint(0);

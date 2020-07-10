@@ -1,4 +1,4 @@
-package com.krakenrs.spade.ir.gen;
+package com.krakenrs.spade.ir.gen.asm;
 
 import com.krakenrs.spade.ir.code.expr.InvokeExpr;
 import com.krakenrs.spade.ir.code.stmt.JumpCondStmt;

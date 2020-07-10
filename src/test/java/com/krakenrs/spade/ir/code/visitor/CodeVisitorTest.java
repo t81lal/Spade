@@ -6,11 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.krakenrs.spade.ir.type.*;
 import org.junit.jupiter.api.Test;
 
-import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodeUnit;
+import com.krakenrs.spade.ir.code.MockCodeFactory;
 import com.krakenrs.spade.ir.code.expr.AllocArrayExpr;
 import com.krakenrs.spade.ir.code.expr.AllocObjectExpr;
 import com.krakenrs.spade.ir.code.expr.ArithmeticExpr;
@@ -39,7 +38,11 @@ import com.krakenrs.spade.ir.code.stmt.JumpUncondStmt;
 import com.krakenrs.spade.ir.code.stmt.MonitorStmt;
 import com.krakenrs.spade.ir.code.stmt.ReturnStmt;
 import com.krakenrs.spade.ir.code.stmt.ThrowStmt;
-import com.krakenrs.spade.ir.code.visitor.AbstractCodeVisitor;
+import com.krakenrs.spade.ir.type.ArrayType;
+import com.krakenrs.spade.ir.type.MethodType;
+import com.krakenrs.spade.ir.type.ObjectType;
+import com.krakenrs.spade.ir.type.PrimitiveType;
+import com.krakenrs.spade.ir.type.UnresolvedClassType;
 import com.krakenrs.spade.ir.value.Constant;
 import com.krakenrs.spade.ir.value.Local;
 
@@ -474,7 +477,7 @@ public class CodeVisitorTest {
     void testJumpCondStmt() {
         var l = cst(1);
         var r = cst(2);
-        var s = new JumpCondStmt(l, r, JumpCondStmt.Mode.EQ, new CodeBlock(1));
+        var s = new JumpCondStmt(l, r, JumpCondStmt.Mode.EQ, MockCodeFactory.makeBlock(1));
         var v = new MockCodeVisitor();
         s.accept(v);
         assertEquals(List.of(s, l, r), v.searchPath);
@@ -484,7 +487,7 @@ public class CodeVisitorTest {
     @Test
     void testJumpSwitchStmt() {
         var e = cst(5);
-        var s = new JumpSwitchStmt(e, Map.of(), new CodeBlock(1));
+        var s = new JumpSwitchStmt(e, Map.of(), MockCodeFactory.makeBlock(1));
         var v = new MockCodeVisitor();
         s.accept(v);
         assertEquals(List.of(s, e), v.searchPath);
@@ -493,7 +496,7 @@ public class CodeVisitorTest {
 
     @Test
     void testJumpUncondStmt() {
-        var s = new JumpUncondStmt(new CodeBlock(1));
+        var s = new JumpUncondStmt(MockCodeFactory.makeBlock(1));
         var v = new MockCodeVisitor();
         s.accept(v);
         assertEquals(List.of(s), v.searchPath);

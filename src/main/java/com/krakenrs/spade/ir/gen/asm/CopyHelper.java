@@ -1,4 +1,4 @@
-package com.krakenrs.spade.ir.gen;
+package com.krakenrs.spade.ir.gen.asm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.krakenrs.spade.commons.collections.tuple.Tuple3.ImmutableTuple3;
-import com.krakenrs.spade.ir.gen.LocalStack.TypedLocal;
+import com.krakenrs.spade.ir.gen.asm.LocalStack.TypedLocal;
 import com.krakenrs.spade.ir.type.ValueType;
 
 public class CopyHelper {
