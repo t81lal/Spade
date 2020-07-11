@@ -159,7 +159,7 @@ public class CodePrinter implements Opcodes {
                 }
                 case ARITHMETIC: {
                     ArithmeticExpr ae = (ArithmeticExpr) e;
-                    return emitExpr(ae.lhs()).emit(" ").emit(ae.op()).emit(" ").emitExpr(ae.rhs());
+                    return emitExpr(ae.getLhs()).emit(" ").emit(ae.getOperation()).emit(" ").emitExpr(ae.getRhs());
                 }
                 case ARRAYLEN: {
                     return emitExpr(((ArrayLengthExpr) e).var()).emit(".length");

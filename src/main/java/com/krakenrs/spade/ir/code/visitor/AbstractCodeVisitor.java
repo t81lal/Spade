@@ -123,8 +123,8 @@ public abstract class AbstractCodeVisitor implements CodeVisitor {
 
     @Override
     public void visitArithmeticExpr(ArithmeticExpr e) {
-        e.lhs().accept(this);
-        e.rhs().accept(this);
+        e.getLhs().accept(this);
+        e.getRhs().accept(this);
     }
 
     @Override

@@ -83,6 +83,8 @@ public class AbstractCodeReducer implements CodeReducer {
 
         if (value == null) {
             return s;
+        } else if(value == s.value()) {
+            return s;
         } else {
             return new AssignLocalStmt(s.var(), value);
         }
@@ -204,13 +206,13 @@ public class AbstractCodeReducer implements CodeReducer {
 
     @Override
     public Expr reduceArithmeticExpr(ArithmeticExpr e) {
-        var lhs = reduceExprToValue(e.lhs());
-        var rhs = reduceExprToValue(e.rhs());
+        var lhs = reduceExprToValue(e.getLhs());
+        var rhs = reduceExprToValue(e.getRhs());
 
         if (anyNull(lhs, rhs)) {
             return e;
         } else {
-            return new ArithmeticExpr(e.getType(), e.op(), lhs, rhs);
+            return new ArithmeticExpr(e.getType(), e.getOperation(), lhs, rhs);
         }
     }
 

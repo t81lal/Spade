@@ -12,6 +12,9 @@ import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ValueType;
 
+import lombok.Getter;
+import lombok.NonNull;
+
 public class ArithmeticExpr extends Expr {
 
     public enum Operation {
@@ -39,11 +42,14 @@ public class ArithmeticExpr extends Expr {
         }
     }
 
+    @Getter
     private final Operation operation;
+    @Getter
     private final ValueExpr<?> lhs, rhs;
 
     @Inject
-    public ArithmeticExpr(@Assisted ValueType resultType, @Assisted Operation operation, @Assisted("left") ValueExpr<?> lhs, @Assisted("right") ValueExpr<?> rhs) {
+    public ArithmeticExpr(@Assisted @NonNull ValueType resultType, @Assisted @NonNull Operation operation,
+            @Assisted("left") @NonNull ValueExpr<?> lhs, @Assisted("right") @NonNull ValueExpr<?> rhs) {
         super(Opcodes.ARITHMETIC, resultType);
         this.operation = operation;
         this.lhs = lhs;
@@ -62,18 +68,6 @@ public class ArithmeticExpr extends Expr {
     @Override
     public Expr reduceExpr(CodeReducer reducer) {
         return reducer.reduceArithmeticExpr(this);
-    }
-
-    public Operation op() {
-        return operation;
-    }
-
-    public ValueExpr<?> lhs() {
-        return lhs;
-    }
-
-    public ValueExpr<?> rhs() {
-        return rhs;
     }
 
     @Override

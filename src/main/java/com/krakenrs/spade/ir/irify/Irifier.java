@@ -356,11 +356,11 @@ public class Irifier {
             sw.print("tm.asValueType(\"");
             sw.print(e.getType().toString());
             sw.print("\"), ArithmeticExpr.Operation.");
-            sw.print(e.op().name());
+            sw.print(e.getOperation().name());
             sw.print(", ");
-            e.lhs().accept(this);
+            e.getLhs().accept(this);
             sw.print(", ");
-            e.rhs().accept(this);
+            e.getRhs().accept(this);
             sw.print(")");
         }
 
