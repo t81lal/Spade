@@ -27,6 +27,10 @@ public class StmtTests {
         return new LoadLocalExpr(PrimitiveType.INT, new Local(0, false, 0));
     }
 
+    public static LoadLocalExpr child(int index) {
+        return new LoadLocalExpr(PrimitiveType.INT, new Local(index, false, 0));
+    }
+
     public static Local var() {
         return new Local(0, false, 0);
     }
