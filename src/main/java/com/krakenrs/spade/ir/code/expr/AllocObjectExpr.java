@@ -8,9 +8,11 @@ import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ClassType;
 
+import lombok.NonNull;
+
 public class AllocObjectExpr extends Expr {
     @Inject
-    public AllocObjectExpr(@Assisted ClassType type) {
+    public AllocObjectExpr(@Assisted @NonNull ClassType type) {
         super(Opcodes.ALLOCOBJ, type.asValueType());
     }
 
