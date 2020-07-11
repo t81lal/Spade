@@ -23,11 +23,11 @@ import com.krakenrs.spade.ir.value.Local;
 
 public class StmtTests {
 
-    static LoadLocalExpr child() {
+    public static LoadLocalExpr child() {
         return new LoadLocalExpr(PrimitiveType.INT, new Local(0, false, 0));
     }
 
-    static Local var() {
+    public static Local var() {
         return new Local(0, false, 0);
     }
 
