@@ -60,6 +60,8 @@ public abstract class CodeUnit {
         return true;
     }
 
+    /* hashCode and equals should not be overriden, the only way two
+     * units can be equal should be because of their id. */
     @Override
     public final int hashCode() {
         return id;
