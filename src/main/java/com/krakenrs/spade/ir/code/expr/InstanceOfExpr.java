@@ -55,4 +55,9 @@ public class InstanceOfExpr extends Expr {
             return false;
         }
     }
+
+    @Override
+    public Expr deepCopy() {
+        return new InstanceOfExpr(var.deepCopy(), checkType);
+    }
 }

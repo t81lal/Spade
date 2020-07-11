@@ -12,6 +12,8 @@ import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.PrimitiveType;
 
+import lombok.NonNull;
+
 public class CompareExpr extends Expr {
 
     public enum Operation {
@@ -33,7 +35,8 @@ public class CompareExpr extends Expr {
     private final Operation operation;
 
     @Inject
-    public CompareExpr(@Assisted("left") LoadLocalExpr lhs, @Assisted("right") LoadLocalExpr rhs, @Assisted Operation operation) {
+    public CompareExpr(@Assisted("left") @NonNull LoadLocalExpr lhs, @Assisted("right") @NonNull LoadLocalExpr rhs,
+            @Assisted @NonNull Operation operation) {
         super(Opcodes.COMPARE, PrimitiveType.INT);
         this.lhs = lhs;
         this.rhs = rhs;
@@ -74,5 +77,10 @@ public class CompareExpr extends Expr {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public CompareExpr deepCopy() {
+        return new CompareExpr(lhs.deepCopy(), rhs.deepCopy(), operation);
     }
 }

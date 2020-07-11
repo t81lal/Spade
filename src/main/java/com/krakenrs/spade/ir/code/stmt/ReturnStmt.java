@@ -44,4 +44,9 @@ public class ReturnStmt extends Stmt {
     public boolean equivalent(CodeUnit u) {
         return super.equivalent(u) && Objects.equals(((ReturnStmt) u).var, var);
     }
+
+    @Override
+    public ReturnStmt deepCopy() {
+        return new ReturnStmt(var.deepCopy());
+    }
 }

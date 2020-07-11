@@ -81,4 +81,9 @@ public class JumpCondStmt extends Stmt {
             return false;
         }
     }
+
+    @Override
+    public JumpCondStmt deepCopy() {
+        return new JumpCondStmt(lhs.deepCopy(), rhs.deepCopy(), mode, target);
+    }
 }

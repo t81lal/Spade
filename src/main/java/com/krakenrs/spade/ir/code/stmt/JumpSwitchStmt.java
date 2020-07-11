@@ -78,4 +78,9 @@ public class JumpSwitchStmt extends Stmt {
         }
         return false;
     }
+
+    @Override
+    public JumpSwitchStmt deepCopy() {
+        return new JumpSwitchStmt(expr.deepCopy(), cases, defaultCase);
+    }
 }

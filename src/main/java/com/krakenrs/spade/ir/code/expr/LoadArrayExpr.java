@@ -54,4 +54,9 @@ public class LoadArrayExpr extends Expr {
             return false;
         }
     }
+
+    @Override
+    public LoadArrayExpr deepCopy() {
+        return new LoadArrayExpr(type, array.deepCopy(), index.deepCopy());
+    }
 }

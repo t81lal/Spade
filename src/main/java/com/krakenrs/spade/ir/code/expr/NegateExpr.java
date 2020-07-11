@@ -39,4 +39,9 @@ public class NegateExpr extends Expr {
     public boolean equivalent(CodeUnit u) {
         return super.equivalent(u) && equivalent(((NegateExpr) u).var, var);
     }
+
+    @Override
+    public NegateExpr deepCopy() {
+        return new NegateExpr(var.deepCopy());
+    }
 }

@@ -45,4 +45,9 @@ public class AssignLocalStmt extends DeclareLocalStmt {
     public Stmt reduceStmt(CodeReducer reducer) {
         return reducer.reduceAssignLocalStmt(this);
     }
+
+    @Override
+    public AssignLocalStmt deepCopy() {
+        return new AssignLocalStmt(var, value.deepCopy());
+    }
 }

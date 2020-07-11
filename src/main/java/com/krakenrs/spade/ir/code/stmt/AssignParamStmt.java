@@ -29,4 +29,9 @@ public class AssignParamStmt extends DeclareLocalStmt {
     public AssignParamStmt copy(Local newVar) {
         return new AssignParamStmt(newVar);
     }
+
+    @Override
+    public AssignParamStmt deepCopy() {
+        return new AssignParamStmt(var);
+    }
 }

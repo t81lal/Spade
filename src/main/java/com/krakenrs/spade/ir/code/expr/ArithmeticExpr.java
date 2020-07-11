@@ -79,4 +79,9 @@ public class ArithmeticExpr extends Expr {
             return false;
         }
     }
+
+    @Override
+    public ArithmeticExpr deepCopy() {
+        return new ArithmeticExpr(type, operation, lhs.deepCopy(), rhs.deepCopy());
+    }
 }

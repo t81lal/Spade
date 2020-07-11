@@ -15,7 +15,8 @@ public class AssignArrayStmt extends Stmt {
     private final ValueExpr<?> index, value;
 
     @Inject
-    public AssignArrayStmt(@Assisted LoadLocalExpr array, @Assisted("index") ValueExpr<?> index, @Assisted("value") ValueExpr<?> value) {
+    public AssignArrayStmt(@Assisted LoadLocalExpr array, @Assisted("index") ValueExpr<?> index,
+            @Assisted("value") ValueExpr<?> value) {
         super(Opcodes.ASSIGN_ARRAY);
         this.array = array;
         this.index = index;
@@ -57,5 +58,10 @@ public class AssignArrayStmt extends Stmt {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public AssignArrayStmt deepCopy() {
+        return new AssignArrayStmt(array.deepCopy(), index.deepCopy(), value.deepCopy());
     }
 }

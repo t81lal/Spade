@@ -55,6 +55,8 @@ public abstract class LoadFieldExpr extends Expr {
         }
     }
 
+    public abstract LoadFieldExpr deepCopy();
+
     public static class LoadStaticFieldExpr extends LoadFieldExpr {
         @Inject
         public LoadStaticFieldExpr(@Assisted ClassType owner, @Assisted String name, @Assisted ValueType fieldType) {
@@ -64,6 +66,11 @@ public abstract class LoadFieldExpr extends Expr {
         @Override
         public boolean isStatic() {
             return true;
+        }
+
+        @Override
+        public LoadStaticFieldExpr deepCopy() {
+            return new LoadStaticFieldExpr(owner(), name(), type);
         }
     }
 
@@ -90,6 +97,11 @@ public abstract class LoadFieldExpr extends Expr {
         @Override
         public boolean equivalent(CodeUnit u) {
             return super.equivalent(u) && equivalent(((LoadVirtualFieldExpr) u).accessor, accessor);
+        }
+
+        @Override
+        public LoadVirtualFieldExpr deepCopy() {
+            return new LoadVirtualFieldExpr(owner(), name(), type, accessor.deepCopy());
         }
     }
 }

@@ -17,4 +17,9 @@ public class LoadConstExpr<T> extends ValueExpr<Constant<T>> {
     public Expr reduceExpr(CodeReducer reducer) {
         return reducer.reduceLoadConstExpr(this);
     }
+
+    @Override
+    public LoadConstExpr<T> deepCopy() {
+        return new LoadConstExpr<>(value());
+    }
 }

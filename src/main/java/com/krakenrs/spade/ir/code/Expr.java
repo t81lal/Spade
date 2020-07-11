@@ -21,6 +21,9 @@ public abstract class Expr extends CodeUnit {
         super(opcode);
     }
 
+    @Override
+    public abstract Expr deepCopy();
+
     public Expr(int opcode, ValueType type) {
         super(opcode);
         this.type = type;

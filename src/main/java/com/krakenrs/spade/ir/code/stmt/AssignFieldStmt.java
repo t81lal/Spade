@@ -16,10 +16,10 @@ import com.krakenrs.spade.ir.type.ValueType;
 
 public abstract class AssignFieldStmt extends Stmt {
 
-    private final ClassType owner;
-    private final String name;
-    private final ValueType fieldType;
-    private final ValueExpr<?> value;
+    protected final ClassType owner;
+    protected final String name;
+    protected final ValueType fieldType;
+    protected final ValueExpr<?> value;
 
     public AssignFieldStmt(ClassType owner, String name, ValueType fieldType, ValueExpr<?> value) {
         super(Opcodes.ASSIGN_FIELD);
@@ -58,6 +58,8 @@ public abstract class AssignFieldStmt extends Stmt {
         return value;
     }
 
+    public abstract AssignFieldStmt deepCopy();
+
     public abstract boolean isStatic();
 
     @Override
@@ -80,6 +82,11 @@ public abstract class AssignFieldStmt extends Stmt {
         @Override
         public boolean isStatic() {
             return true;
+        }
+
+        @Override
+        public AssignStaticFieldStmt deepCopy() {
+            return new AssignStaticFieldStmt(owner, name, fieldType, value.deepCopy());
         }
     }
 
@@ -107,6 +114,11 @@ public abstract class AssignFieldStmt extends Stmt {
         @Override
         public boolean equivalent(CodeUnit u) {
             return super.equivalent(u) && equivalent(((AssignVirtualFieldStmt) u).accessor, accessor);
+        }
+
+        @Override
+        public AssignVirtualFieldStmt deepCopy() {
+            return new AssignVirtualFieldStmt(owner, name, fieldType, value.deepCopy(), accessor.deepCopy());
         }
     }
 }

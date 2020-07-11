@@ -17,6 +17,9 @@ public abstract class Stmt extends CodeUnit {
     }
 
     @Override
+    public abstract Stmt deepCopy();
+
+    @Override
     public Stmt stmt() {
         return this;
     }

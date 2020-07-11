@@ -18,4 +18,9 @@ public class LoadLocalExpr extends ValueExpr<Local> {
     public Expr reduceExpr(CodeReducer reducer) {
         return reducer.reduceLoadLocalExpr(this);
     }
+
+    @Override
+    public LoadLocalExpr deepCopy() {
+        return new LoadLocalExpr(type, value());
+    }
 }

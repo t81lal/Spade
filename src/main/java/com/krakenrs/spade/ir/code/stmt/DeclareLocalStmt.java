@@ -7,12 +7,15 @@ import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.value.Local;
 
 public abstract class DeclareLocalStmt extends Stmt {
-    private final Local var;
+    protected final Local var;
 
     public DeclareLocalStmt(int opcode, Local var) {
         super(opcode);
         this.var = var;
     }
+
+    @Override
+    public abstract DeclareLocalStmt deepCopy();
 
     public Local var() {
         return var;

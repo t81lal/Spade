@@ -22,11 +22,11 @@ public abstract class InvokeExpr extends Expr {
         STATIC, VIRTUAL, INTERFACE, SPECIAL, DYNAMIC
     }
 
-    private final ClassType owner;
-    private final String name;
-    private final MethodType methodType;
-    private final List<ValueExpr<?>> arguments;
-    private final Mode mode;
+    protected final ClassType owner;
+    protected final String name;
+    protected final MethodType methodType;
+    protected final List<ValueExpr<?>> arguments;
+    protected final Mode mode;
 
     public InvokeExpr(ClassType owner, String name, MethodType methodType, Mode mode, List<ValueExpr<?>> arguments) {
         super(Opcodes.INVOKE, methodType.getReturnType());
@@ -72,6 +72,8 @@ public abstract class InvokeExpr extends Expr {
         return mode;
     }
 
+    public abstract InvokeExpr deepCopy();
+
     @Override
     public boolean equivalent(CodeUnit u) {
         if (super.equivalent(u)) {
@@ -107,12 +109,22 @@ public abstract class InvokeExpr extends Expr {
         public boolean equivalent(CodeUnit u) {
             return super.equivalent(u) && equivalent(((InvokeVirtualExpr) u).accessor, accessor);
         }
+
+        @Override
+        public InvokeVirtualExpr deepCopy() {
+            return new InvokeVirtualExpr(owner, name, methodType, mode, accessor.deepCopy(), deepCopy(arguments()));
+        }
     }
 
     public static class InvokeStaticExpr extends InvokeExpr {
         @Inject
         public InvokeStaticExpr(@Assisted ClassType owner, @Assisted String name, @Assisted MethodType methodType, @Assisted List<ValueExpr<?>> arguments) {
             super(owner, name, methodType, Mode.STATIC, arguments);
+        }
+
+        @Override
+        public InvokeStaticExpr deepCopy() {
+            return new InvokeStaticExpr(owner, name, methodType, deepCopy(arguments()));
         }
     }
 }

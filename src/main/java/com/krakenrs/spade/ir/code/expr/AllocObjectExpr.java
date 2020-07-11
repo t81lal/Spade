@@ -7,6 +7,7 @@ import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ClassType;
+import com.krakenrs.spade.ir.type.ObjectType;
 
 import lombok.NonNull;
 
@@ -25,5 +26,11 @@ public class AllocObjectExpr extends Expr {
     @Override
     public Expr reduceExpr(CodeReducer reducer) {
         return reducer.reduceAllocObjectExpr(this);
+    }
+
+    @Override
+    public AllocObjectExpr deepCopy() {
+        ObjectType ourType = (ObjectType) type;
+        return new AllocObjectExpr(ourType.getClassType());
     }
 }

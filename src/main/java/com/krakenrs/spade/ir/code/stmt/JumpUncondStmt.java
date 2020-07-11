@@ -40,4 +40,9 @@ public class JumpUncondStmt extends Stmt {
     public boolean equivalent(CodeUnit u) {
         return super.equivalent(u) && Objects.equals(((JumpUncondStmt) u).target, target);
     }
+
+    @Override
+    public JumpUncondStmt deepCopy() {
+        return new JumpUncondStmt(target);
+    }
 }

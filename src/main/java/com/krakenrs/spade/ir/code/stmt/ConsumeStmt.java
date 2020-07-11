@@ -39,4 +39,9 @@ public class ConsumeStmt extends Stmt {
     public boolean equivalent(CodeUnit u) {
         return super.equivalent(u) && equivalent(((ConsumeStmt) u).expr, expr);
     }
+
+    @Override
+    public ConsumeStmt deepCopy() {
+        return new ConsumeStmt(expr.deepCopy());
+    }
 }

@@ -10,12 +10,13 @@ import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.PrimitiveType;
 
-public class ArrayLengthExpr extends Expr {
+import lombok.NonNull;
 
+public class ArrayLengthExpr extends Expr {
     private final LoadLocalExpr var;
 
     @Inject
-    public ArrayLengthExpr(@Assisted LoadLocalExpr var) {
+    public ArrayLengthExpr(@Assisted @NonNull LoadLocalExpr var) {
         super(Opcodes.ARRAYLEN, PrimitiveType.INT);
         this.var = var;
 
@@ -40,5 +41,10 @@ public class ArrayLengthExpr extends Expr {
     @Override
     public boolean equivalent(CodeUnit u) {
         return super.equivalent(u) && equivalent(((ArrayLengthExpr) u).var, var);
+    }
+
+    @Override
+    public Expr deepCopy() {
+        return new ArrayLengthExpr(var.deepCopy());
     }
 }

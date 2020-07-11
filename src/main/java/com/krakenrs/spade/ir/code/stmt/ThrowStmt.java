@@ -42,4 +42,9 @@ public class ThrowStmt extends Stmt {
     public boolean equivalent(CodeUnit u) {
         return super.equivalent(u) && Objects.equals(((ThrowStmt) u).var, var);
     }
+
+    @Override
+    public ThrowStmt deepCopy() {
+        return new ThrowStmt(var.deepCopy());
+    }
 }

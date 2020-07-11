@@ -53,4 +53,9 @@ public class AllocArrayExpr extends Expr {
     public boolean equivalent(@NonNull CodeUnit u) {
         return super.equivalent(u) && equivalent(((AllocArrayExpr) u).bounds, bounds);
     }
+
+    @Override
+    public Expr deepCopy() {
+        return new AllocArrayExpr(type, deepCopy(bounds));
+    }
 }

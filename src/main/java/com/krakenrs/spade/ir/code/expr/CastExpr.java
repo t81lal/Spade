@@ -10,11 +10,13 @@ import com.krakenrs.spade.ir.code.visitor.CodeReducer;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.type.ValueType;
 
+import lombok.NonNull;
+
 public class CastExpr extends Expr {
     private final LoadLocalExpr var;
 
     @Inject
-    public CastExpr(@Assisted ValueType type, @Assisted LoadLocalExpr var) {
+    public CastExpr(@Assisted @NonNull ValueType type, @Assisted @NonNull LoadLocalExpr var) {
         super(Opcodes.CAST, type);
         this.var = var;
 
@@ -39,5 +41,10 @@ public class CastExpr extends Expr {
     @Override
     public boolean equivalent(CodeUnit u) {
         return super.equivalent(u) && equivalent(((CastExpr) u).var, var);
+    }
+
+    @Override
+    public CastExpr deepCopy() {
+        return new CastExpr(type, var.deepCopy());
     }
 }

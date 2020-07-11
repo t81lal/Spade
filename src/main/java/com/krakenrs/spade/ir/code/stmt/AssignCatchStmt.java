@@ -45,4 +45,9 @@ public class AssignCatchStmt extends DeclareLocalStmt {
     public AssignCatchStmt copy(Local newVar) {
         return new AssignCatchStmt(newVar, type);
     }
+
+    @Override
+    public AssignCatchStmt deepCopy() {
+        return new AssignCatchStmt(var, type);
+    }
 }

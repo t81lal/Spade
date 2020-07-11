@@ -47,4 +47,9 @@ public class AssignPhiStmt extends DeclareLocalStmt {
     public AssignPhiStmt copy(Local newVar) {
         return new AssignPhiStmt(newVar, arguments);
     }
+
+    @Override
+    public AssignPhiStmt deepCopy() {
+        return new AssignPhiStmt(var, arguments);
+    }
 }

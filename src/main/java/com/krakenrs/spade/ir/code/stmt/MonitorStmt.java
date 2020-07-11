@@ -57,4 +57,9 @@ public class MonitorStmt extends Stmt {
             return false;
         }
     }
+
+    @Override
+    public MonitorStmt deepCopy() {
+        return new MonitorStmt(var.deepCopy(), mode);
+    }
 }

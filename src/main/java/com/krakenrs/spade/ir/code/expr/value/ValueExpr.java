@@ -40,4 +40,6 @@ public abstract class ValueExpr<T extends Value> extends Expr {
             return false;
         }
     }
+    
+    public abstract ValueExpr<T> deepCopy();
 }

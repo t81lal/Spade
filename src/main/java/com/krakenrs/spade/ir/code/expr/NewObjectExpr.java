@@ -67,4 +67,8 @@ public class NewObjectExpr extends Expr {
         }
     }
 
+    @Override
+    public NewObjectExpr deepCopy() {
+        return new NewObjectExpr(owner, methodType, deepCopy(arguments));
+    }
 }

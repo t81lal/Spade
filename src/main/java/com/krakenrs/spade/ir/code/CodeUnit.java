@@ -1,5 +1,6 @@
 package com.krakenrs.spade.ir.code;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -37,6 +38,18 @@ public abstract class CodeUnit {
 
     public void accept(CodeVisitor vis) {
         vis.visitAny(this);
+    }
+
+    public abstract CodeUnit deepCopy();
+
+    @SuppressWarnings("unchecked")
+    public static <T extends CodeUnit> List<T> deepCopy(List<T> units) {
+        List<T> copied = new ArrayList<>();
+        for(T unit : units) {
+            // cast is implicitly supported by the copy contract
+            copied.add((T)unit.deepCopy());
+        }
+        return copied;
     }
 
     public abstract boolean equivalent(CodeUnit u);
