@@ -57,7 +57,7 @@ public class AllocObjectExprTest {
     }
 
     @Test
-    void testNotEquivalentBounds() {
+    void testNotEquivalentTypes() {
         var e1 = new AllocObjectExpr(new UnresolvedClassType("TestClass1"));
         var e2 = new AllocObjectExpr(new UnresolvedClassType("TestClass2"));
 
