@@ -58,6 +58,7 @@ public class CodeBlock implements Vertex {
             throw new IllegalArgumentException();
         }
         Stmt stmt = stmts.remove(index);
+        codeObservationManager.notifyStmtRemoved(stmt);
         stmt.setBlock(null);
     }
 
@@ -72,11 +73,13 @@ public class CodeBlock implements Vertex {
     public void appendStmt(Stmt stmt) {
         preAppendStmt(stmt);
         stmts.add(stmt);
+        codeObservationManager.notifyStmtAdded(stmt);
     }
 
     public void preprendStmt(Stmt stmt) {
         preAppendStmt(stmt);
         stmts.add(0, stmt);
+        codeObservationManager.notifyStmtAdded(stmt);
     }
 
     private void preAppendStmt(Stmt stmt) {
@@ -109,6 +112,7 @@ public class CodeBlock implements Vertex {
         int index = stmts.indexOf(pos) + offset;
         stmts.add(index, stmt);
         stmt.setBlock(this);
+        codeObservationManager.notifyStmtAdded(stmt);
     }
 
     public void replaceStmt(@NonNull Stmt oldStmt, @NonNull Stmt newStmt) {
@@ -124,6 +128,7 @@ public class CodeBlock implements Vertex {
         int index = stmts.indexOf(oldStmt);
         stmts.set(index, newStmt);
         newStmt.setBlock(this);
+        codeObservationManager.notifyStmtReplaced(oldStmt, newStmt);
     }
 
     public List<Stmt> stmts() {

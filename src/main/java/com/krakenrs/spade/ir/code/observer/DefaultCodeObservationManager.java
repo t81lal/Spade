@@ -13,10 +13,12 @@ public class DefaultCodeObservationManager implements CodeObservationManager {
         codeObservers = new ArrayList<>();
     }
 
+    @Override
     public void addCodeObserver(CodeObserver codeObserver) {
         this.codeObservers.add(codeObserver);
     }
 
+    @Override
     public void removeCodeObserver(CodeObserver codeObserver) {
         this.codeObservers.remove(codeObserver);
     }
