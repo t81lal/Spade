@@ -2,6 +2,7 @@ package com.krakenrs.spade.ir.code.expr;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
@@ -22,13 +23,19 @@ public class AllocArrayExpr extends Expr {
     private final List<ValueExpr<?>> bounds;
 
     @Inject
-    public AllocArrayExpr(@Assisted ValueType type, @Assisted @NonNull List<ValueExpr<?>> bounds) {
+    public AllocArrayExpr(@Assisted @NonNull ValueType type, @Assisted @NonNull List<ValueExpr<?>> bounds) {
         super(Opcodes.ALLOCARR, type);
-        this.bounds = new ArrayList<>(bounds);
+
+        if (bounds.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
 
         for (ValueExpr<?> b : bounds) {
+            Objects.requireNonNull(b);
             b.setParent(this);
         }
+
+        this.bounds = new ArrayList<>(bounds);
     }
 
     @Override
