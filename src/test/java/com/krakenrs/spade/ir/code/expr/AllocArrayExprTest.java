@@ -81,4 +81,12 @@ public class AllocArrayExprTest {
 
         assertFalse(e1.equivalent(e2));
     }
+
+    @Test
+    void testNotEquivalentTypes() {
+        var e1 = new AllocArrayExpr(PrimitiveType.INT, List.of(child()));
+        var e2 = new AllocArrayExpr(PrimitiveType.BYTE, List.of(child()));
+
+        assertFalse(e1.equivalent(e2));
+    }
 }
