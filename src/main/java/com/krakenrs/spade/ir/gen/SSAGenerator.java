@@ -29,6 +29,8 @@ import com.krakenrs.spade.ir.code.Stmt;
 import com.krakenrs.spade.ir.code.analysis.SSADefUseMap;
 import com.krakenrs.spade.ir.code.expr.value.LoadConstExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
+import com.krakenrs.spade.ir.code.observer.CodeObservationManager;
+import com.krakenrs.spade.ir.code.observer.CodeObserver;
 import com.krakenrs.spade.ir.code.stmt.AssignLocalStmt;
 import com.krakenrs.spade.ir.code.stmt.AssignPhiStmt;
 import com.krakenrs.spade.ir.code.stmt.ConsumeStmt;
@@ -77,11 +79,12 @@ public class SSAGenerator {
     /* Build this up as we go along */
     private SSADefUseMap defUseMap;
 
-//    private CodeObservationManager manager;
+    private CodeObservationManager codeObservationManager;
 
     @Inject
-    public SSAGenerator(@NonNull GenerationCtx ctx, @Assisted ControlFlowGraph cfg) {
+    public SSAGenerator(@NonNull GenerationCtx ctx, @NonNull CodeObservationManager codeObservationManager, @Assisted ControlFlowGraph cfg) {
         this.ctx = ctx;
+        this.codeObservationManager = codeObservationManager;
         this.cfg = cfg;
 
         assignments = new LazyCreationHashMap<>(HashSet::new);
@@ -97,6 +100,21 @@ public class SSAGenerator {
 
         defUseMap = new SSADefUseMap();
     }
+    
+    CodeObserver ssaCodeObserver = new CodeObserver() {
+        @Override
+        public void onStmtReplaced(Stmt oldStmt, Stmt newStmt) {
+            System.out.println("SSAGenerator.ssaCodeObserver.new CodeObserver() {...}.onStmtReplaced()");
+        }
+        @Override
+        public void onStmtRemoved(Stmt stmt) {
+            System.out.println("SSAGenerator.ssaCodeObserver.new CodeObserver() {...}.onStmtRemoved()");
+        }
+        @Override
+        public void onStmtAdded(Stmt stmt) {
+            System.out.println("SSAGenerator.doTransform()");
+        }
+    };
 
     public void doTransform() {
         ctx.executePhase("SSAGenerator", () -> {
@@ -247,6 +265,8 @@ public class SSAGenerator {
 
         System.out.println(defUseMap);
         
+        codeObservationManager.addCodeObserver(ssaCodeObserver);
+        
     }
 
     private void search(CodeBlock current, Set<CodeBlock> visited, Map<CodeBlock, Integer> ordering) {
@@ -334,9 +354,7 @@ public class SSAGenerator {
                 /* Since our code unit model is immutable, any changes in a statement causes the entire
                  * statement to be replaced in the block. */
                 Stmt newStmt = translateFullStmt(stmt);
-                if(newStmt == null) {
-                    throw new NullPointerException();
-                }
+
                 if (newStmt != stmt) {
                     current.replaceStmt(stmt, newStmt);
 
@@ -456,10 +474,12 @@ public class SSAGenerator {
     }
 
     private void fixPhiArgs(CodeBlock current, CodeBlock successor) {
+        RenamePhiArgCodeReducer reducer = new RenamePhiArgCodeReducer(current);
+
         for (Stmt stmt : successor.modSafeStmts()) {
             if (stmt.opcode() == Opcodes.ASSIGN_PHI) {
                 AssignPhiStmt phiStmt = (AssignPhiStmt) stmt;
-                AssignPhiStmt newStmt = translatePhiStmt(phiStmt);
+                AssignPhiStmt newStmt = (AssignPhiStmt) phiStmt.reduceStmt(reducer);
                 if (phiStmt != newStmt) {
                     ctx.getLogger().trace(" Replace phi in {}: {}, {}", CodeBlockShim.of(current),
                             CodeUnitShim.of(phiStmt), CodeUnitShim.of(newStmt));
@@ -469,6 +489,29 @@ public class SSAGenerator {
                 /* No need to search the rest of the block * after we have visited the phis as they * precede all other statements.*/
                 break;
             }
+        }
+    }
+    
+    class RenamePhiArgCodeReducer extends AbstractCodeReducer {
+		private final CodeBlock predBlock;
+		
+    	public RenamePhiArgCodeReducer(CodeBlock predBlock) {
+			this.predBlock = predBlock;
+		}
+    	
+        @Override
+        public AssignPhiStmt reduceAssignPhiStmt(AssignPhiStmt s) {
+        	if(s.arguments().containsKey(predBlock)) {
+                Map<CodeBlock, Local> resultArgs = new HashMap<>(s.arguments());
+                
+                Local oldLocal = resultArgs.get(predBlock);
+                Local newLocal = getLatestVersion(oldLocal);
+                resultArgs.put(predBlock, newLocal);
+
+                return new AssignPhiStmt(s.var(), resultArgs);
+        	} else {
+        		return s;
+        	}
         }
     }
 
@@ -517,7 +560,7 @@ public class SSAGenerator {
 
     private Stmt translateFullStmt(Stmt stmt) {
         reducer.setShouldRename(true);
-        return stmt.reduceStmt(reducer);
+        return Objects.requireNonNull(stmt.reduceStmt(reducer));
     }
 
     private AssignPhiStmt translatePhiStmt(AssignPhiStmt phiStmt) {
