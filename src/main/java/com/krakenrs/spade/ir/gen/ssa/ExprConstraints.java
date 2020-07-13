@@ -42,7 +42,7 @@ public class ExprConstraints implements Opcodes {
     }
 
     static class SideEffectCheckVisitor extends AbstractCodeVisitor {
-        boolean hasSideEffects = true;
+        boolean hasSideEffects = false;
 
         @Override
         public void visitAny(CodeUnit u) {
@@ -52,7 +52,7 @@ public class ExprConstraints implements Opcodes {
                 case ALLOCARR:
                 case NEWOBJ:
                 case INVOKE:
-                    hasSideEffects = false;
+                    hasSideEffects = true;
             }
         }
     }
