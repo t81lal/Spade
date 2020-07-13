@@ -38,7 +38,7 @@ public class AssignLocalStmt extends DeclareLocalStmt {
 
     @Override
     public AssignLocalStmt copy(Local newVar) {
-        return new AssignLocalStmt(newVar, value);
+        return new AssignLocalStmt(newVar, value.deepCopy());
     }
 
     @Override
