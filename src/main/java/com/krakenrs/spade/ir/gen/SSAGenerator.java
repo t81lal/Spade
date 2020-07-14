@@ -74,7 +74,7 @@ public class SSAGenerator {
     private final Map<Local, LatestValue> latest;
 
     private DominatorComputer<CodeBlock> dominator;
-    private SsaBlockLivenessAnalyser.Factory livenessFactory;
+    private SsaBlockLivenessAnalyser livenessAnalyser;
 
     /* Build this up as we go along */
     private SSADefUseMap defUseMap;
@@ -86,7 +86,7 @@ public class SSAGenerator {
 			@NonNull SsaBlockLivenessAnalyser.Factory livenessFactory, @Assisted ControlFlowGraph cfg) {
 		this.ctx = ctx;
 		this.codeObservationManager = codeObservationManager;
-		this.livenessFactory = livenessFactory;
+		this.livenessAnalyser = livenessFactory.create(cfg);
 		this.cfg = cfg;
 
 		assignments = new LazyCreationHashMap<>(HashSet::new);
@@ -140,7 +140,7 @@ public class SSAGenerator {
         findLocalsAndAssignments();
         
         /* we only want to compute once it here as the code will be changing and we don't want to force a recompute of the liveness info */
-        SsaBlockLivenessAnalyser liveness = livenessFactory.get(cfg);
+        SsaBlockLivenessAnalyser.Results liveness = livenessAnalyser.getResults();
 
         int i = 0;
         for (var local : locals) {
@@ -190,7 +190,7 @@ public class SSAGenerator {
         }
     }
 
-    private void insertPhisForBlock(SsaBlockLivenessAnalyser liveness, CodeBlock block, Local local, int i, LinkedList<CodeBlock> queue) {
+    private void insertPhisForBlock(SsaBlockLivenessAnalyser.Results liveness, CodeBlock block, Local local, int i, LinkedList<CodeBlock> queue) {
         if (block.equals(cfg.getEntryBlock())) {
             return;
         }

@@ -13,6 +13,7 @@ import com.krakenrs.spade.ir.code.expr.InvokeExpr;
 import com.krakenrs.spade.ir.code.expr.LoadFieldExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadConstExpr;
 import com.krakenrs.spade.ir.code.expr.value.LoadLocalExpr;
+import com.krakenrs.spade.ir.code.observer.CodeObservationManager;
 import com.krakenrs.spade.ir.code.stmt.*;
 import com.krakenrs.spade.ir.type.SimpleTypeManager;
 import com.krakenrs.spade.ir.value.Constant;
@@ -27,6 +28,8 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import static org.mockito.Mockito.*;
 
 public class SsaBlockLivenessAnalyserTest {
     static ControlFlowGraph getMyMethod() {
@@ -144,8 +147,11 @@ public class SsaBlockLivenessAnalyserTest {
     @ParameterizedTest
     @MethodSource("tests")
     void test1(ControlFlowGraph cfg, String g) throws Exception {
-        var analyser = new SsaBlockLivenessAnalyser(cfg);
-        var g2 = makeLivenessGraph(cfg, analyser);
+    	var mockCom = mock(CodeObservationManager.class);
+        var analyser = new SsaBlockLivenessAnalyser(mockCom, cfg);
+        var results = analyser.getResults();
+
+        var g2 = makeLivenessGraph(cfg, results);
         var checker = createChecker(g, LivenessBlock::new, Edge::new);
         checker.verify(PropTime.POST, g2, varParser);
     }
@@ -157,7 +163,7 @@ public class SsaBlockLivenessAnalyserTest {
     }
     
     static Digraph<LivenessBlock, Edge<LivenessBlock>> makeLivenessGraph(ControlFlowGraph cfg,
-            SsaBlockLivenessAnalyser analyser) {
+            SsaBlockLivenessAnalyser.Results liveness) {
         // Assumes that the blocks in the cfg are ordered with ids starting from 0 and that
         // the generator is deterministic in the way it generates the block ids.
         //  in fact, we can use the orderHint which should represent the order of the blocks
@@ -166,8 +172,8 @@ public class SsaBlockLivenessAnalyserTest {
 
         Map<CodeBlock, LivenessBlock> blockMapping = new HashMap<>();
         for (CodeBlock block : cfg.getVertices()) {
-            LivenessBlock newBlock = new LivenessBlock(block.getOrderHint(), analyser.getLiveIn(block),
-                    analyser.getLiveOut(block));
+            LivenessBlock newBlock = new LivenessBlock(block.getOrderHint(), liveness.getLiveIn(block),
+                    liveness.getLiveOut(block));
             newGraph.addVertex(newBlock);
             blockMapping.put(block, newBlock);
         }

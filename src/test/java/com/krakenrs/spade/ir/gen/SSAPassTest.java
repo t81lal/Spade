@@ -129,12 +129,12 @@ public class SSAPassTest {
             return genCtxScope.getCurrentContext();
         }
         
-        @Provides
-        @Inject
-        @MethodScoped
-        SsaBlockLivenessAnalyser.Factory provideSsaBlockLivenessAnalyserFactory(CodeObservationManager codeObservationManager) {
-        	return new SsaBlockLivenessAnalyser.Factory(codeObservationManager);
-        }
+//        @Provides
+//        @Inject
+//        @MethodScoped
+//        SsaBlockLivenessAnalyser.Factory provideSsaBlockLivenessAnalyserFactory(CodeObservationManager codeObservationManager) {
+//        	return new SsaBlockLivenessAnalyser.Factory(codeObservationManager);
+//        }
 
         @Override
         protected void configure() {
@@ -156,6 +156,8 @@ public class SSAPassTest {
             install(new FactoryModuleBuilder().build(SSAGenerator.Factory.class));
             install(new FactoryModuleBuilder().build(CodeBlock.Factory.class));
             install(new FactoryModuleBuilder().build(ControlFlowGraph.Factory.class));
+            
+            install(new FactoryModuleBuilder().build(SsaBlockLivenessAnalyser.Factory.class));
             
             install(new FactoryModuleBuilder().build(CodeFactory.class));
             bind(ConstCodeFactory.class).toInstance(new SimpleConstCodeFactory());
