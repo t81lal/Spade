@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import com.krakenrs.spade.ir.code.visitor.AbstractValueVisitor;
+import com.krakenrs.spade.ir.code.visitor.CheckSSAVisitor;
 import com.krakenrs.spade.ir.code.visitor.CodeVisitor;
 import com.krakenrs.spade.ir.code.visitor.LocalUsageVisitor;
 import com.krakenrs.spade.ir.value.Local;
@@ -28,10 +30,17 @@ public abstract class CodeUnit {
         return opcode;
     }
 
+    public <T> T getValue(AbstractValueVisitor<T> vis) {
+    	accept(vis);
+    	return vis.get();
+    }
+    
     public Set<Local> getUses() {
-        LocalUsageVisitor vis = new LocalUsageVisitor();
-        accept(vis);
-        return vis.getUses();
+        return getValue(new LocalUsageVisitor());
+    }
+    
+    public boolean isInSSA() {
+    	return getValue(new CheckSSAVisitor());
     }
 
     public abstract Stmt stmt();
