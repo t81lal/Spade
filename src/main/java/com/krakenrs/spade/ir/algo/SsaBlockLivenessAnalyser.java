@@ -8,6 +8,10 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.function.Supplier;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.inject.Inject;
 import com.krakenrs.spade.commons.collections.LazyCreationHashMap;
 import com.krakenrs.spade.commons.collections.bitset.CachingBitSetIndexer;
 import com.krakenrs.spade.commons.collections.bitset.GenericBitSet;
@@ -17,11 +21,59 @@ import com.krakenrs.spade.ir.code.ControlFlowGraph;
 import com.krakenrs.spade.ir.code.FlowEdge;
 import com.krakenrs.spade.ir.code.Opcodes;
 import com.krakenrs.spade.ir.code.Stmt;
+import com.krakenrs.spade.ir.code.observer.CodeObservationManager;
+import com.krakenrs.spade.ir.code.observer.CodeObserver;
 import com.krakenrs.spade.ir.code.stmt.AssignPhiStmt;
 import com.krakenrs.spade.ir.code.stmt.DeclareLocalStmt;
 import com.krakenrs.spade.ir.value.Local;
 
 public class SsaBlockLivenessAnalyser {
+	
+	public static class Factory implements CodeObserver {
+		private static final Logger LOGGER = LoggerFactory.getLogger(Factory.class);
+
+		private boolean dirty;
+		private SsaBlockLivenessAnalyser currentLivenessAnalyser;
+		
+		@Inject
+		public Factory(CodeObservationManager com) {
+			LOGGER.trace("Creating new SSA liveness analyser factory: {}", this);
+
+			dirty = true;
+			com.addCodeObserver(this);
+		}
+
+		public SsaBlockLivenessAnalyser get(ControlFlowGraph cfg) {
+			if(dirty) {
+				LOGGER.trace("Recomputing SSA liveness info");
+				dirty = false;
+				currentLivenessAnalyser = new SsaBlockLivenessAnalyser(cfg);
+			}
+			return currentLivenessAnalyser;
+		}
+		
+		private void setDirty() {
+			if(!this.dirty) {
+				LOGGER.trace("Dirty SSA liveness factory: {}", this);
+			}
+			dirty = true;
+		}
+
+		@Override
+		public void onStmtAdded(Stmt stmt) {
+			setDirty();
+		}
+
+		@Override
+		public void onStmtRemoved(Stmt stmt) {
+			setDirty();
+		}
+
+		@Override
+		public void onStmtReplaced(Stmt oldStmt, Stmt newStmt) {
+			setDirty();
+		}
+	}
 
     private final ControlFlowGraph graph;
 
@@ -31,7 +83,7 @@ public class SsaBlockLivenessAnalyser {
 
     private Queue<CodeBlock> queue;
 
-    public SsaBlockLivenessAnalyser(ControlFlowGraph graph) {
+    SsaBlockLivenessAnalyser(ControlFlowGraph graph) {
         this.graph = graph;
 
         Indexer<Local> localIndexer = CachingBitSetIndexer.newSequentialIndexer();

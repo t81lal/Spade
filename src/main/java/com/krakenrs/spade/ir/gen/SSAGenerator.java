@@ -74,32 +74,34 @@ public class SSAGenerator {
     private final Map<Local, LatestValue> latest;
 
     private DominatorComputer<CodeBlock> dominator;
-    private SsaBlockLivenessAnalyser liveness;
+    private SsaBlockLivenessAnalyser.Factory livenessFactory;
 
     /* Build this up as we go along */
     private SSADefUseMap defUseMap;
 
     private CodeObservationManager codeObservationManager;
 
-    @Inject
-    public SSAGenerator(@NonNull GenerationCtx ctx, @NonNull CodeObservationManager codeObservationManager, @Assisted ControlFlowGraph cfg) {
-        this.ctx = ctx;
-        this.codeObservationManager = codeObservationManager;
-        this.cfg = cfg;
+	@Inject
+	public SSAGenerator(@NonNull GenerationCtx ctx, @NonNull CodeObservationManager codeObservationManager,
+			@NonNull SsaBlockLivenessAnalyser.Factory livenessFactory, @Assisted ControlFlowGraph cfg) {
+		this.ctx = ctx;
+		this.codeObservationManager = codeObservationManager;
+		this.livenessFactory = livenessFactory;
+		this.cfg = cfg;
 
-        assignments = new LazyCreationHashMap<>(HashSet::new);
-        counter = new LazyCreationHashMap<>(() -> 0);
-        stacks = new LazyCreationHashMap<>(Stack::new);
-        handlers = new HashSet<>();
-        insertion = new LazyCreationHashMap<>(() -> 0);
-        locals = new HashSet<>();
-        process = new LazyCreationHashMap<>(() -> 0);
-        reachingDefs = new HashMap<>();
+		assignments = new LazyCreationHashMap<>(HashSet::new);
+		counter = new LazyCreationHashMap<>(() -> 0);
+		stacks = new LazyCreationHashMap<>(Stack::new);
+		handlers = new HashSet<>();
+		insertion = new LazyCreationHashMap<>(() -> 0);
+		locals = new HashSet<>();
+		process = new LazyCreationHashMap<>(() -> 0);
+		reachingDefs = new HashMap<>();
 
-        latest = new HashMap<>();
+		latest = new HashMap<>();
 
-        defUseMap = new SSADefUseMap();
-    }
+		defUseMap = new SSADefUseMap();
+	}
     
     CodeObserver ssaCodeObserver = new CodeObserver() {
         @Override
@@ -120,7 +122,6 @@ public class SSAGenerator {
         ctx.executePhase("SSAGenerator", () -> {
             ctx.executeStage("getHandlers", this::getHandlers);
             ctx.executeStage("updateDominators", this::updateDominators);
-            ctx.executeStage("updateLiveness", this::updateLiveness);
             ctx.executeStage("insertPhis", this::insertPhis);
             ctx.executeStage("rename", this::rename);
         });
@@ -135,12 +136,11 @@ public class SSAGenerator {
         dominator.run();
     }
 
-    private void updateLiveness() {
-        liveness = new SsaBlockLivenessAnalyser(cfg);
-    }
-
     private void insertPhis() {
         findLocalsAndAssignments();
+        
+        /* we only want to compute once it here as the code will be changing and we don't want to force a recompute of the liveness info */
+        SsaBlockLivenessAnalyser liveness = livenessFactory.get(cfg);
 
         int i = 0;
         for (var local : locals) {
@@ -157,7 +157,7 @@ public class SSAGenerator {
             while (!q.isEmpty()) {
                 CodeBlock toProcess = q.poll();
                 ctx.getLogger().trace("  visit: {}", CodeBlockShim.of(toProcess));
-                insertPhisForBlock(toProcess, local, i, q);
+                insertPhisForBlock(liveness, toProcess, local, i, q);
             }
         }
     }
@@ -190,13 +190,13 @@ public class SSAGenerator {
         }
     }
 
-    private void insertPhisForBlock(CodeBlock block, Local local, int i, LinkedList<CodeBlock> queue) {
+    private void insertPhisForBlock(SsaBlockLivenessAnalyser liveness, CodeBlock block, Local local, int i, LinkedList<CodeBlock> queue) {
         if (block.equals(cfg.getEntryBlock())) {
             return;
         }
 
         ctx.getLogger().trace("   IterDomFrontier({}) = {}", CodeBlockShim.of(block), CodeBlockShim.of(dominator.getIteratedDominanceFrontier(block)));
-
+        
         for (var candidate : dominator.getIteratedDominanceFrontier(block)) {
             if (insertion.get(candidate) < i) {
                 if (liveness.getLiveIn(candidate).contains(local)) {

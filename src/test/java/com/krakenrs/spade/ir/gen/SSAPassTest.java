@@ -24,6 +24,7 @@ import com.krakenrs.spade.commons.collections.tuple.Tuple2;
 import com.krakenrs.spade.guice.ContextScope;
 import com.krakenrs.spade.guice.ContextScopedGuicedPipelineExecutionContext;
 import com.krakenrs.spade.guice.MethodScoped;
+import com.krakenrs.spade.ir.algo.SsaBlockLivenessAnalyser;
 import com.krakenrs.spade.ir.code.CodeBlock;
 import com.krakenrs.spade.ir.code.CodePrinter;
 import com.krakenrs.spade.ir.code.ControlFlowGraph;
@@ -126,6 +127,13 @@ public class SSAPassTest {
         @MethodScoped
         GenerationCtx provideContext() {
             return genCtxScope.getCurrentContext();
+        }
+        
+        @Provides
+        @Inject
+        @MethodScoped
+        SsaBlockLivenessAnalyser.Factory provideSsaBlockLivenessAnalyserFactory(CodeObservationManager codeObservationManager) {
+        	return new SsaBlockLivenessAnalyser.Factory(codeObservationManager);
         }
 
         @Override
