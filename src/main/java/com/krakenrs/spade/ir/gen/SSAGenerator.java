@@ -21,6 +21,7 @@ import com.krakenrs.spade.commons.collections.graph.algo.DepthFirstSearch;
 import com.krakenrs.spade.commons.collections.graph.algo.DominatorComputer;
 import com.krakenrs.spade.ir.algo.SsaBlockLivenessAnalyser;
 import com.krakenrs.spade.ir.code.CodeBlock;
+import com.krakenrs.spade.ir.code.CodePrinter;
 import com.krakenrs.spade.ir.code.ControlFlowGraph;
 import com.krakenrs.spade.ir.code.ExceptionRange;
 import com.krakenrs.spade.ir.code.Expr;
@@ -43,6 +44,7 @@ import com.krakenrs.spade.ir.gen.ssa.LatestValue.ConstLV;
 import com.krakenrs.spade.ir.gen.ssa.LatestValue.LocalLV;
 import com.krakenrs.spade.ir.gen.ssa.LatestValue.PhiLV;
 import com.krakenrs.spade.ir.gen.ssa.LatestValue.VarLV;
+import com.krakenrs.spade.ir.gen.ssa.prop.EvalCtx;
 import com.krakenrs.spade.ir.value.Local;
 import com.krakenrs.spade.logging.shims.CodeBlockShim;
 import com.krakenrs.spade.logging.shims.CodeUnitShim;
@@ -72,11 +74,11 @@ public class SSAGenerator {
     private final Map<Local, ReachingDefinition> reachingDefs;
 
     private final Map<Local, LatestValue> latest;
+    private final Map<Local, EvalCtx> evals;
 
     private DominatorComputer<CodeBlock> dominator;
     private SsaBlockLivenessAnalyser livenessAnalyser;
 
-    /* Build this up as we go along */
     private SSADefUseMap defUseMap;
 
     private CodeObservationManager codeObservationManager;
@@ -99,24 +101,11 @@ public class SSAGenerator {
 		reachingDefs = new HashMap<>();
 
 		latest = new HashMap<>();
+		evals = new HashMap<>();
 
 		defUseMap = new SSADefUseMap();
 	}
     
-    CodeObserver ssaCodeObserver = new CodeObserver() {
-        @Override
-        public void onStmtReplaced(Stmt oldStmt, Stmt newStmt) {
-            System.out.println("SSAGenerator.ssaCodeObserver.new CodeObserver() {...}.onStmtReplaced()");
-        }
-        @Override
-        public void onStmtRemoved(Stmt stmt) {
-            System.out.println("SSAGenerator.ssaCodeObserver.new CodeObserver() {...}.onStmtRemoved()");
-        }
-        @Override
-        public void onStmtAdded(Stmt stmt) {
-            System.out.println("SSAGenerator.doTransform()");
-        }
-    };
 
     public void doTransform() {
         ctx.executePhase("SSAGenerator", () -> {
@@ -226,6 +215,20 @@ public class SSAGenerator {
             }
         }
     }
+    
+    private void buildDefUseMap(List<CodeBlock> postOrder) {
+        /* Build def/use map. Since we are in SSA (assumed from valid bytecode) each use is dominated
+         * by it's corresponding definition, so if we visit in reverse postorder, we will initialise
+         * local definitions before reaching their uses, ensuring this is a safe operation. */
+        for(int i=0; i < postOrder.size(); i++) {
+            CodeBlock b = postOrder.get(postOrder.size() - i - 1);
+            for(Stmt stmt : b.stmts()) {
+                defUseMap.addStmt(stmt);
+            }
+        }
+
+        System.out.println(defUseMap);
+    }
 
     private void rename() {
         /* We are visiting the blocks in a slightly different order, but want to retain relative
@@ -252,20 +255,7 @@ public class SSAGenerator {
         /* do renaming */
         search(cfg.getEntryBlock(), visited, ordering);
         
-
-        /* Build def/use map. Since we are in SSA (assumed from valid bytecode) each use is dominated
-         * by it's corresponding definition, so if we visit in reverse postorder, we will initialise
-         * local definitions before reaching their uses, ensuring this is a safe operation. */
-        for(int i=0; i < postOrder.size(); i++) {
-            CodeBlock b = postOrder.get(postOrder.size() - i - 1);
-            for(Stmt stmt : b.stmts()) {
-                defUseMap.addStmt(stmt);
-            }
-        }
-
-        System.out.println(defUseMap);
-        
-        codeObservationManager.addCodeObserver(ssaCodeObserver);
+        buildDefUseMap(postOrder);
         
     }
 
@@ -357,19 +347,6 @@ public class SSAGenerator {
 
                 if (newStmt != stmt) {
                     current.replaceStmt(stmt, newStmt);
-
-                    /* If stmt is a decl and newStmt is a decl, then swapDefs
-                     * else we remove the old stmt and add the new one to the
-                     * def/use map */
-                    
-//                    if(stmt instanceof DeclareLocalStmt && newStmt instanceof DeclareLocalStmt) {
-//                        /* Assumption here: newStmt lhs == oldStmt lhs */
-//                        defUseMap.replaceDef((DeclareLocalStmt) newStmt);
-//                    } else {
-//                        defUseMap.removeStmt(stmt);
-//                        defUseMap.addStmt(newStmt);
-//                    }
-
                     ////// IMPORTANT: Replaced the loop variable!
                     stmt = newStmt;
                 }
@@ -408,8 +385,21 @@ public class SSAGenerator {
         }
         
         /* Initialise an entry for this variable in the SSA def/use map */
+//        defUseMap.addStmt(newDecl);
 
         return newDecl;
+    }
+    
+    private void makeEvalCtx(DeclareLocalStmt decl) {
+        Local lhsVar = decl.var();
+        if (evals.containsKey(lhsVar)) {
+            throw new IllegalStateException("Revisit " + lhsVar);
+        }
+        EvalCtx ctx;
+        int sOp = decl.opcode();
+        if(sOp == Opcodes.ASSIGN_LOCAL) {
+            
+        }
     }
 
     private void makeValue(DeclareLocalStmt decl) {
@@ -451,21 +441,19 @@ public class SSAGenerator {
                 val = new LatestValue(v, v, new LocalLV(lhsVar));
                 val.collectConstraints(expr);
             }
+        } else if (sOp == Opcodes.ASSIGN_PARAM) {
+            /* x = x, value equals itself (pure) */
+            val = new LatestValue(new LocalLV(decl.var()), null, null);
+        } else if (sOp == Opcodes.ASSIGN_CATCH) {
+            /* x = catch(...) */
+            CatchLV v = new CatchLV();
+            val = new LatestValue(v, v, null);
+        } else if (sOp == Opcodes.ASSIGN_PHI) {
+            /* x = phi{...} */
+            PhiLV v = new PhiLV((AssignPhiStmt) decl);
+            val = new LatestValue(v, v, null);
         } else {
-            if (sOp == Opcodes.ASSIGN_PARAM) {
-                /* x = x, value equals itself (pure) */
-                val = new LatestValue(new LocalLV(decl.var()), null, null);
-            } else if (sOp == Opcodes.ASSIGN_CATCH) {
-                /* x = catch(...) */
-                CatchLV v = new CatchLV();
-                val = new LatestValue(v, v, null);
-            } else if (sOp == Opcodes.ASSIGN_PHI) {
-                /* x = phi{...} */
-                PhiLV v = new PhiLV((AssignPhiStmt) decl);
-                val = new LatestValue(v, v, null);
-            } else {
-                throw new IllegalStateException();
-            }
+            throw new IllegalStateException();
         }
         
         ctx.getLogger().trace("  Made value {} for {}", val, lhsVar);
@@ -515,28 +503,27 @@ public class SSAGenerator {
         }
     }
 
-    class RenamingCodeReducer extends AbstractCodeReducer {
-        boolean shouldRename;
-
-        void setShouldRename(boolean shouldRename) {
-            this.shouldRename = shouldRename;
+    private Local remap(Local local) {
+        LatestValue lval = latest.get(local);
+        LatestValue.Val suggested = lval.suggestedValue;
+        if(suggested instanceof LatestValue.LocalLV) {
+            
         }
+        System.out.println(local + "\n" + lval);
+        return local;
+    }
 
-        private Local remap(Local local) {
-            LatestValue val = latest.get(local);
-            System.out.println(local + "\n" + val);
-            return local;
-        }
+    private Local reduceLocal(Local local) {
+        Local ssaLocal;
+//        if (shouldRename) {
+            ssaLocal = getLatestVersion(local);
+//        } else {
+//            ssaLocal = local;
+//        }
+        return remap(ssaLocal);
+    }
 
-        private Local reduceLocal(Local local) {
-            Local ssaLocal;
-            if (shouldRename) {
-                ssaLocal = getLatestVersion(local);
-            } else {
-                ssaLocal = local;
-            }
-            return remap(ssaLocal);
-        }
+    class UseRenamingCodeReducer extends AbstractCodeReducer {
 
         @Override
         public Expr reduceLoadLocalExpr(LoadLocalExpr e) {
@@ -556,10 +543,10 @@ public class SSAGenerator {
         }
     }
 
-    RenamingCodeReducer reducer = new RenamingCodeReducer();
+    UseRenamingCodeReducer reducer = new UseRenamingCodeReducer();
 
     private Stmt translateFullStmt(Stmt stmt) {
-        reducer.setShouldRename(true);
+//        reducer.setShouldRename(true);
         return Objects.requireNonNull(stmt.reduceStmt(reducer));
     }
 

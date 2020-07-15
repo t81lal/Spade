@@ -9,7 +9,7 @@ import com.krakenrs.spade.ir.code.stmt.DeclareLocalStmt;
 import lombok.Getter;
 import lombok.NonNull;
 
-public final class Def {
+public abstract class Def2 {
     @NonNull
     @Getter
     private final DeclareLocalStmt stmt;
@@ -17,12 +17,12 @@ public final class Def {
     @Getter
     private final Set<Use> uses;
 
-    public Def(DeclareLocalStmt stmt) {
+    public Def2(DeclareLocalStmt stmt) {
         this.stmt = stmt;
         this.uses = new HashSet<>();
     }
 
-    public Def(DeclareLocalStmt stmt, Set<Use> uses) {
+    public Def2(DeclareLocalStmt stmt, Set<Use> uses) {
         this.stmt = stmt;
         this.uses = uses;
     }
@@ -48,7 +48,7 @@ public final class Def {
             return true;
         if (getClass() != obj.getClass())
             return false;
-        Def other = (Def) obj;
+        Def2 other = (Def2) obj;
         return Objects.equals(other.stmt, stmt);
     }
 }

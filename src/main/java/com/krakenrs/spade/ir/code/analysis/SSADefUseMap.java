@@ -2,6 +2,7 @@ package com.krakenrs.spade.ir.code.analysis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,11 +23,11 @@ import com.krakenrs.spade.ir.value.Local;
 import lombok.NonNull;
 
 public class SSADefUseMap {
-    private final Map<Local, Def> defs = new HashMap<>();
+    private final Map<Local, Def2> defs = new HashMap<>();
     private final AddStmtVisitor addStmtVisitor = new AddStmtVisitor();
     private final RemoveStmtVisitor removeStmtVisitor = new RemoveStmtVisitor();
     private boolean enforceSSA = true;
-    
+
     public SSADefUseMap() {
     }
 
@@ -42,6 +43,36 @@ public class SSADefUseMap {
         removedStmt.accept(removeStmtVisitor);
     }
 
+    public void replaceStmt(@NonNull Stmt oldStmt, @NonNull Stmt newStmt) {
+        /* We only want to replace a def if it is overwriting another def
+         * otherwise we are just replacing normal statements that only contain
+         * defs. */
+
+        boolean oldDef = oldStmt instanceof DeclareLocalStmt;
+        boolean newDef = newStmt instanceof DeclareLocalStmt;
+
+        if (oldDef ^ newDef) {
+            throw new IllegalArgumentException("Can't do replace between a decl and a non decl");
+        }
+
+        if (oldDef) {
+            /* both are defs */
+            DeclareLocalStmt oldDecl = (DeclareLocalStmt) oldStmt;
+            DeclareLocalStmt newDecl = (DeclareLocalStmt) newStmt;
+
+            if (!oldDecl.var().equals(newDecl.var())) {
+                throw new IllegalArgumentException("Can't replace decl of " + oldDecl.var() + " with " + newDecl.var());
+            }
+
+            /* do the replace */
+            this.replaceDef(newDecl);
+        } else {
+            /* both are non def stmts */
+            this.removeStmt(oldStmt);
+            this.addStmt(newStmt);
+        }
+    }
+
     public void replaceDef(@NonNull DeclareLocalStmt newDecl) {
         Local declLocal = newDecl.var();
         assertDefined(declLocal);
@@ -51,7 +82,7 @@ public class SSADefUseMap {
          * map invariants, so we have to do this ourselves so that after
          * the map remains consistent. */
 
-        Def oldDef = defs.get(declLocal);
+        Def2 oldDef = defs.get(declLocal);
         try {
             removeStmtVisitor.shouldRemoveDef = false;
             oldDef.getStmt().accept(removeStmtVisitor);
@@ -67,8 +98,18 @@ public class SSADefUseMap {
         }
 
         /* copy the uses over to the new Def holder */
-        Def newDef = new Def(newDecl, oldDef.getUses());
+        Def2 newDef = createDef(newDecl, oldDef.getUses());
         defs.put(declLocal, newDef);
+    }
+
+    private Def2 createDef(DeclareLocalStmt decl, Set<Use> uses) {
+        if (decl instanceof AssignPhiStmt) {
+            AssignPhiStmt phi = (AssignPhiStmt) decl;
+            if (!phi.isInSSA()) {
+                return new PartialPhiDef(phi, uses);
+            }
+        }
+        return new CopyDef(decl, uses);
     }
 
     public DeclareLocalStmt getDef(@NonNull Local local) {
@@ -104,8 +145,11 @@ public class SSADefUseMap {
                  * so it doesn't get added as a use. */
                 DeclareLocalStmt decl = (DeclareLocalStmt) u;
                 Local declaredLocal = assertVersioned(decl.var());
+                /* The lhs has to be an SSA local here but the right might not be
+                 * in the case of a partial phi, so isInSSA will return false only
+                 * if the rhs is partial */
                 if (!defs.containsKey(declaredLocal)) {
-                    defs.put(declaredLocal, new Def(decl));
+                    defs.put(declaredLocal, createDef(decl, new HashSet<>()));
                 } else {
                     throw new UnsupportedOperationException(declaredLocal + " is already defined");
                 }
@@ -114,9 +158,23 @@ public class SSADefUseMap {
 
         @Override
         public void visitAssignPhiStmt(AssignPhiStmt s) {
+            /* In the case of partial phis, we only added what we can */
+            boolean isPartial = defs.get(assertDefined(s.var())) instanceof PartialPhiDef;
             for (Entry<CodeBlock, Local> e : s.arguments().entrySet()) {
-                Local usedLocal = assertDefined(e.getValue());
-                defs.get(usedLocal).addUse(new PhiUse(e.getKey(), usedLocal, s));
+                Local usedLocal = e.getValue();
+
+                boolean shouldMakeUse = false;
+                if (!isPartial) {
+                    /* not partial => verify */
+                    assertDefined(usedLocal);
+                    shouldMakeUse = true;
+                } else {
+                    shouldMakeUse = defs.containsKey(usedLocal) && usedLocal.isVersioned();
+                }
+
+                if (shouldMakeUse) {
+                    defs.get(usedLocal).addUse(new PhiUse(e.getKey(), usedLocal, s));
+                }
             }
         }
 
@@ -169,14 +227,19 @@ public class SSADefUseMap {
         StringBuilder sb = new StringBuilder();
         sb.append("Def table:\n");
 
-        Iterator<Entry<Local, Def>> defIt = defs.entrySet().iterator();
+        Iterator<Entry<Local, Def2>> defIt = defs.entrySet().iterator();
         List<Use> uses = new ArrayList<>();
         while (defIt.hasNext()) {
-            Entry<Local, Def> e = defIt.next();
-            DeclareLocalStmt s = e.getValue().getStmt();
+            Entry<Local, Def2> e = defIt.next();
+            Def2 def = e.getValue();
+            DeclareLocalStmt s = def.getStmt();
             String blockId = s.getBlock() != null ? String.valueOf(s.getBlock().id()) : "?";
-            sb.append(" ").append(e.getKey()).append(" @ L").append(blockId).append(" | ").append(CodePrinter.toString(s));
-            uses.addAll(e.getValue().getUses());
+            sb.append(" ").append(e.getKey());
+            if (def instanceof PartialPhiDef) {
+                sb.append(" (partial) ");
+            }
+            sb.append(" @ L").append(blockId).append(" | ").append(CodePrinter.toString(s));
+            uses.addAll(def.getUses());
 
             if (defIt.hasNext() || !uses.isEmpty()) {
                 sb.append("\n");
