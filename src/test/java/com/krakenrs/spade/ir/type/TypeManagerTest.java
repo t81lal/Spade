@@ -5,6 +5,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.Serializable;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -15,17 +17,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class TypeManagerTest {
     final Supplier<MockTypeManager> typeManagers = () -> {
         MockTypeManager manager = new MockTypeManager();
-        manager.addClass("java/lang/Object", new ResolvedClassType("java/lang/Object", null, Set.of()));
-        manager.addClass("java/io/Serializable", new ResolvedClassType("java/io/Serializable", null, Set.of()));
-        manager.addClass("java/lang/Comparable", new ResolvedClassType("java/lang/Comparable", null, Set.of()));
+        manager.addClass("java/lang/Object", new ResolvedClassType("java/lang/Object", null, Set.of(), Object.class.getModifiers()));
+        manager.addClass("java/io/Serializable", new ResolvedClassType("java/io/Serializable", null, Set.of(), Serializable.class.getModifiers()));
+        manager.addClass("java/lang/Comparable", new ResolvedClassType("java/lang/Comparable", null, Set.of(), Comparable.class.getModifiers()));
         manager.addClass("java/lang/Number", new ResolvedClassType("java/lang/Number", manager.findClassType("java/lang/Object"),
-                Set.of(manager.findClassType("java/io/Serializable"))));
+                Set.of(manager.findClassType("java/io/Serializable")), Number.class.getModifiers()));
         manager.addClass("java/lang/Integer", new ResolvedClassType("java/lang/Integer", manager.findClassType("java/lang/Number"),
-                Set.of(manager.findClassType("java/lang/Comparable"))));
+                Set.of(manager.findClassType("java/lang/Comparable")), Integer.class.getModifiers()));
         manager.addClass("java/lang/Long", new ResolvedClassType("java/lang/Long", manager.findClassType("java/lang/Number"),
-                Set.of(manager.findClassType("java/lang/Comparable"))));
+                Set.of(manager.findClassType("java/lang/Comparable")), Long.class.getModifiers()));
         manager.addClass("foo/CoolInteger",
-                new ResolvedClassType("foo/CoolInteger", manager.findClassType("java/lang/Integer"), Set.of()));
+                new ResolvedClassType("foo/CoolInteger", manager.findClassType("java/lang/Integer"), Set.of(), Modifier.PUBLIC));
         return manager;
     };
 

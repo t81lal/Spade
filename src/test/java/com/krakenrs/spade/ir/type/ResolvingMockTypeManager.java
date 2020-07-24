@@ -23,7 +23,7 @@ public class ResolvingMockTypeManager extends MockTypeManager {
             }
             Set<ClassType> superInterfacesTypes = Arrays.asList(clazz.getInterfaces()).stream().map(this::asClassType)
                     .collect(Collectors.toSet());
-            return new ResolvedClassType(klassName, superClassType, superInterfacesTypes);
+            return new ResolvedClassType(klassName, superClassType, superInterfacesTypes, clazz.getModifiers());
         } catch (ClassNotFoundException e) {
             return new UnresolvedClassType(klassName);
         }

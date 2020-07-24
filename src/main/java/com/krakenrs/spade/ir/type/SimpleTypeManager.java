@@ -18,7 +18,7 @@ public class SimpleTypeManager extends TypeManager {
             for (Class<?> i : c.getInterfaces()) {
                 iTs.add(asClassType(i));
             }
-            return new ResolvedClassType(name, sT, iTs);
+            return new ResolvedClassType(name, sT, iTs, c.getModifiers());
         } catch (ClassNotFoundException e) {
             LOGGER.error("", e);
             return new UnresolvedClassType(name);

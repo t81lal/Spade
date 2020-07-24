@@ -16,4 +16,9 @@ public class UnresolvedClassType extends ClassType {
     public Set<ClassType> getSuperInterfaceTypes() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public boolean isInterface() {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -23,6 +23,8 @@ public abstract class ClassType implements Type {
     public abstract ClassType getSuperClassType();
 
     public abstract Set<ClassType> getSuperInterfaceTypes();
+    
+    public abstract boolean isInterface();
 
     @Override
     public String toString() {
