@@ -14,11 +14,19 @@ import java.util.zip.ZipInputStream;
 import org.objectweb.asm.ClassReader;
 
 public class KlassSource {
-
+    private final String name;
     private final Map<String, Klass> klasses;
     private final Map<String, byte[]> resources;
 
     public KlassSource() {
+        this(null);
+    }
+
+    public KlassSource(String name) {
+        if (name == null) {
+            name = "KlassSource-" + hashCode();
+        }
+        this.name = name;
         this.klasses = new HashMap<>();
         this.resources = new HashMap<>();
     }
@@ -115,5 +123,10 @@ public class KlassSource {
 
     public Set<Klass> getKlasses() {
         return Collections.unmodifiableSet(new HashSet<>(klasses.values()));
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
