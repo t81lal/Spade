@@ -31,6 +31,10 @@ public abstract class TypeManager {
             }
         }
     }
+    
+    public ObjectType asObjectType(Class<?> clazz) {
+        return asClassType(clazz).asValueType();
+    }
 
     public ClassType asClassType(Class<?> clazz) {
         if (clazz == null) {
