@@ -11,13 +11,13 @@ public class ArrayType implements ValueType {
         this.componentType = requireNonNull(componentType);
     }
 
-    public ValueType componentType() {
+    public ValueType elementType() {
         return componentType;
     }
 
-    public ValueType elementType() {
+    public ValueType componentType() {
         if (componentType instanceof ArrayType) {
-            return ((ArrayType) componentType).elementType();
+            return ((ArrayType) componentType).componentType();
         } else {
             return componentType;
         }

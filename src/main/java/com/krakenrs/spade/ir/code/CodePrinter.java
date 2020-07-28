@@ -147,7 +147,7 @@ public class CodePrinter implements Opcodes {
                 }
                 case ALLOCARR: {
                     AllocArrayExpr aae = (AllocArrayExpr) e;
-                    emit("new ").emit(((ArrayType) aae.getType()).elementType());
+                    emit("new ").emit(((ArrayType) aae.getType()).componentType());
                     for (ValueExpr<?> bound : aae.getBounds()) {
                         emit('[').emitExpr(bound).emit(']');
                     }

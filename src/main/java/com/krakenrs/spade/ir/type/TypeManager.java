@@ -121,7 +121,7 @@ public abstract class TypeManager {
                 } else if (i == len - 1) {
                     ValueType vt = _asValueType(cs, 0, len);
                     if (!(vt instanceof PrimitiveType) && !(vt instanceof ArrayType
-                            && ((ArrayType) vt).elementType() instanceof PrimitiveType)) {
+                            && ((ArrayType) vt).componentType() instanceof PrimitiveType)) {
                         throw new TypeParsingException("Expecting primitive, got " + vt, cs, 0, i, false);
                     } else {
                         return vt;

@@ -144,7 +144,7 @@ class TypeManagerTest {
         var objectArrayType = types.asArrayType(Object.class, 1);
         assertThrows(NullPointerException.class, () -> types.asArrayType((ValueType) null, 1));
         assertThrows(IllegalArgumentException.class, () -> types.asArrayType(objectArrayType, 1));
-        assertThrows(IllegalArgumentException.class, () -> types.asArrayType(objectArrayType.elementType(), 0));
+        assertThrows(IllegalArgumentException.class, () -> types.asArrayType(objectArrayType.componentType(), 0));
     }
 
     @Test
