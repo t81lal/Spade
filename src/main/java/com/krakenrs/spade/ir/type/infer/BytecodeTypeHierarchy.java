@@ -79,13 +79,13 @@ public class BytecodeTypeHierarchy implements TypeHierarchy {
         }
     }
 
-    private static Collection<PrimitiveType> REAL_PRIMITIVE__TYPES = Set.of(PrimitiveType.BOOLEAN, PrimitiveType.BYTE,
+    private static Collection<PrimitiveType> REAL_PRIMITIVE_TYPES = Set.of(PrimitiveType.BOOLEAN, PrimitiveType.BYTE,
             PrimitiveType.CHAR, PrimitiveType.SHORT, PrimitiveType.INT, PrimitiveType.FLOAT, PrimitiveType.DOUBLE,
             PrimitiveType.LONG);
 
     public static boolean isPrimLike(ValueType t) {
         // Not null or void
-        return REAL_PRIMITIVE__TYPES.contains(t) || t instanceof SizedIntType;
+        return REAL_PRIMITIVE_TYPES.contains(t) || t instanceof SizedIntType;
     }
 
     private Collection<ValueType> lcas_(ValueType t1, ValueType t2) {
