@@ -18,8 +18,10 @@ public class ResolvingMockTypeManager extends MockTypeManager {
             Class<?> superClazz = clazz.getSuperclass();
             ClassType superClassType = null;
             if (superClazz != null) {
-                // Object and interfaces
+                // objects except Object
                 superClassType = asClassType(superClazz);
+            } else if(clazz.isInterface()) {
+                superClassType = asClassType(Object.class);
             }
             Set<ClassType> superInterfacesTypes = Arrays.asList(clazz.getInterfaces()).stream().map(this::asClassType)
                     .collect(Collectors.toSet());
