@@ -25,7 +25,7 @@ public class KlassScene {
         name = name.replace(".", "/");
         for (KlassSource source : sources) {
             if (source.hasKlass(name)) {
-                LOGGER.info("Found loaded klass: {}", name);
+                LOGGER.trace("Found loaded klass: {}", name);
                 return source.getKlass(name);
             }
         }
