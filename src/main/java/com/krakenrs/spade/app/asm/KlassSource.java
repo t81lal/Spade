@@ -12,8 +12,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.objectweb.asm.ClassReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KlassSource {
+    private static final Logger LOGGER = LoggerFactory.getLogger(KlassSource.class);
+
     private final String name;
     private final Map<String, Klass> klasses;
     private final Map<String, byte[]> resources;
@@ -79,18 +83,24 @@ public class KlassSource {
     public void loadFromJar(InputStream is, int options, boolean loadDirectories) throws IOException {
         Objects.requireNonNull(is, "inputstream must not be null");
 
+        int newClasses = 0, newResources = 0;
+
         // Use ZipInputStream instead of JarInputStream because JarInputStream consumes the manifest
         try (ZipInputStream jIn = new ZipInputStream(is)) {
             ZipEntry e;
             while ((e = jIn.getNextEntry()) != null) {
                 String entryName = e.getName();
                 if (entryName.endsWith(".class")) {
+                    newClasses++;
                     loadFromClassFile(jIn, options);
                 } else if (e.isDirectory() == loadDirectories) {
+                    newResources++;
                     loadResource(entryName, jIn);
                 }
             }
         }
+
+        LOGGER.info("KlassSource/{} loaded {} class(es) and {} resource(s)", name, newClasses, newResources);
     }
 
     public boolean hasKlass(String klassName) {
