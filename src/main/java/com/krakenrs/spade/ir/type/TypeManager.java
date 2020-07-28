@@ -5,12 +5,12 @@ import java.util.*;
 public abstract class TypeManager {
     private final Map<String, ClassType> classTypes;
     private final Map<String, ValueType> valueTypes;
-    private final Map<String, MethodType> methodTypeCache;
+    private final Map<String, MethodType> methodTypes;
 
     public TypeManager() {
         classTypes = new HashMap<>();
         valueTypes = new HashMap<>();
-        methodTypeCache = new HashMap<>();
+        methodTypes = new HashMap<>();
     }
 
     protected abstract ClassType findClassType(String name);
@@ -171,11 +171,11 @@ public abstract class TypeManager {
     }
 
     public MethodType asMethodType(String descriptor) {
-        if (methodTypeCache.containsKey(descriptor)) {
-            return methodTypeCache.get(descriptor);
+        if (methodTypes.containsKey(descriptor)) {
+            return methodTypes.get(descriptor);
         } else {
             MethodType mt = parseMethodType(descriptor.toCharArray(), 0, descriptor.length() - 1);
-            methodTypeCache.put(descriptor, mt);
+            methodTypes.put(descriptor, mt);
             return mt;
         }
     }
