@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import com.krakenrs.spade.ir.type.ClassType;
 import com.krakenrs.spade.ir.type.ResolvedClassType;
 import com.krakenrs.spade.ir.type.TypeManager;
+import com.krakenrs.spade.ir.type.UnresolvedClassType;
 
 import lombok.Getter;
 
@@ -20,6 +21,10 @@ public class ASMTypeManager extends TypeManager {
     @Override
     protected ClassType findClassType(String name) {
         Klass klass = scene.findKlass(name);
+
+        if (klass == null) {
+            return new UnresolvedClassType(name);
+        }
 
         ClassType superClass = null;
         if (klass.superName == null) {
