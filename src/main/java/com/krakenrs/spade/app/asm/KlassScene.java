@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +21,20 @@ public class KlassScene {
     public KlassScene() {
         sources = new HashSet<>();
     }
+    
+    public Stream<Klass> getKlasses() {
+        Stream<Klass> stream = Stream.empty();
+        for(KlassSource source : sources) {
+            stream = Stream.concat(stream, source.getKlasses().stream());
+        }
+        return stream;
+    }
 
     public Klass findKlass(@NonNull String name) {
         name = name.replace(".", "/");
         for (KlassSource source : sources) {
             if (source.hasKlass(name)) {
-                LOGGER.trace("Found loaded klass: {}", name);
+                // LOGGER.trace("Found loaded klass: {}", name);
                 return source.getKlass(name);
             }
         }
