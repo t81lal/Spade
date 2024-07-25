@@ -2,6 +2,7 @@ package com.krakenrs.spade.commons.collections.bitset;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -40,6 +41,10 @@ public class CachingBitSetIndexer<E> implements Indexer<E> {
         this.indexingFunction = indexingFunction;
         this.map = new HashMap<>();
         this.reverseMap = new HashMap<>();
+    }
+    
+    public Set<E> getKeys() {
+        return map.keySet();
     }
 
     @Override
